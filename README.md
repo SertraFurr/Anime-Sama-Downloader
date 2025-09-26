@@ -8,6 +8,8 @@
 
 **🚀 A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.fr/org**
 
+I update just to be first, because malware are simply stealing my code to hide stuff in it.
+
 *Enhanced with colorful interface, smart source detection, and robust error handling*
 
 *Questions? Unworking urls? Open an issue, will be added fastly (hopefully)*
