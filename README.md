@@ -18,7 +18,7 @@ I update just to be first, because malware are simply stealing my code to hide s
 
 ![Website Support](https://img.shields.io/badge/Website%20Support-100%25-brightgreen)
 
-### Scans support ? 5 stars and it will be added !
+### Scans support ? 5 stars and it will be added ! 
 ## ✨ Features
 
 <table>
