@@ -5,7 +5,7 @@
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux_(mostly_windows)-lightgrey.svg?style=for-the-badge" alt="Platform">
 <img src="https://img.shields.io/badge/License-GPL_V3-green.svg?style=for-the-badge" alt="License">
-
+ 
 **🚀 A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.fr/org**
 
 I update just to be first, because malware are simply stealing my code to hide stuff in it.
