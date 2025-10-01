@@ -25,19 +25,6 @@ def check_ffmpeg_installed():
         print("FFmpeg is not detected in PATH.")
         return False
 
-
-def install_ffmpeg_with_winget():
-    system = platform.system().lower()
-    if system != "windows":
-        raise OSError("This script only supports Windows for now. Check https://ffmpeg.org/download.html for installation instructions for your OS.")
-
-    print("Installing FFmpeg using winget...")
-    try:
-        subprocess.run(["winget", "install", "ffmpeg", "--accept-source-agreements", "--accept-package-agreements"], check=True)
-        print("FFmpeg installed successfully via winget.")
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to install FFmpeg via winget: {e}")
-        
 def package_check(ask_install=False, first_run=False):
     missing_packages = []
 
@@ -52,9 +39,9 @@ def package_check(ask_install=False, first_run=False):
         missing_packages.append("tqdm")
 
     try:
-        from moviepy import VideoFileClip
+        import av
     except ImportError:
-        missing_packages.append("moviepy")
+        missing_packages.append("av")
 
     try:
         from bs4 import BeautifulSoup
@@ -80,10 +67,11 @@ def package_check(ask_install=False, first_run=False):
                 from tqdm import tqdm
             except ImportError:
                 missing_packages.append("tqdm")
+
             try:
-                from moviepy import VideoFileClip
+                import av
             except ImportError:
-                missing_packages.append("moviepy")
+                missing_packages.append("av")
 
             try:
                 from bs4 import BeautifulSoup
@@ -109,11 +97,6 @@ if not package_check(ask_install=True, first_run=True):
         input("Press Enter to exit...")
         sys.exit(1)
 
-try:
-    from moviepy                  import VideoFileClip
-except ImportError:
-    print_status("moviepy not installed and can't seem to be installed. You should install it manually.", "error")
-    VideoFileClip = None
 
 from concurrent.futures           import ThreadPoolExecutor, as_completed
 
@@ -160,7 +143,7 @@ def get_save_directory():
 
 def validate_anime_sama_url(url):
     pattern = re.compile(
-        r'^https://anime-sama\.(?:fr|org)/catalogue/[^/]+/(?:saison\d+|film\d*)/(?:vostfr|vf|vo)/?$', re.IGNORECASE
+r'^https://anime-sama\.(?:fr|org)/catalogue/[^/]+/(?:saison\d+|film\d*)/(?:vostfr|vf|vo)/?$', re.IGNORECASE
     )
     if pattern.match(url):
         return True, ""
@@ -220,29 +203,11 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
         print_status(f"Episode {episode_num} successfully saved to: {save_path}", "success")
         return True, save_path
 def main():
+
     if not check_ffmpeg_installed():
 
-        print("❌ FFmpeg is not installed.")
-        response = input("ℹ️ Would you like to install FFmpeg using winget? (If not you will use moviepy (Slower)) (y/n): ").strip().lower()
-        if response not in ['y', 'yes', '1']:
-                print("⚠️ FFmpeg is required for video processing. Falling back to moviepy (slower).")
-                
-        else:
-            install_ffmpeg_with_winget()
-
-            if check_ffmpeg_installed():
-                try:
-                    cmd = ["ffmpeg", "--version"]
-                    subprocess.run(cmd, check=True)
-                    print("Check command!")
-                except subprocess.CalledProcessError as e:
-                    print(f"Failed to run FFmpeg command: {e}")
-            else:
-                    print("❌ FFmpeg installed but not accessible yet.")
-                    print("ℹ️ Please restart your terminal or system to apply PATH changes and try again.")
-                    input("Press Enter to quit, YOU MUST CLOSE THE TERMINAL!...")
-                    quit()
-
+        print_status("FFmpeg is not installed or not found in the PATH. You could consider installing it from https://ffmpeg.org/download.html", "error")
+        return
 
     try:
         print_header()
@@ -327,25 +292,33 @@ def main():
             auto_mp4_choice = input(f"{Colors.BOLD}Convert .ts file(s) to .mp4 automatically after download? (t/1/y = yes / s = no , default: s): {Colors.ENDC}").strip().lower()
             automatic_mp4 = auto_mp4_choice in ['t', 'threaded', '1', 'y', 'yes']
 
-            if automatic_mp4 and not VideoFileClip:
-                print_status("moviepy not installed, cannot convert to .mp4. Install it using 'pip install moviepy'", "warning")
-                automatic_mp4 = False
+            if automatic_mp4:
+                try:
+                    import av
+                except ImportError:
+
+                    print_status("AV not installed, cannot convert to .mp4. Install it using 'pip install av'", "warning")
+                    automatic_mp4 = False
 
             if automatic_mp4:
                 while True:
-                    ffmpeg_or_moviepy = input(f"{Colors.BOLD}Choose conversion tool - 1 for ffmpeg but takes more space (faster), 2 for moviepy (slower but lighter) (default: 1): {Colors.ENDC}").strip().lower()
+                    ffmpeg_or_moviepy = input(f"{Colors.BOLD}Choose conversion tool - 1 for AV (fast and easier)  Choose conversion tool - 2 for ffmpeg but takes more space (fast) (default: 1): {Colors.ENDC}").strip().lower()
                     if ffmpeg_or_moviepy in ['1', 'ffmpeg', '']:
-                        pre_selected_tool = 'ffmpeg'
+                        try :
+                            import av
+                            pre_selected_tool = 'av'
+                            break
+                        except ImportError:
+                            input("⚠️ AV not installed, cannot use it. Press Enter to quit...")
+                            quit()
+                    elif ffmpeg_or_moviepy in ['2', 'ffmpeg']:
                         if not check_ffmpeg_installed():
-                            print_status("ffmpeg is not installed. Fallback to moviepy", "error")
-                            pre_selected_tool = 'moviepy'
+                            print_status("ffmpeg is not installed. Fallback to av", "error")
+                            pre_selected_tool = 'av'
                             break
                         break
-                    elif ffmpeg_or_moviepy in ['2', 'moviepy']:
-                        pre_selected_tool = 'moviepy'
-                        break
                     else:
-                        print_status("Invalid choice. Please enter 1 for ffmpeg or 2 for moviepy (default: 1).", "warning")
+                        print_status("Invalid choice. Please enter 1 for av or enter 2 for ffmpeg (default: 1).", "warning")
 
         failed_downloads = 0
         try:
@@ -391,6 +364,4 @@ def main():
         print_status(f"Fatal error: {str(e)}", "error")
         return 1
 if __name__ == "__main__":
-
     sys.exit(main())
-
