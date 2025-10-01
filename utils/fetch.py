@@ -54,8 +54,6 @@ def get_sibnet_redirect_location(video_url):
         print_status(f"Failed to get redirect location: {str(e)}", "error")
         return None
 
-
-
 def fetch_page_content(url):
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
@@ -67,7 +65,13 @@ def fetch_page_content(url):
                   'https://vidmoly.net/' if 'vidmoly.net' in url else
                   'https://movearnpre.com/' if 'movearnpre.com' in url else
                     'https://mivalyo.com/' if 'mivalyo.com' in url else
-                  'https://oneupload.net/'
+                  'https://oneupload.net/' if 'oneupload.net' in url else 
+                  'https://vidmoly.net/' if 'vidmoly.to' in url else
+                  'https://movearnpre.com/' if 'movearnpre.com' in url or 'ovaltinecdn.com' in url else
+                  'https://dingtezuni.com/' if 'dingtezuni.com' in url else
+                  'https://smoothpre.com/' if 'smoothpre.com' in url else
+                  'https://Smoothpre.com/' if 'Smoothpre.com' in url else
+                  'https://mivalyo.com/'
     }
     try:
         print_status("Connecting to server...", "loading")
@@ -145,107 +149,14 @@ def fetch_video_source(url):
             except requests.RequestException as e:
                 print_status(f"Failed to fetch M3U8 playlist: {str(e)}", "error")
                 return None
-            
-        # MOVEARNPRE EXTRACTION
-        elif 'movearnpre.com' in single_url:
-            m3u8_url = extract_movearnpre_video_source(single_url)
-            if not m3u8_url:
-                return None
-            
-            max_retries = 5
-            for attempt in range(max_retries):
-                try:
-                    headers = {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
-                        'Referer': 'https://movearnpre.com/'
-                    }
-                    response = requests.get(m3u8_url, headers=headers, timeout=10)
-                    response.raise_for_status()
-                    print_status("Parsing movearnpre M3U8 content...", "loading")
-                    streams = parse_m3u8_content(response.text, m3u8_url)
-                    if not streams:
-                        print_status("No video streams found in movearnpre M3U8 playlist", "error")
-                        return None
-                    best_stream = max(streams, key=lambda x: int(x.get('BANDWIDTH', 0)))
-                    print_status(f"Selected best movearnpre stream: {best_stream.get('BANDWIDTH', 'Unknown')} bps", "info")
-                    return best_stream['url']
-                except requests.RequestException as e:
-                    if attempt < max_retries - 1:
-                        print_status(f"Attempt {attempt + 1} failed: {str(e)}. Retrying...", "warning")
-                        time.sleep(1)
-                        continue
-                    else:
-                        print_status("Sorry, either the service is not working or the algorithm to get the download link got unlucky. You could try to restart. The video itself might be broken.", "error")
-                        return None
         
-        elif 'mivalyo.com' in single_url:
+        # all those !
+        elif 'dingtezuni.com' in single_url or 'mivalyo.com' in single_url or 'smoothpre.com' in single_url or 'Smoothpre.com' in single_url or 'movearnpre.com' in single_url:
             m3u8_url = extract_movearnpre_video_source(single_url)
             if not m3u8_url:
                 return None
-            max_retries = 5
-            for attempt in range(max_retries):
-                try:
-                    headers = {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
-                        'Referer': 'https://mivalyo.com/'
-                    }
-                    response = requests.get(m3u8_url, headers=headers, timeout=10)
-                    response.raise_for_status()
-                    print_status("Parsing mivalyo M3U8 content...", "loading")
-                    streams = parse_m3u8_content(response.text, m3u8_url)
-                    if not streams:
-                        print_status("No video streams found in mivalyo M3U8 playlist", "error")
-                        return None
-                    best_stream = max(streams, key=lambda x: int(x.get('BANDWIDTH', 0)))
-                    print_status(f"Selected best mivalyo stream: {best_stream.get('BANDWIDTH', 'Unknown')} bps", "info")
-                    return best_stream['url']
-                except requests.RequestException as e:
-                    if attempt < max_retries - 1:
-                        print_status(f"Attempt {attempt + 1} failed: {str(e)}. Retrying...", "warning")
-                        time.sleep(1)
-                        continue
-                    else:
-                        print_status("Sorry, either the service is not working or the algorithm to get the download link got unlucky. You could try to restart.", "error")
-                        return None
+            return m3u8_url
 
-        # SMOOTHPRE EXTRACTION
-        elif 'smoothpre.com' in single_url or 'Smoothpre.com' in single_url:
-            try: 
-                m3u8_url = extract_movearnpre_video_source(single_url)
-                if not m3u8_url:
-                    return None
-                
-                max_retries = 5
-                for attempt in range(max_retries):
-                    try:
-                        headers = {
-                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
-                            'Referer': 'https://smoothpre.com/'
-                        }
-                        response = requests.get(m3u8_url, headers=headers, timeout=10)
-                        response.raise_for_status()
-                        print_status("Parsing smoothpre M3U8 content...", "loading")
-                        streams = parse_m3u8_content(response.text, m3u8_url)
-                        if not streams:
-                            print_status("No video streams found in smoothpre M3U8 playlist", "error")
-                            return None
-                        best_stream = max(streams, key=lambda x: int(x.get('BANDWIDTH', 0)))
-                        print_status(f"Selected best smoothpre stream: {best_stream.get('BANDWIDTH', 'Unknown')} bps", "info")
-                        return best_stream['url']
-                    except requests.RequestException as e:
-                        if attempt < max_retries - 1:
-                            print_status(f"Attempt {attempt + 1} failed: {str(e)}. Retrying...", "warning")
-                            time.sleep(1)
-                            continue
-                        else:
-                            print_status("Sorry, either the service is not working or the algorithm to get the download link got unlucky. You could try to restart.", "error")
-                            return None
-            except Exception as e:
-                print_status(f"An error occurred during smoothpre extraction: {str(e)}. The video itself might be broken.", "error")
-                return None
-        else:
-            print_status("Unsupported video source. Only some urls are supported. Look on the readme.", "error")
-            return None
 
     if isinstance(url, str):
         return process_single_url(url)
