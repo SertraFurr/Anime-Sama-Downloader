@@ -205,9 +205,7 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
 def main():
 
     if not check_ffmpeg_installed():
-
         print_status("FFmpeg is not installed or not found in the PATH. You could consider installing it from https://ffmpeg.org/download.html", "error")
-        return
 
     try:
         print_header()
@@ -365,3 +363,4 @@ def main():
         return 1
 if __name__ == "__main__":
     sys.exit(main())
+
