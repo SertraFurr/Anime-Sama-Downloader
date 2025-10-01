@@ -14,6 +14,7 @@ def download_video(video_url, save_path, use_ts_threading=False, url='',automati
         'Accept': 'video/webm,video/mp4,video/*;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
         'Referer': 'https://movearnpre.com/' if 'movearnpre.com' in url or 'ovaltinecdn.com' in url else
+        'dingtezuni.com' if 'dingtezuni.com' in url else
                   'https://vidmoly.net/' if 'vidmoly.net'in url else 'https://vidmoly.net/' if 'vidmoly.to' in url else
                   'https://oneupload.net/' if 'oneupload.net' in url else 
                   'https://sendvid.com/' if 'sendvid.com' in url else 
