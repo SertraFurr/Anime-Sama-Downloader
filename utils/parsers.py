@@ -62,11 +62,16 @@ def parse_ts_segments(m3u8_content):
 
     for line in lines:
         line = line.strip()
-        if re.match(r'^https?://.*\.ts(\?.*)?$', line):
+
+        if not line or line.startswith('#'):
+            if line.startswith('#EXT-X-KEY'):
+                encryption_detected = True
+            continue
+
+        if re.match(r'^https?://', line):
             segments.append(line)
-        elif line.startswith('#EXT-X-KEY'):
-            encryption_detected = True
 
     if encryption_detected:
-        print_status("M3U8 contains encryption (#EXT-X-KEY). Decryption is not supported.", "warning")
+        print("⚠️ M3U8 contains encryption (#EXT-X-KEY). Decryption is not supported.")
+    
     return segments
