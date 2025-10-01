@@ -27,6 +27,8 @@ def print_episodes(episodes):
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Smoothpre ✅{Colors.ENDC}")
             elif 'mivalyo.com' in url:
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Mivalyo ✅{Colors.ENDC}")
+            elif 'dingtezuni.com' in url:
+                print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Dingtezuni ✅{Colors.ENDC}")
             else:
                 print(f"{Colors.WARNING}  {i:2d}. Episode {i} - Unknown source ⚠️ {Colors.ENDC} {url[:60]}...")
 
@@ -37,7 +39,7 @@ def get_player_choice(episodes):
     available_players = list(episodes.keys())
     for i, player in enumerate(available_players, 1):
         working_episodes = sum(1 for url in episodes[player] 
-                     if 'sendvid.com' in url or 'video.sibnet.ru' in url or 'oneupload.net' in url or 'oneupload.to' in url or 'vidmoly.net' in url or 'vidmoly.to' in url or 'movearnpre.com' in url or 'smoothpre.com' in url or 'Smoothpre.com' in url or 'mivalyo.com' in url)
+                     if 'sendvid.com' in url or 'dingtezuni.com' in url or  'video.sibnet.ru' in url or 'oneupload.net' in url or 'oneupload.to' in url or 'vidmoly.net' in url or 'vidmoly.to' in url or 'movearnpre.com' in url or 'smoothpre.com' in url or 'Smoothpre.com' in url or 'mivalyo.com' in url)
         total_episodes = len(episodes[player])
         print(f"{Colors.OKCYAN}  {i}. {player} ({working_episodes}/{total_episodes} working episodes){Colors.ENDC}")
     
@@ -81,7 +83,7 @@ def get_episode_choice(episodes, player_choice):
     
     for i, url in enumerate(episodes[player_choice], 1):
         url = url.lower()
-        url_list = ["sendvid.com", "video.sibnet.ru", "oneupload.net", "oneupload.to", "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com"]
+        url_list = ["dingtezuni.com", "sendvid.com", "video.sibnet.ru", "oneupload.net", "oneupload.to", "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com"]
         if any(source in url for source in url_list):
             working_episodes.append(i)
             if 'sendvid.com' in url:
@@ -98,6 +100,8 @@ def get_episode_choice(episodes, player_choice):
                 source_type = "Smoothpre"
             elif 'mivalyo.com' in url:
                 source_type = "Mivalyo"
+            elif 'dingtezuni.com' in url:
+                source_type = "Dingtezuni"
             
             print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - {source_type} ✅{Colors.ENDC}")
         else:
