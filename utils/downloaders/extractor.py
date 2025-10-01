@@ -69,12 +69,7 @@ def unpack_js_for_ts_file(packed_code, base, count, words):
             num //= base
         return ''.join(reversed(digits))
     
-    replacements = {}
-    for i in range(count):
-        key = to_base(i, base)
-        if i < len(words) and words[i]:
-            replacements[key] = words[i]
-    
+    replacements = {to_base(i, base): words[i] for i in range(count) if i < len(words) and words[i]}
     unpacked = packed_code
     for key, value in replacements.items():
         pattern = r'\b' + re.escape(key) + r'\b'
@@ -86,61 +81,87 @@ def extract_packed_code_for_ts(html_content):
     pattern = r"eval\(function\(p,a,c,k,e,d\)\{.*?\}\('(.*?)',(\d+),(\d+),'(.*?)'\.split\('\|'\)\)\)"
     match = re.search(pattern, html_content, re.DOTALL)
     if match:
-        packed_code = match.group(1)
-        base = int(match.group(2))
-        count = int(match.group(3))
-        words = match.group(4).split('|')
-        return packed_code, base, count, words
-    else:
-        print("No packed JavaScript code found.")
-        return None, None, None, None
+        return match.group(1), int(match.group(2)), int(match.group(3)), match.group(4).split('|')
+    print("No packed JavaScript code found.")
+    return None, None, None, None
 
 def fetch_html_for_ts(url):
     try:
         headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'Accept-Language': 'en-US,en;q=0.9',
-    'Referer': url.split('/embed/')[0],
-    'Connection': 'keep-alive',
-}
-        response = requests.get(url, headers=headers)
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Referer': url.split('/embed/')[0],
+            'Connection': 'keep-alive',
+        }
+        response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         return response.text
     except requests.exceptions.RequestException as e:
         print(f"Error fetching the page: {e}")
         return None
-    
-def extract_hls_url(unpacked_code):
 
-    pattern = r'var\s+links\s*=\s*\{[^}]*"hls[^"]*"\s*:\s*"([^"]+)"'
+def extract_hls_url(unpacked_code):
+    pattern = r'["\'](/stream/[^"\']*/master\.m3u8[^"\']*)["\']'
     match = re.search(pattern, unpacked_code)
     if match:
         return match.group(1)
     
-    pattern2 = r'file\s*:\s*[^"]*"([^"]*\.m3u8[^"]*)"'
-    match2 = re.search(pattern2, unpacked_code)
-    if match2:
-        return match2.group(1)
-    
+    print("No matching /stream/.../master.m3u8 URL found in unpacked code.")
     return None
 
+def extract_last_video_source(master_m3u8_url):
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+            'Accept': '*/*',
+            'Referer': master_m3u8_url.split('/embed/')[0],
+        }
+        response = requests.get(master_m3u8_url, headers=headers, timeout=10)
+        response.raise_for_status()
+        
+        master_content = response.text
+
+        pattern = r'#EXT-X-STREAM-INF:.*?RESOLUTION=(\d+)x(\d+).*?\n(.*?\.m3u8)'
+        streams = re.findall(pattern, master_content)
+
+        if not streams:
+            print("No variant streams found in master.m3u8")
+            return None
+
+        streams_sorted = sorted(streams, key=lambda x: int(x[1]), reverse=True)
+        best_stream = streams_sorted[0][2]
+
+        base_url = master_m3u8_url.rsplit('/', 1)[0]
+        return f"{base_url}/{best_stream}"
+
+    except Exception as e:
+        print(f"Error fetching or parsing master.m3u8: {e}")
+        return None
+
+
 def extract_movearnpre_video_source(embed_url):
+    url_start = embed_url.split('/embed/')[0]
     html_content = fetch_html_for_ts(embed_url)
     if not html_content:
-        return
+        return None
     
     packed_code, base, count, words = extract_packed_code_for_ts(html_content)
     if not packed_code:
-        return
+        return None
     
     unpacked_code = unpack_js_for_ts_file(packed_code, base, count, words)
     
     hls_url = extract_hls_url(unpacked_code)
     if hls_url:
-        return hls_url
-    else:
-        print_status("No HLS URL found in the unpacked code", "error")
-        return None
-    
+        if hls_url.startswith('/stream/'):
+            full_url = url_start + hls_url
+            full_url = extract_last_video_source(full_url)
+            return full_url
 
+        else:
+            print(f"Extracted URL {hls_url} does not match the expected /stream/ pattern.")
+    else:
+        pass
+    
+    return None
