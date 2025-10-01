@@ -44,15 +44,7 @@ I update just to be first, because malware are simply stealing my code to hide s
 </tr>
 </table>
 
-<details>
-  <summary><strong>🚩 Stealing/Malware List (Shows every fake/copy without credit made out of my code.) (Click to reveal)</strong></summary>
 
-  | Username | Link | Description |
-  |----------|------|-------------|
-  | `OMTSE` | [Repo](https://github.com/OMTSE/Anime-Sama-Downloader) | Used code without credit |
-
-DO NOT HARASS ANY INDIVIDUAL IN THIS LIST (They probably may be ban at some point aswell.)
-</details>
 
 
 
@@ -166,6 +158,7 @@ https://anime-sama.fr/  # Just homepage
 
 | Platform | Status | Performance | Notes |
 |:--------:|:------:|:-----------:|:------|
+| READ BEFORE DOING ANYTHING | Threaded mode is only suitable for strong Wi-Fi connections that won’t crash when handling multiple downloads simultaneously.
 | 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Primary recommended source |
 | 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Reliable backup source |
 | 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
@@ -173,6 +166,7 @@ https://anime-sama.fr/  # Just homepage
 | 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. |
 | 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
 | 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. |
+| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. |
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Scam website, only redirect to advertisement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
 
