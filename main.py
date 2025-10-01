@@ -160,7 +160,7 @@ def get_save_directory():
 
 def validate_anime_sama_url(url):
     pattern = re.compile(
-        r'^https://anime-sama\.(?:fr|org)/catalogue/[^/]+/saison\d+/(?:vostfr|vf|vo)/?$', re.IGNORECASE
+        r'^https://anime-sama\.(?:fr|org)/catalogue/[^/]+/(?:saison\d+|film\d*)/(?:vostfr|vf|vo)/?$', re.IGNORECASE
     )
     if pattern.match(url):
         return True, ""
@@ -393,3 +393,4 @@ def main():
 if __name__ == "__main__":
 
     sys.exit(main())
+
