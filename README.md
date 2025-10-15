@@ -12,7 +12,7 @@
 
 *Questions? Unworking urls? Open an issue, will be added fastly (hopefully)*
 
-It also works on unreleased episodes ! (Where it says 'This content does not exist.' sometimes it still exist.)
+It also works on unreleased episodes ! (Where it says 'This content does not exist.' sometimes it still exist.) 
 ### 🌟 Star this repo if it helped you!
 
 Looking for projects to do ! feel free to request in issue !
