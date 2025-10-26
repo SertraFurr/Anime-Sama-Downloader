@@ -5,6 +5,8 @@
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux_(mostly_windows)-lightgrey.svg?style=for-the-badge" alt="Platform">
 <img src="https://img.shields.io/badge/License-GPL_V3-green.svg?style=for-the-badge" alt="License">
+
+3 Stars left before I had scans support ! 
  
 **🚀 A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.fr/org**
 
@@ -13,6 +15,7 @@
 *Questions? Unworking urls? Open an issue, will be added fastly (hopefully)*
 
 It also works on unreleased episodes ! (Where it says 'This content does not exist.' sometimes it still exist.) 
+
 ### 🌟 Star this repo if it helped you!
 
 Looking for projects to do ! feel free to request in issue !
