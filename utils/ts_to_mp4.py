@@ -42,22 +42,26 @@ def convert_with_ffmpeg(ts_file, mp4_file):
 
 def fix_ts(infile, outfile):
     input_container = av.open(infile, mode="r", format="mpegts")
-
     output_container = av.open(outfile, mode="w")
 
     streams = {}
     for in_stream in input_container.streams:
-        codec_name = in_stream.codec.name
-        out_stream = output_container.add_stream(codec_name)
+        if not hasattr(in_stream, "codec_context") or in_stream.type == "data":
+            continue 
+        out_stream = output_container.add_stream(in_stream.codec_context.name)
         streams[in_stream.index] = out_stream
 
     for packet in input_container.demux():
-        if packet.stream.index in streams:
-            packet.stream = streams[packet.stream.index]
-            try:
-                output_container.mux(packet)
-            except Exception as e:
-                print(f"⚠️ Skipped packet: {e}")
+        if packet.stream.index not in streams:
+            continue
+        packet.stream = streams[packet.stream.index]
+        try:
+            output_container.mux(packet)
+        except av.PyAVCallbackError:
+            continue
+        except Exception as e:
+            print(f"⚠️ Skipped packet: {e}")
+
 
     output_container.close()
     input_container.close()
@@ -118,3 +122,4 @@ def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):
     else:
         print_status("No valid conversion tool specified", "error")
         return False, input_path
+
