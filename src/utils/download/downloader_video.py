@@ -1,10 +1,11 @@
 import os
 import requests
-from utils.var import Colors, print_status
-from utils.parsers import parse_ts_segments
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from tqdm import tqdm
 import time
+from tqdm import tqdm
+# import functions with files
+from utils.var          import Colors, print_status
+from utils.parsers      import parse_ts_segments
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 def download_video(video_url, save_path, use_ts_threading=False, url='',automatic_mp4=False, threaded_mp4=False):
     print_status(f"Starting download: {os.path.basename(save_path)}", "loading")

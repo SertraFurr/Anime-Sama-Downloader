@@ -1,0 +1,34 @@
+import re
+import requests
+import time
+
+from utils.var                   import print_status
+
+def fetch_episodes(base_url):
+    js_url = base_url.rstrip('/') + '/episodes.js'
+    print_status("Fetching episode list...", "loading")
+    
+    try:
+        response = requests.get(js_url, timeout=15)
+        response.raise_for_status()
+        js_content = response.text
+    except Exception as e:
+        print_status(f"Failed to fetch episodes.js: {str(e)}", "error")
+        return None
+
+    pattern = re.compile(r'var\s+(eps\d+)\s*=\s*\[([^\]]*)\];', re.MULTILINE)
+    matches = pattern.findall(js_content)
+    episodes = {}
+    
+    for name, content in matches:
+        player_num = re.search(r'\d+', name).group()
+        player_name = f"Player {player_num}"
+        urls = re.findall(r"'(https?://[^']+)'", content)
+        episodes[player_name] = urls
+    
+    if episodes:
+        print_status(f"Found {len(episodes)} players with episodes!", "success")
+    else:
+        print_status("No episodes found in episodes.js", "error")
+    
+    return episodes

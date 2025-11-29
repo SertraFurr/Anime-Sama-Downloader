@@ -47,3 +47,5 @@ htmlcov/
 # venv
 venv/
 env/
+
+.editorconfig
