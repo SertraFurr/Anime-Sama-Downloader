@@ -12,37 +12,43 @@ import urllib.request
 import zipfile
 import tarfile
 import shutil
+from concurrent.futures                                 import ThreadPoolExecutor, as_completed
 
 # import functions with files
-from concurrent.futures           import ThreadPoolExecutor, as_completed
-from utils.parsers                import parse_ts_segments
-from utils.ts_to_mp4              import convert_ts_to_mp4
-from utils.fetch                  import fetch_episodes, fetch_video_source
-from utils.downloaders.downloader import download_video
-from utils.stuff                  import print_episodes, get_player_choice, get_episode_choice
-from utils.var                    import Colors, print_status, print_separator, print_header, print_tutorial
+from src.utils.parse.parse_ts_segments                  import parse_ts_segments
+from src.utils.ts.convert_ts_to_mp4                     import convert_ts_to_mp4
+from src.utils.fetch.fetch_episodes                     import fetch_episodes
+from src.utils.fetch.fetch_video_source                 import fetch_video_source
+from src.utils.download.download_video                  import download_video
+from src.utils.print.print_episodes                     import print_episodes
+from src.utils.get.get_player_choice                    import get_player_choice
+from src.utils.get.get_episode_choice                   import get_episode_choice
+from src.utils.print.print_status                       import print_status
+from src.utils.check.check_package                      import check_package
+from src.utils.check.check_ffmpeg_installed             import check_ffmpeg_installed
+from src.utils.validate_anime_sama_url                  import validate_anime_sama_url
+from src.utils.extract.extract_anime_name               import extract_anime_name
+from src.utils.get.get_save_directory                   import get_save_directory
+from src.utils.download.download_episode                import download_episode
+from src.var                                            import Colors, print_separator, print_header, print_tutorial
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
 
-if not package_check(ask_install=True, first_run=True):
-    print_status("Some required packages were missing. Would you like to install them now? (y/n): ", "warning")
-    ask_user = input().strip().lower()
-    if ask_user in ['y', 'yes', '1']:
-        if not package_check(ask_install=True, first_run=False):
-            print_status("Failed to install required packages. Please install them manually and re-run the script. pip install -r requirements.txt", "error")
-            sys.exit(1)
-    else:
-        print_status("Cannot proceed without required packages. Exiting.", "warning")
-        input("Press Enter to exit...")
-        sys.exit(1)
-def install_package(package_name):
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
 def main():
+
+    if not check_package(ask_install=True, first_run=True):
+        print_status("Some required packages were missing. Would you like to install them now? (y/n): ", "warning")
+
+        ask_user = input().strip().lower()
+        
+        if ask_user in ['y', 'yes', '1']:
+            if not check_package(ask_install=True, first_run=False):
+                print_status("Failed to install required packages. Please install them manually and re-run the script.", "error")
+                sys.exit(1)
+        else:
+            print_status("Cannot proceed without required packages. Exiting.", "warning")
+            input("Press Enter to exit...")
+            sys.exit(1)
 
     if not check_ffmpeg_installed():
         print_status("FFmpeg is not installed or not found in the PATH. You could consider installing it from https://ffmpeg.org/download.html", "error")

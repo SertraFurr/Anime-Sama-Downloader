@@ -1,7 +1,6 @@
 import re
-import requests
-from urllib.parse import urlparse
-from utils.var import print_status
+
+from src.var import print_status
 
 def parse_ts_segments(m3u8_content):
     segments = []

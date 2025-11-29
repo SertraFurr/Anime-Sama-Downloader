@@ -1,8 +1,3 @@
-from utils.var import print_status, Colors
-import subprocess
-import sys
-import shutil
-import os
 import av
 
 def fix_ts(infile, outfile):
@@ -26,7 +21,6 @@ def fix_ts(infile, outfile):
             continue
         except Exception as e:
             print(f"⚠️ Skipped packet: {e}")
-
 
     output_container.close()
     input_container.close()

@@ -1,8 +1,6 @@
-import re
 import requests
-import time
 
-from utils.var                   import print_status
+from src.var import print_status
 
 def fetch_page_content(url):
     headers = {

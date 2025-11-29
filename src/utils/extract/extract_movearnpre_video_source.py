@@ -1,7 +1,8 @@
-from utils.var import print_status, Colors
 import re
+import requests
 from bs4 import BeautifulSoup
-import requests, time, re
+
+from src.var import print_status, Colors
 
 def extract_movearnpre_video_source(embed_url):
     url_start = embed_url.split('/embed/')[0]

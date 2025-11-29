@@ -1,8 +1,6 @@
-import re
 import requests
-import time
 
-from utils.var                   import print_status
+from src.var import print_status
 
 def fetch_sibnet_redirect_location(video_url):
     headers = {

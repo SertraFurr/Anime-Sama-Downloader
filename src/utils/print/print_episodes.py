@@ -1,6 +1,4 @@
-import os
-import requests
-from utils.var import Colors, print_status, print_separator
+from src.var import Colors, print_separator
 
 def print_episodes(episodes):
     print(f"\n{Colors.BOLD}{Colors.HEADER}📺 AVAILABLE EPISODES{Colors.ENDC}")

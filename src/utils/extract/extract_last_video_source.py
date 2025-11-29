@@ -1,7 +1,6 @@
 from utils.var import print_status, Colors
 import re
-from bs4 import BeautifulSoup
-import requests, time, re
+import requests
 
 def extract_last_video_source(master_m3u8_url):
     try:

@@ -1,6 +1,4 @@
-import os
-import requests
-from utils.var import Colors, print_status, print_separator
+from src.var import Colors, print_status, print_separator
 
 def get_episode_choice(episodes, player_choice):
     print(f"\n{Colors.BOLD}{Colors.HEADER}📺 SELECT EPISODE - {player_choice}{Colors.ENDC}")

@@ -1,8 +1,7 @@
 import re
 import requests
-import time
 
-from utils.var                   import print_status
+from src.var import print_status
 
 def fetch_episodes(base_url):
     js_url = base_url.rstrip('/') + '/episodes.js'

@@ -1,10 +1,14 @@
-import re
 import requests
-import time
 
-from utils.var                   import print_status
-from utils.parsers               import parse_m3u8_content
-from utils.downloaders.extractor import extract_movearnpre_video_source, extract_sendvid_video_source, extract_sibnet_video_source, extract_oneupload_video_source, extract_vidmoly_video_source
+from src.var                                            import print_status
+from src.utils.parse.parse_m3u8_content                 import parse_m3u8_content
+from src.utils.extract.extract_movearnpre_video_source  import extract_movearnpre_video_source
+from src.utils.extract.extract_sendvid_video_source     import extract_sendvid_video_source
+from src.utils.extract.extract_oneupload_video_source   import extract_oneupload_video_source
+from src.utils.extract.extract_vidmoly_video_source     import extract_vidmoly_video_source
+from src.utils.fetch.fetch_page_content                 import fetch_page_content
+from src.utils.extract.extract_sibnet_video_source      import extract_sibnet_video_source
+from src.utils.fetch.fetch_sibnet_redirect_location     import fetch_sibnet_redirect_location
 
 def fetch_video_source(url):
     def process_single_url(single_url):
@@ -26,7 +30,7 @@ def fetch_video_source(url):
             video_source = extract_sibnet_video_source(html_content)
             if video_source:
                 print_status("Getting direct download link...", "loading")
-                return get_sibnet_redirect_location(video_source)
+                return fetch_sibnet_redirect_location(video_source)
             return None
         
         # ONEUPLOAD EXTRACTION

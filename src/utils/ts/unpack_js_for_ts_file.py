@@ -1,7 +1,4 @@
-from utils.var import print_status, Colors
 import re
-from bs4 import BeautifulSoup
-import requests, time, re
 
 def unpack_js_for_ts_file(packed_code, base, count, words):
     def to_base(num, base):

@@ -1,7 +1,5 @@
 from utils.var import print_status, Colors
-import re
-from bs4 import BeautifulSoup
-import requests, time, re
+import requests
 
 def fetch_html_for_ts(url):
     try:

@@ -1,3 +1,6 @@
+import os
+from src.var import Colors, print_status, print_separator
+
 def get_save_directory():
     print(f"\n{Colors.BOLD}{Colors.HEADER}📁 SAVE LOCATION{Colors.ENDC}")
     print_separator()

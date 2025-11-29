@@ -1,9 +1,7 @@
-from utils.var import print_status, Colors
 import subprocess
-import sys
-import shutil
 import os
-import av
+
+from src.var import print_status, Colors
 
 def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):
     if not os.path.exists(input_path):

@@ -1,13 +1,7 @@
-from utils.var import print_status, Colors
-import subprocess
-import sys
 import shutil
-import os
-import av
 
 def check_ffmpeg_installed():
     return shutil.which("ffmpeg") is not None
-
 
 # 2e function for check if ffmpeg is installed 
 #def check_ffmpeg_installed():

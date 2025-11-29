@@ -1,4 +1,9 @@
-def package_check(ask_install=False, first_run=False):
+import subprocess
+import sys
+
+from src.var import print_status
+
+def check_package(ask_install=False, first_run=False):
     missing_packages = []
 
     try:

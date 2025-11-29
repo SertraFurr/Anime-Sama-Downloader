@@ -1,9 +1,6 @@
 from utils.var import print_status, Colors
 import subprocess
 import sys
-import shutil
-import os
-import av
 
 def convert_with_ffmpeg(ts_file, mp4_file):
     print_status(f"Converting {ts_file} to {mp4_file} using ffmpeg...", "loading")

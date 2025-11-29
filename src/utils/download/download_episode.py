@@ -1,3 +1,8 @@
+import os
+
+from src.var                            import print_separator, print_status, Colors
+from src.utils.download.download_video  import download_video
+
 def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None):
     if not video_source:
         print_status(f"Could not extract video source for episode {episode_num}", "error")
