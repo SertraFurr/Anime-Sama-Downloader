@@ -1,4 +1,3 @@
-
 import os
 import requests
 from utils.var import Colors, print_status
@@ -122,4 +121,3 @@ def download_video(video_url, save_path, use_ts_threading=False, url='',automati
     except Exception as e:
         print_status(f"Download failed: {str(e)}", "error")
         return False, None
-    
