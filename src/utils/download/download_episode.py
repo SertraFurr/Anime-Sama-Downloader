@@ -2,6 +2,7 @@ import os
 
 from src.var                            import print_separator, print_status, Colors
 from src.utils.download.download_video  import download_video
+from src.utils.ts.convert_ts_to_mp4     import convert_ts_to_mp4
 
 def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None):
     if not video_source:

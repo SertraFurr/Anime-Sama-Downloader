@@ -49,3 +49,6 @@ venv/
 env/
 
 .editorconfig
+
+# videos file
+videos/
