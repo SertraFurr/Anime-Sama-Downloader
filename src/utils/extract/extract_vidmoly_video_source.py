@@ -1,8 +1,7 @@
 import re
-import requests
 from bs4 import BeautifulSoup
 
-from src.var import print_status, Colors
+from src.var import print_status
 
 def extract_vidmoly_video_source(html_content):
     if not html_content:

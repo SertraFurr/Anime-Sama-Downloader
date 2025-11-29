@@ -1,6 +1,5 @@
 import re
 from urllib.parse   import urlparse
-from src.var        import print_status
 
 def parse_m3u8_content(m3u8_content, base_url=None):
     streams = []

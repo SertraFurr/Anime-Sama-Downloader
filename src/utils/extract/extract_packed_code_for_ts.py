@@ -1,7 +1,4 @@
-from src.var import print_status, Colors
 import re
-from bs4 import BeautifulSoup
-import requests
 
 def extract_packed_code_for_ts(html_content):
     pattern = r"eval\(function\(p,a,c,k,e,d\)\{.*?\}\('(.*?)',(\d+),(\d+),'(.*?)'\.split\('\|'\)\)\)"

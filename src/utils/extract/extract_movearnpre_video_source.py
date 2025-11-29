@@ -1,7 +1,3 @@
-import re
-import requests
-from bs4 import BeautifulSoup
-
 from src.utils.extract.extract_hls_url              import extract_hls_url
 from src.utils.fetch.fetch_html_for_ts              import fetch_html_for_ts
 from src.utils.extract.extract_packed_code_for_ts   import extract_packed_code_for_ts

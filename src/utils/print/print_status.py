@@ -1,5 +1,3 @@
-from src.var import Colors
-
 def print_status(message, status_type="info"):
     prefix = {
         "info": "[*]",

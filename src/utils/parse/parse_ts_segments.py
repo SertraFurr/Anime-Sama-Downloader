@@ -1,7 +1,5 @@
 import re
 
-from src.var import print_status
-
 def parse_ts_segments(m3u8_content):
     segments = []
     lines = m3u8_content.splitlines()
