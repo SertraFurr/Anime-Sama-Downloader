@@ -5,7 +5,6 @@ import shutil
 import os
 import av
 
-
 def print_status(message, status_type="info"):
     prefix = {
         "info": "[*]",
@@ -122,4 +121,3 @@ def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):
     else:
         print_status("No valid conversion tool specified", "error")
         return False, input_path
-
