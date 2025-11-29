@@ -1,25 +1,9 @@
-import re
-import os
 import sys
-import subprocess
-import shutil
-import sys
-import subprocess
-import os
-import platform
-import subprocess
-import urllib.request
-import zipfile
-import tarfile
-import shutil
 from concurrent.futures                                 import ThreadPoolExecutor, as_completed
 
 # import functions with files
-from src.utils.parse.parse_ts_segments                  import parse_ts_segments
-from src.utils.ts.convert_ts_to_mp4                     import convert_ts_to_mp4
 from src.utils.fetch.fetch_episodes                     import fetch_episodes
 from src.utils.fetch.fetch_video_source                 import fetch_video_source
-from src.utils.download.download_video                  import download_video
 from src.utils.print.print_episodes                     import print_episodes
 from src.utils.get.get_player_choice                    import get_player_choice
 from src.utils.get.get_episode_choice                   import get_episode_choice
@@ -81,7 +65,6 @@ def main():
         
         anime_name = extract_anime_name(base_url)
         print_status(f"Detected anime: {anime_name}", "info")
-        
         episodes = fetch_episodes(base_url)
         if not episodes:
             print_status("Failed to fetch episodes. Please check the URL and try again.", "error")

@@ -2,7 +2,11 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from src.var import print_status, Colors
+from src.utils.extract.extract_hls_url              import extract_hls_url
+from src.utils.fetch.fetch_html_for_ts              import fetch_html_for_ts
+from src.utils.extract.extract_packed_code_for_ts   import extract_packed_code_for_ts
+from src.utils.extract.extract_last_video_source    import extract_last_video_source
+from src.utils.ts.unpack_js_for_ts_file             import unpack_js_for_ts_file
 
 def extract_movearnpre_video_source(embed_url):
     url_start = embed_url.split('/embed/')[0]

@@ -1,8 +1,4 @@
-from utils.var import print_status, Colors
 import re
-from bs4 import BeautifulSoup
-import requests
-import time
 
 def extract_hls_url(unpacked_code):
     pattern = r'["\'](/stream/[^"\']*/master\.m3u8[^"\']*)["\']'

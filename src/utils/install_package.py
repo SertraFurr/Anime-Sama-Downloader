@@ -1,4 +1,3 @@
-from utils.var import print_status, Colors
 import subprocess
 import sys
 

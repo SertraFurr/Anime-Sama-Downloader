@@ -1,4 +1,4 @@
-from utils.var import print_status, Colors
+from src.var import print_status, Colors
 import re
 from bs4 import BeautifulSoup
 import requests

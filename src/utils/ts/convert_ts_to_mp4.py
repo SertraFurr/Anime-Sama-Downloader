@@ -1,7 +1,7 @@
 import subprocess
 import os
 
-from src.var        import print_status, Colors
+from src.var        import print_status
 from src.utils.ts   import fix_ts
 
 def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):

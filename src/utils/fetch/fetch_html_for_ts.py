@@ -1,4 +1,3 @@
-from utils.var import print_status, Colors
 import requests
 
 def fetch_html_for_ts(url):
