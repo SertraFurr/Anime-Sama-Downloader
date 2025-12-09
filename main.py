@@ -1,207 +1,38 @@
-import re
-import os
 import sys
-import subprocess
-import shutil
-import sys
-import subprocess
-from utils.var                    import Colors, print_status, print_separator, print_header, print_tutorial
-import os
-import platform
-import subprocess
-import urllib.request
-import zipfile
-import tarfile
-import shutil
+from concurrent.futures                                 import ThreadPoolExecutor, as_completed
+
+# import functions with files
+from src.utils.fetch.fetch_episodes                     import fetch_episodes
+from src.utils.fetch.fetch_video_source                 import fetch_video_source
+from src.utils.print.print_episodes                     import print_episodes
+from src.utils.get.get_player_choice                    import get_player_choice
+from src.utils.get.get_episode_choice                   import get_episode_choice
+from src.utils.print.print_status                       import print_status
+from src.utils.check.check_package                      import check_package
+from src.utils.check.check_ffmpeg_installed             import check_ffmpeg_installed
+from src.utils.validate_anime_sama_url                  import validate_anime_sama_url
+from src.utils.extract.extract_anime_name               import extract_anime_name
+from src.utils.get.get_save_directory                   import get_save_directory
+from src.utils.download.download_episode                import download_episode
+from src.var                                            import Colors, print_separator, print_header, print_tutorial
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
 
-def check_ffmpeg_installed():
-    try:
-        result = subprocess.run(["ffmpeg", "-version"], check=True, capture_output=True, text=True)
-        print(f"FFmpeg is installed: {result.stdout.splitlines()[0]}")
-        return True
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        print("FFmpeg is not detected in PATH.")
-        return False
-
-def package_check(ask_install=False, first_run=False):
-    missing_packages = []
-
-    try:
-        import requests
-    except ImportError:
-        missing_packages.append("requests")
-
-    try:
-        from tqdm import tqdm
-    except ImportError:
-        missing_packages.append("tqdm")
-
-    try:
-        import av
-    except ImportError:
-        missing_packages.append("av")
-
-    try:
-        from bs4 import BeautifulSoup
-    except ImportError:
-        missing_packages.append("beautifulsoup4")
-
-    if missing_packages and ask_install:
-        print("Missing packages:", ", ".join(missing_packages))
-        if not first_run:
-            for package in missing_packages:
-                try:
-                    print_status(f"Installing {package}...", "info")
-                    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-                except subprocess.CalledProcessError:
-                    print_status(f"Failed to install {package}.", "error")
-                    return False
-            missing_packages = []
-            try:
-                import requests
-            except ImportError:
-                missing_packages.append("requests")
-            try:
-                from tqdm import tqdm
-            except ImportError:
-                missing_packages.append("tqdm")
-
-            try:
-                import av
-            except ImportError:
-                missing_packages.append("av")
-
-            try:
-                from bs4 import BeautifulSoup
-            except ImportError:
-                missing_packages.append("beautifulsoup4")
-            
-            if missing_packages:
-                print_status(f"Some packages still missing after installation: {', '.join(missing_packages)}", "error")
-                return False
-        else:
-            return False
-    return len(missing_packages) == 0
-
-if not package_check(ask_install=True, first_run=True):
-    print_status("Some required packages were missing. Would you like to install them now? (y/n): ", "warning")
-    ask_user = input().strip().lower()
-    if ask_user in ['y', 'yes', '1']:
-        if not package_check(ask_install=True, first_run=False):
-            print_status("Failed to install required packages. Please install them manually and re-run the script. pip install -r requirements.txt", "error")
-            sys.exit(1)
-    else:
-        print_status("Cannot proceed without required packages. Exiting.", "warning")
-        input("Press Enter to exit...")
-        sys.exit(1)
-
-
-from concurrent.futures           import ThreadPoolExecutor, as_completed
-
-from utils.parsers                import parse_ts_segments
-from utils.ts_to_mp4              import convert_ts_to_mp4
-from utils.fetch                  import fetch_episodes, fetch_video_source
-from utils.downloaders.downloader import download_video
-from utils.stuff                  import print_episodes, get_player_choice, get_episode_choice
-def extract_anime_name(base_url):
-    match = re.search(r'catalogue/([^/]+)/', base_url)
-    if match:
-        return match.group(1)
-    return "episode"
-
-def install_package(package_name):
-    try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", package_name])
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
-def check_ffmpeg_installed():
-    return shutil.which("ffmpeg") is not None
-
-def get_save_directory():
-    print(f"\n{Colors.BOLD}{Colors.HEADER}📁 SAVE LOCATION{Colors.ENDC}")
-    print_separator()
-    
-    default_dir = "./videos"
-    save_dir = input(f"{Colors.OKCYAN}Enter directory to save videos (default: {default_dir}): {Colors.ENDC}").strip()
-    
-    if not save_dir:
-        save_dir = default_dir
-    
-    try:
-        os.makedirs(save_dir, exist_ok=True)
-        print_status(f"Save directory set to: {os.path.abspath(save_dir)}", "success")
-        return save_dir
-    except Exception as e:
-        print_status(f"Cannot create directory {save_dir}: {str(e)}", "error")
-        print_status(f"Using default directory: {default_dir}", "info")
-        os.makedirs(default_dir, exist_ok=True)
-        return default_dir
-
-def validate_anime_sama_url(url):
-    pattern = re.compile(
-r'^https://anime-sama\.(?:fr|org)/catalogue/[^/]+/saison\d+[a-zA-Z]*(?:-\d+[a-zA-Z]*)?/(?:vostfr|vf|vo)/?$'
-    )
-    if pattern.match(url):
-        return True, ""
-    else:
-        return False, (
-            "Invalid URL. Format should be:\n"
-            "  https://anime-sama.fr/catalogue/<anime-name>/saison<NUMBER>/<language>/\n"
-            "Where <language> is VOSTFR, VF, VO, etc. Also .org domain is accepted."
-        )
-
-def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None):
-    if not video_source:
-        print_status(f"Could not extract video source for episode {episode_num}", "error")
-        return False, None
-    
-    print_separator()
-    print_status(f"Processing episode: {episode_num}", "info")
-    print_status(f"Source: {url[:60]}...", "info")
-    
-    save_path = os.path.join(save_dir, f"{anime_name}_episode_{episode_num}.mp4")
-    
-    print(f"\n{Colors.BOLD}{Colors.HEADER}⬇️ DOWNLOADING EPISODE {episode_num}{Colors.ENDC}")
-    print_separator()
-    
-    try:
-        success, output_path = download_video(video_source, save_path, use_ts_threading=use_ts_threading, url=url, automatic_mp4=automatic_mp4)
-    except Exception as e:
-        print_status(f"Download failed for episode {episode_num}: {str(e)}", "error")
-        return False, None
-    
-    if not success:
-        print_status(f"Failed to download episode {episode_num}", "error")
-        return False, None
-    
-    print_separator()
-    
-    if 'm3u8' in video_source and output_path.endswith('.ts'):
-        print_status(f"Video saved as {output_path} (MPEG-TS format, playable in VLC or similar players)", "success")
-        if automatic_mp4:
-            success, final_path = convert_ts_to_mp4(output_path, save_path, pre_selected_tool)
-            if success:
-                print_status(f"Episode {episode_num} successfully saved to: {final_path}", "success")
-                try:
-                    os.remove(output_path)
-                    print_status(f"Removed temporary .ts file: {output_path}", "info")
-                except Exception as e:
-                    print_status(f"Could not remove temporary .ts file: {str(e)}", "warning")
-                return True, final_path
-            else:
-                print_status(f"Conversion failed for episode {episode_num}, keeping .ts file: {output_path}", "error")
-                return False, output_path
-        else:
-            print_status(f"Keeping .ts file for episode {episode_num}: {output_path}", "info")
-            return True, output_path
-    else:
-        print_status(f"Episode {episode_num} successfully saved to: {save_path}", "success")
-        return True, save_path
 def main():
+
+    if not check_package(ask_install=True, first_run=True):
+        print_status("Some required packages were missing. Would you like to install them now? (y/n): ", "warning")
+
+        ask_user = input().strip().lower()
+        
+        if ask_user in ['y', 'yes', '1']:
+            if not check_package(ask_install=True, first_run=False):
+                print_status("Failed to install required packages. Please install them manually and re-run the script.", "error")
+                sys.exit(1)
+        else:
+            print_status("Cannot proceed without required packages. Exiting.", "warning")
+            input("Press Enter to exit...")
+            sys.exit(1)
 
     if not check_ffmpeg_installed():
         print_status("FFmpeg is not installed or not found in the PATH. You could consider installing it from https://ffmpeg.org/download.html", "error")
@@ -234,7 +65,6 @@ def main():
         
         anime_name = extract_anime_name(base_url)
         print_status(f"Detected anime: {anime_name}", "info")
-        
         episodes = fetch_episodes(base_url)
         if not episodes:
             print_status("Failed to fetch episodes. Please check the URL and try again.", "error")
@@ -362,6 +192,3 @@ def main():
         return 1
 if __name__ == "__main__":
     sys.exit(main())
-
-
-

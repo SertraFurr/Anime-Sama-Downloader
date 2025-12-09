@@ -1,0 +1,54 @@
+# Distribution / packaging
+.Python
+*.egg-info/
+dist/
+build/
+
+# Byte-compiled / optimized files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# C extensions
+*.so
+
+# Packages
+*.whl
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+
+# Pytest
+.cache
+pytest_debug.log
+
+# Coverage reports
+.coverage
+*.cover
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Environnement file
+.env
+*.env
+
+# venv
+venv/
+env/
+
+.editorconfig
+
+# videos file
+videos/
