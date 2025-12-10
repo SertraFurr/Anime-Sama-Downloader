@@ -1,8 +1,7 @@
 import subprocess
 import os
-
 from src.var        import print_status
-from src.utils.ts   import fix_ts
+from src.utils.ts.fix_ts import fix_ts
 
 def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):
     if not os.path.exists(input_path):
@@ -55,7 +54,37 @@ def convert_ts_to_mp4(input_path, output_path, pre_selected_tool=None):
             return True, output_path
         except Exception as e:
             print_status(f"AV conversion failed: {str(e)}", "error")
-            return False, input_path
+            try:
+                from src.utils.check.check_ffmpeg_installed import check_ffmpeg_installed
+                if check_ffmpeg_installed():
+                    try:
+                        ff_output = os.path.splitext(input_path)[0] + '.mp4'
+                        ffmpeg_cmd = [
+                            "ffmpeg", "-y",
+                            "-i", input_path,
+                            "-c:v", "copy",
+                            "-c:a", "copy",
+                            ff_output
+                        ]
+                        print_status("AV failed — falling back to FFmpeg", "info")
+                        process = subprocess.Popen(ffmpeg_cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+                        for line in process.stdout:
+                            print(line, end='')
+                        process.wait()
+                        if process.returncode == 0:
+                            print_status(f"Video converted successfully to {ff_output}", "success")
+                            return True, ff_output
+                        else:
+                            print_status("FFmpeg fallback conversion failed", "error")
+                            return False, input_path
+                    except Exception as ff_e:
+                        print_status(f"FFmpeg fallback failed: {str(ff_e)}", "error")
+                        return False, input_path
+                else:
+                    print_status("FFmpeg not available for fallback", "error")
+                    return False, input_path
+            except Exception:
+                return False, input_path
 
     else:
         print_status("No valid conversion tool specified", "error")
