@@ -27,5 +27,7 @@ def print_episodes(episodes):
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Mivalyo ✅{Colors.ENDC}")
             elif 'dingtezuni.com' in url:
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Dingtezuni ✅{Colors.ENDC}")
+            elif 'embed4me.com' in url:
+                print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Embed4me ✅{Colors.ENDC}")
             else:
                 print(f"{Colors.WARNING}  {i:2d}. Episode {i} - Unknown source ⚠️ {Colors.ENDC} {url[:60]}...")
