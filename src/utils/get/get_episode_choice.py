@@ -9,7 +9,7 @@ def get_episode_choice(episodes, player_choice):
     
     for i, url in enumerate(episodes[player_choice], 1):
         url = url.lower()
-        url_list = ["dingtezuni.com", "sendvid.com", "video.sibnet.ru", "oneupload.net", "oneupload.to", "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com"]
+        url_list = ["dingtezuni.com", "sendvid.com", "video.sibnet.ru", "oneupload.net", "oneupload.to", "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com", "embed4me.com", "embed4me"]
         if any(source in url for source in url_list):
             working_episodes.append(i)
             if 'sendvid.com' in url:
@@ -26,6 +26,8 @@ def get_episode_choice(episodes, player_choice):
                 source_type = "Smoothpre"
             elif 'mivalyo.com' in url:
                 source_type = "Mivalyo"
+            elif 'embed4me' in url or 'embed4me.com' in url:
+                source_type = "Embed4me"
             elif 'dingtezuni.com' in url:
                 source_type = "Dingtezuni"
             
