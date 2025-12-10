@@ -4,6 +4,7 @@ from src.var                                            import print_status
 from src.utils.parse.parse_m3u8_content                 import parse_m3u8_content
 from src.utils.extract.extract_movearnpre_video_source  import extract_movearnpre_video_source
 from src.utils.extract.extract_sendvid_video_source     import extract_sendvid_video_source
+from src.utils.extract.extract_embed4me_video_source   import extract_embed4me_video_source
 from src.utils.extract.extract_oneupload_video_source   import extract_oneupload_video_source
 from src.utils.extract.extract_vidmoly_video_source     import extract_vidmoly_video_source
 from src.utils.fetch.fetch_page_content                 import fetch_page_content
@@ -23,6 +24,13 @@ def fetch_video_source(url):
         if 'sendvid.com' in single_url:
             html_content = fetch_page_content(single_url)
             return extract_sendvid_video_source(html_content)
+
+        # EMBED4ME EXTRACTION
+        if 'embed4me' in single_url or 'embed4me.com' in single_url or 'lpayer.embed4me.com' in single_url:
+            m3u8_url = extract_embed4me_video_source(single_url)
+            if not m3u8_url:
+                return None
+            return m3u8_url
         
         # SIBNET EXTRACTION
         elif 'video.sibnet.ru' in single_url:
