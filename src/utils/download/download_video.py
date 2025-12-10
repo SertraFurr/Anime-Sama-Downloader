@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 import time
 from tqdm import tqdm
@@ -9,24 +10,87 @@ from src.utils.parse.parse_ts_segments  import parse_ts_segments
 
 def download_video(video_url, save_path, use_ts_threading=False, url='',automatic_mp4=False, threaded_mp4=False):
     print_status(f"Starting download: {os.path.basename(save_path)}", "loading")
+    ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+
+    if 'embed4me' in url or 'embed4me' in video_url or 'lpayer.embed4me.com' in url or 'lpayer.embed4me.com' in video_url:
+        referer = 'https://lpayer.embed4me.com/'
+        origin = 'https://lpayer.embed4me.com'
+    elif 'movearnpre.com' in url or 'ovaltinecdn.com' in url:
+        referer = 'https://movearnpre.com/'
+        origin = ''
+    elif 'dingtezuni.com' in url:
+        referer = 'https://dingtezuni.com/'
+        origin = ''
+    elif 'vidmoly.net' in url or 'vidmoly.to' in url:
+        referer = 'https://vidmoly.net/'
+        origin = ''
+    elif 'oneupload.net' in url:
+        referer = 'https://oneupload.net/'
+        origin = ''
+    elif 'sendvid.com' in url:
+        referer = 'https://sendvid.com/'
+        origin = ''
+    elif 'mivalyo.com' in url:
+        referer = 'https://mivalyo.com/'
+        origin = ''
+    else:
+        referer = 'https://vidmoly.net/'
+        origin = ''
+
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
+        'User-Agent': ua,
         'Accept': 'video/webm,video/mp4,video/*;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': 'https://movearnpre.com/' if 'movearnpre.com' in url or 'ovaltinecdn.com' in url else
-        'dingtezuni.com' if 'dingtezuni.com' in url else
-                  'https://vidmoly.net/' if 'vidmoly.net'in url else 'https://vidmoly.net/' if 'vidmoly.to' in url else
-                  'https://oneupload.net/' if 'oneupload.net' in url else 
-                  'https://sendvid.com/' if 'sendvid.com' in url else 
-                  'https://mivalyo.com/' if 'mivalyo.com' in url else
-                  'https://video.sibnet.ru/'
+        'Referer': referer,
     }
+    if origin:
+        headers['Origin'] = origin
 
     try:
         if 'm3u8' in video_url:
+            from urllib.parse import urljoin
+
             response = requests.get(video_url, headers=headers, timeout=10)
             response.raise_for_status()
-            segments = parse_ts_segments(response.text)
+            content = response.text
+
+            if "#EXT-X-STREAM-INF" in content:
+                best_bandwidth = -1
+                best_url = None
+                lines = content.splitlines()
+                for i, line in enumerate(lines):
+                    if line.startswith("#EXT-X-STREAM-INF"):
+                        bw_match = re.search(r'BANDWIDTH=(\d+)', line)
+                        bw = int(bw_match.group(1)) if bw_match else 0
+                        candidate = lines[i+1].strip() if i+1 < len(lines) else None
+                        if candidate:
+                            if bw > best_bandwidth:
+                                best_bandwidth = bw
+                                best_url = candidate
+                if best_url:
+                    if not best_url.startswith('http'):
+                        best_url = urljoin(response.url, best_url)
+                    variant_resp = requests.get(best_url, headers=headers, timeout=10)
+                    variant_resp.raise_for_status()
+                    content = variant_resp.text
+
+            segments = []
+            base_for_join = response.url
+            try:
+                if 'variant_resp' in locals():
+                    base_for_join = variant_resp.url
+            except Exception:
+                pass
+
+            for line in content.splitlines():
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                if not line.startswith('http'):
+                    seg_url = urljoin(base_for_join, line)
+                else:
+                    seg_url = line
+                segments.append(seg_url)
             if not segments:
                 print_status("No .ts segments found in M3U8 playlist", "error")
                 return False, None
