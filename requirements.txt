@@ -2,3 +2,4 @@ tqdm
 requests
 beautifulsoup4
 av
+pycryptodome
