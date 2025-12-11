@@ -7,7 +7,7 @@ def get_player_choice(episodes):
     available_players = list(episodes.keys())
     valid_sources = [
         "sendvid.com", "dingtezuni.com", "video.sibnet.ru", "oneupload.net", "oneupload.to",
-        "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com"
+        "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com", 'embed4me.com'
     ]
     for i, player in enumerate(available_players, 1):
         working_episodes = sum(
