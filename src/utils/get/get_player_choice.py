@@ -5,9 +5,15 @@ def get_player_choice(episodes):
     print_separator()
     
     available_players = list(episodes.keys())
+    valid_sources = [
+        "sendvid.com", "dingtezuni.com", "video.sibnet.ru", "oneupload.net", "oneupload.to",
+        "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com"
+    ]
     for i, player in enumerate(available_players, 1):
-        working_episodes = sum(1 for url in episodes[player] 
-                     if 'sendvid.com' in url or 'dingtezuni.com' in url or  'video.sibnet.ru' in url or 'oneupload.net' in url or 'oneupload.to' in url or 'vidmoly.net' in url or 'vidmoly.to' in url or 'movearnpre.com' in url or 'smoothpre.com' in url or 'Smoothpre.com' in url or 'mivalyo.com' in url)
+        working_episodes = sum(
+            1 for url in episodes[player]
+            if any(source in url.lower() for source in valid_sources)
+        )
         total_episodes = len(episodes[player])
         print(f"{Colors.OKCYAN}  {i}. {player} ({working_episodes}/{total_episodes} working episodes){Colors.ENDC}")
     
