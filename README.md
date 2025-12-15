@@ -168,12 +168,13 @@ https://anime-sama.fr/  # Just homepage
 | 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
 | 🎬 **ONEUPLOAD** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
 | 🎬 **EMBED4ME** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. |
-| 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. |
-| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. |
+| 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
+
 
 </div>
 
