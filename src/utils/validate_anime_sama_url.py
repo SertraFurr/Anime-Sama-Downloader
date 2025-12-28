@@ -1,7 +1,10 @@
 import re
 
 def validate_anime_sama_url(url):
-    pattern = re.compile(r'^https://anime-sama\.(?:fr|org|eu|si|tv)/catalogue/[^/]+/(?:saison\d+(?:-\d+)?|film\d*)/(?:vostfr|vf|vo|vf1|vf2)/?$')
+    pattern = re.compile(
+    r'^https?://(?:www\.)?anime-sama\.[^/]+/catalogue/[^/]+/(?:saison\d+(?:-\d+)?|film\d*)/(?:vostfr|vo|vf\d*)/?$', 
+    re.IGNORECASE
+    )
     if pattern.match(url):
         return True, ""
     else:
