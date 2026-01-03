@@ -1,3 +1,4 @@
+import time
 import requests
 
 from src.var                                            import print_status
@@ -66,7 +67,18 @@ def fetch_video_source(url):
             
         # VIDMOLY EXTRACTION
         elif 'vidmoly.net' in single_url:
-            html_content = fetch_page_content(single_url)
+            attempt = 0
+            html_content = None
+            
+            while True:
+                attempt += 1
+                html_content = fetch_page_content(single_url)
+                if html_content and '<title>Please wait</title>' in html_content:
+                    print_status(f"Vidmoly rate limit ('Please wait') detected. Retrying in 1s (Attempt {attempt})...", "warning")
+                    time.sleep(1)
+                    continue
+                break
+                
             m3u8_url = extract_vidmoly_video_source(html_content)
             if not m3u8_url:
                 return None
@@ -97,7 +109,9 @@ def fetch_video_source(url):
         return process_single_url(url)
     elif isinstance(url, list):
         results = []
-        for single_url in url:
+        for i, single_url in enumerate(url):
+            if i > 0 and 'vidmoly' in single_url:
+                time.sleep(3)
             result = process_single_url(single_url)
             results.append(result)
         return results
