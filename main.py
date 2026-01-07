@@ -1,6 +1,6 @@
 import sys
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures                         import ThreadPoolExecutor, as_completed
 from src.utils.fetch.fetch_episodes             import fetch_episodes
 from src.utils.fetch.fetch_video_source         import fetch_video_source
 from src.utils.print.print_episodes             import print_episodes
@@ -164,6 +164,41 @@ def main():
                     if args.player.lower() in p.lower():
                         player_choice = p
                         break
+                
+                if not player_choice:
+                    target = args.player.lower()
+                    domain_map = {
+                        "sibnet": "video.sibnet.ru",
+                        "sendvid": "sendvid.com",
+                        "vidmoly": ["vidmoly.net", "vidmoly.to"],
+                        "oneupload": ["oneupload.net", "oneupload.to"],
+                        "movearn": "movearnpre.com",
+                        "smooth": "smoothpre.com",
+                        "mivalyo": "mivalyo.com",
+                        "dingtezuni": "dingtezuni.com",
+                        "embed4me": "embed4me.com"
+                    }
+                    
+                    search_domains = []
+                    if target in domain_map:
+                         val = domain_map[target]
+                         if isinstance(val, list): search_domains.extend(val)
+                         else: search_domains.append(val)
+                    else:
+                        search_domains.append(target)
+                        
+                    for p in avail:
+                        urls_to_check = episodes[p][:5] 
+                        found_match = False
+                        for u in urls_to_check:
+                            u_lower = u.lower()
+                            if any(d in u_lower for d in search_domains):
+                                player_choice = p
+                                found_match = True
+                                break
+                        if found_match:
+                            break
+
             if not player_choice:
                 print_status(f"Player '{args.player}' not found.", "error")
                 return 1
