@@ -110,7 +110,9 @@ You can use the script entirely from the command line without interactive prompt
 | `--mp4` | Auto-convert .ts to .mp4 | `--mp4` |
 | `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` |
 
-### ⚡ Power User Examples
+<div align="center">
+   
+### ⚡ User Examples
 
 **1. Search and Download Interactively:**
 ```bash
@@ -126,6 +128,7 @@ python main.py --url "https://anime-sama.tv/catalogue/roshidere/saison1/vostfr/"
 ```bash
 python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 ```
+</div>
 
 ---
 
