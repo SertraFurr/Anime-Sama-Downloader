@@ -43,7 +43,11 @@ def get_episode_choice(episodes, player_choice):
 
     while True:
         try:
-            episode_input = input(f"\n{Colors.BOLD}Enter episode number(s) (1-{num_episodes}, comma-separated example 1,2,3, or 'all' for all available): {Colors.ENDC}").strip().lower()
+            episode_input = input(
+                f"\n{Colors.BOLD}Enter episode number(s) (1-{num_episodes}, "
+                "comma-separated example 1,2,3, ranges like 12-49, or 'all' for all available): "
+                f"{Colors.ENDC}"
+            ).strip().lower()
 
             if episode_input == 'all':
                 valid_episodes = []
@@ -51,22 +55,49 @@ def get_episode_choice(episodes, player_choice):
                     episode_url = episodes[player_choice][i]
                     if not ('vk.com' in episode_url or 'myvi.tv' in episode_url):
                         valid_episodes.append(i)
+
                 if not valid_episodes:
                     print_status("No valid episodes available for download", "error")
                     continue
                 return valid_episodes
 
-            episode_nums = [int(num.strip()) for num in episode_input.split(',') if num.strip()]
             valid_episodes = []
-            for num in episode_nums:
-                if 1 <= num <= num_episodes:
-                    episode_url = episodes[player_choice][num - 1]
-                    if 'vk.com' in episode_url or 'myvi.tv' in episode_url:
-                        print_status(f"Episode {num} source is deprecated and cannot be downloaded", "error")
-                    else:
-                        valid_episodes.append(num - 1)
+            seen = set()
+
+            for part in episode_input.split(','):
+                part = part.strip()
+                if not part:
+                    continue
+
+                if '-' in part:
+                    start, end = map(int, part.split('-', 1))
+                    for num in range(start, end + 1):
+                        if num in seen:
+                            continue
+                        seen.add(num)
+
+                        if 1 <= num <= num_episodes:
+                            episode_url = episodes[player_choice][num - 1]
+                            if 'vk.com' in episode_url or 'myvi.tv' in episode_url:
+                                print_status(f"Episode {num} source is deprecated and cannot be downloaded", "error")
+                            else:
+                                valid_episodes.append(num - 1)
+                        else:
+                            print_status(f"Episode number {num} is out of range (1-{num_episodes})", "error")
                 else:
-                    print_status(f"Episode number {num} is out of range (1-{num_episodes})", "error")
+                    num = int(part)
+                    if num in seen:
+                        continue
+                    seen.add(num)
+
+                    if 1 <= num <= num_episodes:
+                        episode_url = episodes[player_choice][num - 1]
+                        if 'vk.com' in episode_url or 'myvi.tv' in episode_url:
+                            print_status(f"Episode {num} source is deprecated and cannot be downloaded", "error")
+                        else:
+                            valid_episodes.append(num - 1)
+                    else:
+                        print_status(f"Episode number {num} is out of range (1-{num_episodes})", "error")
 
             if valid_episodes:
                 return valid_episodes
@@ -77,4 +108,4 @@ def get_episode_choice(episodes, player_choice):
             print_status("\nOperation cancelled by user", "error")
             return None
         except ValueError:
-            print_status("Invalid input. Please enter numbers (comma-separated) or 'all'.", "error")
+            print_status("Invalid input. Please enter numbers, ranges (e.g. 12-49), or 'all'.", "error")
