@@ -74,8 +74,8 @@ def fetch_video_source(url):
                 attempt += 1
                 html_content = fetch_page_content(single_url)
                 if html_content and '<title>Please wait</title>' in html_content and not "url.indexOf('?'" in html_content:
-                    print_status(f"Vidmoly rate limit ('Please wait') detected. Retrying in 1s (Attempt {attempt})...", "warning")
-                    time.sleep(1)
+                    print_status(f"Vidmoly rate limit ('Please wait') detected. Retrying in 3s (Attempt {attempt})...", "warning")
+                    time.sleep(3)
                     continue
                 break
                 
@@ -97,7 +97,7 @@ def fetch_video_source(url):
             except requests.RequestException as e:
                 print_status(f"Failed to fetch M3U8 playlist: {str(e)}", "error")
                 return None
-                
+        
         # all those !
         elif 'dingtezuni.com' in single_url or 'mivalyo.com' in single_url or 'smoothpre.com' in single_url or 'Smoothpre.com' in single_url or 'movearnpre.com' in single_url:
             m3u8_url = extract_movearnpre_video_source(single_url)
@@ -110,8 +110,6 @@ def fetch_video_source(url):
     elif isinstance(url, list):
         results = []
         for i, single_url in enumerate(url):
-            if i > 0 and 'vidmoly' in single_url:
-                time.sleep(3)
             result = process_single_url(single_url)
             results.append(result)
         return results
