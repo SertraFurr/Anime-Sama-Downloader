@@ -21,7 +21,10 @@ Looking for projects to do ! feel free to request in issue !
 ![Website Support](https://img.shields.io/badge/Website%20Support-100%25-brightgreen)
 
 ### Scans support ? 5 stars and it will be added ! 
+
+
 ## ✨ Features
+</div>
 
 <table>
 <tr>
@@ -43,15 +46,11 @@ Looking for projects to do ! feel free to request in issue !
 - 📺 **Multiple Episode Selection** with threads supports
 - 😊 **FFmpeg support** choose between 2 converters
 
+</td>
 </tr>
 </table>
 
-
-</div>
-
 ---
-
-<div align="center">
 
 ## 🚀 Quick Start
 
@@ -76,7 +75,6 @@ pip install requests beautifulsoup4 tqdm
 - `tqdm` - Progress bar display
 
 </details>
-
 
 ### ⚡ Installation & Usage
 
@@ -112,7 +110,6 @@ You can use the script entirely from the command line without interactive prompt
 | `--mp4` | Auto-convert .ts to .mp4 | `--mp4` |
 | `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` |
 
-   
 ### ⚡ User Examples
 
 **1. Search and Download Interactively:**
@@ -129,7 +126,6 @@ python main.py --url "https://anime-sama.tv/catalogue/roshidere/saison1/vostfr/"
 ```bash
 python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 ```
-</div>
 
 ---
 
@@ -137,7 +133,9 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 
 ## 📖 Complete Interactive Usage Guide
 
+<div align="center">
 <h3>🎯 Three Simple Steps</h3>
+</div>
 
 <table>
 <tr>
@@ -196,13 +194,13 @@ https://anime-sama.fr/  # Just homepage
 
 ---
 
-## 🛠️ Video Source Support
-
 </div>
+
+## 🛠️ Video Source Support
 
 | Platform | Status | Performance | Notes |
 |:--------:|:------:|:-----------:|:------|
-| READ BEFORE DOING ANYTHING | Threaded mode is only suitable for strong Wi-Fi connections that won’t crash when handling multiple downloads simultaneously.
+| **⚠️ READ BEFORE DOING ANYTHING** | Threaded mode is only suitable for strong Wi-Fi connections that won't crash when handling multiple downloads simultaneously. |||
 | 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Primary recommended source |
 | 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Reliable backup source |
 | 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
@@ -214,8 +212,6 @@ https://anime-sama.fr/  # Just homepage
 | 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
-
-
 
 ---
 
@@ -258,12 +254,16 @@ Enter player number (1-3) or type player name:
 </details>
 
 ---
-</div>
+
+
 
 ## ⚙️ Configuration
 
+</div>
+
 <details>
 <summary>🔧 <strong>Customization Options</strong></summary>
+
 
 ### 📁 Default Settings
 - **Download Directory**: `./videos/`
@@ -282,9 +282,9 @@ The script uses a beautiful color scheme:
 
 ---
 
-## 🤝 Contributing
-
 <div align="center">
+
+## 🤝 Contributing
 
 We welcome contributions! Here's how you can help:
 
@@ -295,24 +295,23 @@ We welcome contributions! Here's how you can help:
 </div>
 
 ### 🐛 Found a Bug?
- Check existing [issues](https://github.com/sertrafurr/issues)
- Create a new issue with:
-    📝 Clear description
-    🔄 Steps to reproduce
-    💻 System information
+- Check existing [issues](https://github.com/sertrafurr/issues)
+- Create a new issue with:
+  - 📝 Clear description
+  - 🔄 Steps to reproduce
+  - 💻 System information
 
 ### 💡 Feature Request?
- Open a [discussion](https://github.com/sertrafurr/discussions)
- Explain your idea
- Community feedback welcome!
+- Open a [discussion](https://github.com/sertrafurr/discussions)
+- Explain your idea
+- Community feedback welcome!
+
 
 ---
 
--  In development an tampermonkey extension that will make possible to get ANYTHING sources.
-  
-## 📄 License
-
 <div align="center">
+
+## 📄 License
 
 This project is licensed under the **GPL v3 License**
 
@@ -324,15 +323,20 @@ This project is licensed under the **GPL v3 License**
 
 ---
 
+<div align="center">
+
 ## ⚠️ Disclaimer
 
-<div align="center">
-<strong>📢 Important Notice</strong>
-</div>
+**📢 Important Notice**
 
-- 🎯 This tool is for **educational purposes** only
-- 📺 Respect **copyright laws** in your jurisdiction  
-- 🔒 Use responsibly and in compliance with anime-sama.fr's terms
+ 🎯 This tool is for **educational purposes** only
+
+ 📺 Respect **copyright laws** in your jurisdiction  
+
+ 🔒 Use responsibly and in compliance with anime-sama.fr's terms
+
+
+</div>
 
 ---
 
@@ -351,6 +355,6 @@ This project is licensed under the **GPL v3 License**
 
 [![Stars](https://img.shields.io/github/stars/sertrafurr/anime-sama-downloader?style=for-the-badge&logo=github)](https://github.com/sertrafurr/anime-sama-downloader/stargazers)
 
-</div>
-
 You wish for something/a service to get removed/added, open an issue.
+
+</div>
