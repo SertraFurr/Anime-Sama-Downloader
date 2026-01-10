@@ -182,21 +182,27 @@ Watch the magic happen
 </tr>
 </table>
 
-### 🔗 Example URLs
+</div>
 
-```bash
-# ✅ Perfect URL format
+<details>
+<summary>🔗 Example URLs</summary>
+<div align="center">
+
+**✅ Works**
+```
 https://anime-sama.fr/catalogue/roshidere/saison1/vostfr/
 https://anime-sama.fr/catalogue/demon-slayer/saison1/vf/
 https://anime-sama.fr/catalogue/attack-on-titan/saison3/vostfr/
 https://anime-sama.fr/catalogue/one-piece/saison1/vostfr/
-
-# ❌ Won't work
-https://anime-sama.fr/catalogue/roshidere/  # Missing season/language
-https://anime-sama.fr/  # Just homepage
 ```
 
----
+**❌ Won’t work**
+```
+- https://anime-sama.fr/catalogue/roshidere/
+- https://anime-sama.fr/
+```
+</details>
+
 
 
 
