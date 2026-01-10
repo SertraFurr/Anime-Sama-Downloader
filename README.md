@@ -47,10 +47,11 @@ Looking for projects to do ! feel free to request in issue !
 </table>
 
 
-
-
+</div>
 
 ---
+
+<div align="center">
 
 ## 🚀 Quick Start
 
@@ -75,6 +76,7 @@ pip install requests beautifulsoup4 tqdm
 - `tqdm` - Progress bar display
 
 </details>
+
 
 ### ⚡ Installation & Usage
 
@@ -110,7 +112,6 @@ You can use the script entirely from the command line without interactive prompt
 | `--mp4` | Auto-convert .ts to .mp4 | `--mp4` |
 | `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` |
 
-<div align="center">
    
 ### ⚡ User Examples
 
@@ -132,11 +133,11 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 
 ---
 
+<div align="center">
+
 ## 📖 Complete Interactive Usage Guide
 
-<div align="center">
 <h3>🎯 Three Simple Steps</h3>
-</div>
 
 <table>
 <tr>
@@ -197,7 +198,7 @@ https://anime-sama.fr/  # Just homepage
 
 ## 🛠️ Video Source Support
 
-<div align="center">
+</div>
 
 | Platform | Status | Performance | Notes |
 |:--------:|:------:|:-----------:|:------|
@@ -215,9 +216,10 @@ https://anime-sama.fr/  # Just homepage
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
 
 
-</div>
 
 ---
+
+<div align="center">
 
 ## 📸 Screenshots
 
@@ -256,6 +258,7 @@ Enter player number (1-3) or type player name:
 </details>
 
 ---
+</div>
 
 ## ⚙️ Configuration
 
