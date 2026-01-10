@@ -1,4 +1,5 @@
 <div align="center">
+
    
 # 🎌 Anime-Sama Video Downloader
   
@@ -24,7 +25,7 @@ Looking for projects to do ! feel free to request in issue !
 
 
 ## ✨ Features
-</div>
+
 
 <table>
 <tr>
@@ -53,11 +54,12 @@ Looking for projects to do ! feel free to request in issue !
 ---
 
 ## 🚀 Quick Start
+</div>
 
 ### 📋 Prerequisites
 
 <details>
-<summary>🐍 <strong>Python Requirements</strong></summary>
+<summary>🐍 <strong> <align="center">Python Requirements</strong></summary>
 
 Make sure you have **Python 3.6+** installed:
 
@@ -75,6 +77,7 @@ pip install requests beautifulsoup4 tqdm
 - `tqdm` - Progress bar display
 
 </details>
+
 
 ### ⚡ Installation & Usage
 
@@ -131,11 +134,12 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 
 <div align="center">
 
+
 ## 📖 Complete Interactive Usage Guide
 
-<div align="center">
+
 <h3>🎯 Three Simple Steps</h3>
-</div>
+
 
 <table>
 <tr>
@@ -194,7 +198,7 @@ https://anime-sama.fr/  # Just homepage
 
 ---
 
-</div>
+
 
 ## 🛠️ Video Source Support
 
@@ -215,7 +219,7 @@ https://anime-sama.fr/  # Just homepage
 
 ---
 
-<div align="center">
+
 
 ## 📸 Screenshots
 
@@ -259,30 +263,38 @@ Enter player number (1-3) or type player name:
 
 ## ⚙️ Configuration
 
-</div>
+
 
 <details>
 <summary>🔧 <strong>Customization Options</strong></summary>
 
 
 ### 📁 Default Settings
-- **Download Directory**: `./videos/`
-- **Video Format**: `.mp4`
-- **Naming Convention**: `{anime_name}_episode_{number}.mp4`
+
+**Download Directory**: `./videos/`
+
+**Video Format**: `.mp4`
+
+**Naming Convention**: `{anime_name}_episode_{number}.mp4`
+
 
 ### 🎨 Color Themes
 The script uses a beautiful color scheme:
-- 🔵 **Info**: Cyan messages
-- ✅ **Success**: Green confirmations  
-- ⚠️ **Warning**: Yellow alerts
-- ❌ **Error**: Red error messages
-- 💜 **Headers**: Purple titles
+
+🔵 **Info**: Cyan messages
+
+✅ **Success**: Green confirmations  
+
+⚠️ **Warning**: Yellow alerts
+
+❌ **Error**: Red error messages
+
+💜 **Headers**: Purple titles
+
 
 </details>
 
 ---
-
-<div align="center">
 
 ## 🤝 Contributing
 
@@ -292,24 +304,24 @@ We welcome contributions! Here's how you can help:
 [![Pull Requests](https://img.shields.io/badge/PRs-Welcome-green?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/pulls)
 [![Discussions](https://img.shields.io/badge/Discussions-Join-purple?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/discussions)
 
-</div>
+
 
 ### 🐛 Found a Bug?
-- Check existing [issues](https://github.com/sertrafurr/issues)
-- Create a new issue with:
-  - 📝 Clear description
-  - 🔄 Steps to reproduce
-  - 💻 System information
+ Check existing [issues](https://github.com/sertrafurr/issues)
+ Create a new issue with:
+   📝 Clear description
+   🔄 Steps to reproduce
+   💻 System information
 
 ### 💡 Feature Request?
-- Open a [discussion](https://github.com/sertrafurr/discussions)
-- Explain your idea
-- Community feedback welcome!
+ Open a [discussion](https://github.com/sertrafurr/discussions)
+ Explain your idea
+ Community feedback welcome!
 
 
 ---
 
-<div align="center">
+
 
 ## 📄 License
 
@@ -319,11 +331,11 @@ This project is licensed under the **GPL v3 License**
 
 *Feel free to use, modify, and distribute!*
 
-</div>
+
 
 ---
 
-<div align="center">
+
 
 ## ⚠️ Disclaimer
 
@@ -336,11 +348,11 @@ This project is licensed under the **GPL v3 License**
  🔒 Use responsibly and in compliance with anime-sama.fr's terms
 
 
-</div>
+
 
 ---
 
-<div align="center">
+
 
 ## 🙏 Acknowledgments
 
@@ -357,4 +369,4 @@ This project is licensed under the **GPL v3 License**
 
 You wish for something/a service to get removed/added, open an issue.
 
-</div>
+
