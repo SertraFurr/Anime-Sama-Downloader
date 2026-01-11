@@ -9,6 +9,8 @@ def expand_catalogue_url(url, headers=None):
         
         content = response.text
         matches = re.findall(r'panneauAnime\s*\(\s*["\']([^"\']+)["\']\s*,\s*["\']([^"\']+)["\']\s*\)', content)
+        scan_matches = re.findall(r'panneauScan\s*\(\s*["\']([^"\']+)["\']\s*,\s*["\']([^"\']+)["\']\s*\)', content)
+        matches.extend(scan_matches)
         
         results = []
         seen_urls = set()
