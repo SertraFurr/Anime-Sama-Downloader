@@ -1,7 +1,5 @@
 <div align="center">
 
-## NOT WORKING THEY ADDED CLOUDFLARE, WORKING ON A WAY TO GET THE COOKIE AND USE IT IN THE APP/CHROME EXTENSION
-   
 # 🎌 Anime-Sama Video Downloader
   
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
