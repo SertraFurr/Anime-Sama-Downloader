@@ -34,7 +34,6 @@ def print_header():
 {Colors.HEADER}{Colors.BOLD}
 ╔══════════════════════════════════════════════════════════════╗
 ║                 ANIME-SAMA VIDEO DOWNLOADER                  ║
-║                       Enhanced CLI v2.4                      ║
 ╚══════════════════════════════════════════════════════════════╝
 {Colors.ENDC}
 {Colors.OKCYAN}📺 Download anime episodes from anime-sama.fr easily!{Colors.ENDC}
