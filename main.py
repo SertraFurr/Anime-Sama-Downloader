@@ -100,7 +100,12 @@ def main():
             print(f"\n{Colors.BOLD}{Colors.HEADER}🔍 SEARCH RESULTS{Colors.ENDC}")
             print_separator()
             for i, res in enumerate(results, 1):
-                print(f"{Colors.OKCYAN}{i}. {res['title']} ({res['url']}){Colors.ENDC}")
+                support_text = ""
+                if res.get('support') == "Anime Supported":
+                    support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
+                elif res.get('support') == "Scans Unsupported":
+                    support_text = f" {Colors.FAIL}(Scans Unsupported){Colors.ENDC}"
+                print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text} ({res['url']}){Colors.ENDC}")
             
             while True:
                 try:
@@ -143,7 +148,12 @@ def main():
                     print(f"\n{Colors.BOLD}{Colors.HEADER}🔍 SEARCH RESULTS{Colors.ENDC}")
                     print_separator()
                     for i, res in enumerate(results, 1):
-                         print(f"{Colors.OKCYAN}{i}. {res['title']}{Colors.ENDC}")
+                         support_text = ""
+                         if res.get('support') == "Anime Supported":
+                             support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
+                         elif res.get('support') == "Scans Unsupported":
+                             support_text = f" {Colors.FAIL}(Scans Unsupported){Colors.ENDC}"
+                         print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text}{Colors.ENDC}")
                     
                     valid_choice = False
                     while True:
@@ -153,10 +163,16 @@ def main():
                             idx = int(choice) - 1
                             if 0 <= idx < len(results):
                                 base_url = results[idx]['url']
-                                valid_choice = True
-                                base_url = expand_catalogue_url(base_url, headers=headers)[0]['url']
-                                break
-                    if valid_choice: break
+                                options = expand_catalogue_url(base_url, headers=headers)
+                                if options:
+                                    base_url = options[0]['url']
+                                    valid_choice = True
+                                    break
+                                else:
+                                    print_status("This page doesn't seem to contain any anime downloadable content.", "warning")
+                                    continue
+                    if valid_choice: 
+                        break
         
         is_valid, _ = validate_anime_sama_url(base_url)
         if not is_valid:
