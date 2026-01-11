@@ -12,34 +12,37 @@ _mal_search_cache = {}
 _cache_lock = threading.Lock()
 
 
-def normalize(text: str) -> str:
-    return re.sub(r"[^\w\s]", "", text.lower().strip())
+def normalize(text):
+    if text is None: return ""
+    return re.sub(r"[^\w\s]", "", str(text).lower().strip())
 
 
-def _is_movie_title(title: str) -> bool:
+def _is_movie_title(title):
+    if not title: return False
     movie_keywords = ["movie", "film", "the movie", "le film"]
     title_lower = title.lower()
     return any(keyword in title_lower for keyword in movie_keywords)
 
 
-def _get_best_title(anime: dict) -> str:
+def _get_best_title(anime):
     titles = anime.get("titles", [])
     
     for title in titles:
         if title.get("type") == "English":
-            return title.get("title", "")
+            return title.get("title") or ""
     
     for title in titles:
         if title.get("type") == "Default":
-            return title.get("title", "")
+            return title.get("title") or ""
     
     if titles:
-        return titles[0].get("title", "")
+        return titles[0].get("title") or ""
     
-    return anime.get("title", "Unknown")
+    return anime.get("title") or "Unknown"
 
 
-def _clean_anime_name(name: str) -> str:
+def _clean_anime_name(name):
+    if not name: return ""
     name = re.sub(r'\s*\(.*?\)\s*', '', name)
     name = re.sub(r'\s*\[.*?\]\s*', '', name)
     name = re.sub(r'\s*-\s*saison\s*\d+.*', '', name, flags=re.IGNORECASE)
@@ -49,7 +52,7 @@ def _clean_anime_name(name: str) -> str:
     return name
 
 
-def _display_search_results(animes: list, query: str) -> dict | None:
+def _display_search_results(animes, query):
     if not animes:
         return None
     
@@ -62,13 +65,13 @@ def _display_search_results(animes: list, query: str) -> dict | None:
     display_animes = animes[:10]
     
     for idx, anime in enumerate(display_animes, 1):
-        anime_type = anime.get("type", "Unknown")
-        mal_id = anime.get("mal_id", "?")
+        anime_type = anime.get("type") or "Unknown"
+        mal_id = anime.get("mal_id") or "?"
         title = _get_best_title(anime)
         
         alt_titles = []
         for t in anime.get("titles", [])[:3]:
-            title_text = t.get("title", "")
+            title_text = t.get("title") or ""
             if title_text and title_text != title:
                 alt_titles.append(title_text)
         
@@ -103,7 +106,7 @@ def _display_search_results(animes: list, query: str) -> dict | None:
             return None
 
 
-def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | None:
+def search_anime_on_mal(anime_name, interactive=True):
     cache_key = anime_name.lower().strip()
     if cache_key in _mal_search_cache:
         print_status(f"Using cached MAL data for: {anime_name}", "info")
@@ -155,7 +158,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
     other_types = []
     
     for anime in all_results:
-        anime_type = anime.get("type", "").lower()
+        anime_type = (anime.get("type") or "").lower()
         if anime_type in ["tv", "ona"]:
             tv_series.append(anime)
         else:
@@ -166,7 +169,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         
         for anime in tv_series:
             for title in anime.get("titles", []):
-                title_normalized = normalize(title.get("title", ""))
+                title_normalized = normalize(title.get("title"))
                 if name_normalized == title_normalized:
                     print_status(f"Found exact match: {_get_best_title(anime)}", "success")
                     result = {
@@ -179,7 +182,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         
         for anime in other_types:
             for title in anime.get("titles", []):
-                title_normalized = normalize(title.get("title", ""))
+                title_normalized = normalize(title.get("title"))
                 if name_normalized == title_normalized:
                     print_status(f"Found exact match: {_get_best_title(anime)}", "success")
                     result = {
@@ -225,7 +228,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         return result
 
 
-def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) -> None:
+def create_match_file(save_dir, anime_name, interactive=True):
     with _cache_lock:
         try:
             if not anime_name:
@@ -301,7 +304,7 @@ def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) 
             print_status(f"Error creating match file: {str(e)}", "error")
 
 
-def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None):
+def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None, no_mal=False):
     if not video_source:
         print_status(f"Could not extract video source for episode {episode_num}", "error")
         return False, None
@@ -310,13 +313,14 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
     print_status(f"Processing episode: {episode_num}", "info")
     print_status(f"Source: {url[:60]}...", "info")
     
-    if not anime_name:
+    season_dir = save_dir
+    os.makedirs(season_dir, exist_ok=True)
+
+    if no_mal:
+        print_status("Skipping MAL matching (--no-mal)", "info")
+    elif not anime_name:
         print_status("anime_name is empty, skipping MAL matching", "warning")
-        season_dir = save_dir
     else:
-        season_dir = save_dir
-        
-        os.makedirs(season_dir, exist_ok=True)
         create_match_file(season_dir, anime_name)
     
     save_path = os.path.join(season_dir, f"{anime_name if anime_name else 'episode'}_{episode_num}.mp4")
