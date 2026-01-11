@@ -15,7 +15,7 @@ from src.utils.get.get_save_directory           import get_save_directory
 from src.utils.download.download_episode        import download_episode
 from src.var                                    import Colors, print_separator, print_header, print_tutorial
 from src.utils.search.search_anime              import search_anime
-from src.utils.search.expand_catalogue_url      import expand_catalogue_url
+from src.utils.search.expand_catalogue          import expand_catalogue_url
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
 
