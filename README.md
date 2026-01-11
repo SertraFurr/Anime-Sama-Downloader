@@ -1,5 +1,6 @@
 <div align="center">
 
+## NOT WORKING THEY ADDED CLOUDFLARE, WORKING ON A WAY TO GET THE COOKIE AND USE IT IN THE APP/CHROME EXTENSION
    
 # 🎌 Anime-Sama Video Downloader
   
