@@ -89,7 +89,7 @@ def main():
         base_url = args.url
 
         if args.search and not base_url:
-            results = search_anime(args.search)
+            results = search_anime(args.search, headers=headers)
             if not results:
                 print_status("No results found for search query.", "error")
                 return 1
