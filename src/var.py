@@ -1,3 +1,6 @@
+def get_domain():
+    return "anime-sama.si"
+
 class Colors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
