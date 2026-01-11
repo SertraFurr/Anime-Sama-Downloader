@@ -1,12 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
+from src.utils.config.config import get_cookies
+from src.var import get_domain
 
 def search_anime(query):
-    url = "https://anime-sama.tv/template-php/defaut/fetch.php"
+    url = f"https://{get_domain()}/template-php/defaut/fetch.php"
     headers = {
-        "x-requested-with": "XMLHttpRequest",
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "Accept": "text/html",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        "Accept-Language": "fr-FR,fr;q=0.8",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Upgrade-Insecure-Requests": "1",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36",
+        "Cookie": "cf_clearance=" + get_cookies()
     }
     data = {"query": query}
     
