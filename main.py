@@ -1,6 +1,7 @@
 from src.utils.config.config import get_cookies, set_cookies, check_cookies
 from src.utils.print.print_status import print_status
 from src.var import Colors, get_domain, print_header, print_separator, print_tutorial, generate_requests_headers
+from src.utils.check.is_cloudflare_here import check_if_cloudflare_enabled
 
 def tutorial_input():
     print_status("No valid Cloudflare cookies found. Let's set them up!", "info")
@@ -17,22 +18,25 @@ def tutorial_input():
 
     return cf_clearance, user_agent
 
+cloudflare = check_if_cloudflare_enabled(domain=get_domain(), headers={"User-Agent": "Mozilla/5.0"})
 
-cookies_info = get_cookies()
-if cookies_info is False:
-    cf_clearance, user_agent = tutorial_input()
-    set_cookies(cf_clearance, user_agent)
+if cloudflare:
+    cookies_info = get_cookies()
+    if cookies_info is False:
+        cf_clearance, user_agent = tutorial_input()
+        set_cookies(cf_clearance, user_agent)
+    cf_clearance, headers = get_cookies()
+    request_headers = {"User-Agent": headers.get("User-Agent")}
 
-cf_clearance, headers = get_cookies()
-request_headers = {"User-Agent": headers.get("User-Agent")}
+    while not check_cookies(domain=get_domain(), headers=request_headers):
+        print_status("Please update your Cloudflare cookies or use the same User-Agent as before.", "error")
+        cf_clearance, user_agent = tutorial_input()
+        set_cookies(cf_clearance, user_agent)
 
-while not check_cookies(domain=get_domain(), headers=request_headers):
-    print_status("Please update your Cloudflare cookies or use the same User-Agent as before.", "error")
-    cf_clearance, user_agent = tutorial_input()
-    set_cookies(cf_clearance, user_agent)
-
-user_agent = headers.get("User-Agent")
-headers = generate_requests_headers(cf_clearance, user_agent)
+    user_agent = headers.get("User-Agent")
+    headers = generate_requests_headers(cf_clearance, user_agent)
+else:
+    headers = generate_requests_headers("None", "Mozilla/5.0")
 
 import sys
 import argparse
