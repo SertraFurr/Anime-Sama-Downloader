@@ -54,6 +54,7 @@ from src.utils.get.get_save_directory           import get_save_directory
 from src.utils.download.download_episode        import download_episode
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
+from src.utils.download.download_scan           import download_scan
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
 
@@ -104,8 +105,8 @@ def main():
                 support_text = ""
                 if res.get('support') == "Anime Supported":
                     support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
-                elif res.get('support') == "Scans Unsupported":
-                    support_text = f" {Colors.FAIL}(Scans Unsupported){Colors.ENDC}"
+                elif res.get('support') == "Scans Supported":
+                    support_text = f" {Colors.OKGREEN}(Scans Supported){Colors.ENDC}"
                 print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text} ({res['url']}){Colors.ENDC}")
             
             while True:
@@ -152,8 +153,8 @@ def main():
                          support_text = ""
                          if res.get('support') == "Anime Supported":
                              support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
-                         elif res.get('support') == "Scans Unsupported":
-                             support_text = f" {Colors.FAIL}(Scans Unsupported){Colors.ENDC}"
+                         elif res.get('support') == "Scans Supported":
+                             support_text = f" {Colors.OKGREEN}(Scans Supported){Colors.ENDC}"
                          print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text}{Colors.ENDC}")
                     
                     valid_choice = False
@@ -200,6 +201,10 @@ def main():
         if not is_valid:
             print_status(error_msg, "error")
             return 1
+
+        if "/scan/" in base_url.lower():
+            download_scan(base_url, headers)
+            return 0
 
         anime_name = extract_anime_name(base_url)
         print_status(f"Detected anime: {anime_name}", "info")
