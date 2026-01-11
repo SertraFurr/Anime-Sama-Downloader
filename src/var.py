@@ -1,5 +1,22 @@
+import random
+
 def get_domain():
     return "anime-sama.si"
+
+def generate_requests_headers(cf_clearance, user_agent=None):
+    cookies = f"cf_clearance={cf_clearance}"
+
+    headers = {
+        "User-Agent": user_agent,
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "fr-FR,fr;q=0.8",
+        "Referer": "https://anime-sama.si/",
+        "Origin": "https://anime-sama.si",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+        "Cookie": cookies,
+    }
+    return headers
 
 class Colors:
     HEADER = '\033[95m'
