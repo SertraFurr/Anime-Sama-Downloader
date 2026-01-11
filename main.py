@@ -1,20 +1,38 @@
-from src.utils.config.config                    import get_cookies, set_cookies, check_cookies
-from src.utils.print.print_status               import print_status
-from src.var                                    import Colors, print_separator, print_header, print_tutorial, get_domain
+from src.utils.config.config import get_cookies, set_cookies, check_cookies
+from src.utils.print.print_status import print_status
+from src.var import Colors, get_domain, print_header, print_separator, print_tutorial, generate_requests_headers
 
-if get_cookies() is False:
-    print_status("No cookies found. Please set your Cloudflare cookies in the config.", "error")
-    print_status("Open anime-sama, press F12, go to Application then Cookies:", "info")
-    print_status("Take the cf_clearance cookie value and", "info")
-    input_value = input("paste it here: ").strip()
-    set_cookies(input_value)
+def tutorial_input():
+    print_status("No valid Cloudflare cookies found. Let's set them up!", "info")
+    print_status(f"1. Open {get_domain()} in your browser.", "info")
+    print_status("2. Press F12 to open Developer Tools.", "info")
+    print_status(f"3. Go to the 'Application' tab → Cookies → select {get_domain()}.", "info")
+    print_status("4. Copy the value of the 'cf_clearance' cookie.", "info")
+    cf_clearance = input("Paste the cf_clearance value here: ").strip()
 
-while not check_cookies(domain=get_domain()):
-    print_status("Cloudflare cookies seem to be invalid or expired. Please update your Cloudflare cookies in the config.", "error")
-    print_status("Open anime-sama, press F12, go to Application then Cookies:", "info")
-    print_status("Take the cf_clearance cookie value and", "info")
-    input_value = input("paste it here: ").strip()
-    set_cookies(input_value)
+    print_status("5. In DevTools Console (F12 → Console), run:", "info")
+    print_status("   navigator.userAgent", "info")
+    print_status("6. Copy the User-Agent string printed in console WITHOUT the ' .", "info")
+    user_agent = input("Paste the User-Agent here: ").strip()
+
+    return cf_clearance, user_agent
+
+
+cookies_info = get_cookies()
+if cookies_info is False:
+    cf_clearance, user_agent = tutorial_input()
+    set_cookies(cf_clearance, user_agent)
+
+cf_clearance, headers = get_cookies()
+request_headers = {"User-Agent": headers.get("User-Agent")}
+
+while not check_cookies(domain=get_domain(), headers=request_headers):
+    print_status("Please update your Cloudflare cookies or use the same User-Agent as before.", "error")
+    cf_clearance, user_agent = tutorial_input()
+    set_cookies(cf_clearance, user_agent)
+
+user_agent = headers.get("User-Agent")
+headers = generate_requests_headers(cf_clearance, user_agent)
 
 import sys
 import argparse
@@ -113,7 +131,7 @@ def main():
                     break
                 elif mode == '2':
                     query = input(f"{Colors.BOLD}Enter search query: {Colors.ENDC}").strip()
-                    results = search_anime(query)
+                    results = search_anime(query, headers=headers)
                     if not results:
                         print_status("No results found.", "error")
                         continue
@@ -132,13 +150,14 @@ def main():
                             if 0 <= idx < len(results):
                                 base_url = results[idx]['url']
                                 valid_choice = True
+                                base_url = expand_catalogue_url(base_url, headers=headers)[0]['url']
                                 break
                     if valid_choice: break
         
         is_valid, _ = validate_anime_sama_url(base_url)
         if not is_valid:
             print_status("Checking for seasons/versions...", "info")
-            season_options = expand_catalogue_url(base_url)
+            season_options = expand_catalogue_url(base_url, headers=headers)
             if season_options:
                 print(f"\n{Colors.BOLD}{Colors.HEADER}📅 AVAILABLE SEASONS/VERSIONS{Colors.ENDC}")
                 print_separator()
@@ -163,7 +182,7 @@ def main():
 
         anime_name = extract_anime_name(base_url)
         print_status(f"Detected anime: {anime_name}", "info")
-        episodes = fetch_episodes(base_url)
+        episodes = fetch_episodes(base_url, headers=headers)
         if not episodes:
             print_status("Failed to fetch episodes.", "error")
             return 1
