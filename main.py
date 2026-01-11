@@ -1,3 +1,21 @@
+from src.utils.config.config                    import get_cookies, set_cookies, check_cookies
+from src.utils.print.print_status               import print_status
+from src.var                                    import Colors, print_separator, print_header, print_tutorial, get_domain
+
+if get_cookies() is False:
+    print_status("No cookies found. Please set your Cloudflare cookies in the config.", "error")
+    print_status("Open anime-sama, press F12, go to Application then Cookies:", "info")
+    print_status("Take the cf_clearance cookie value and", "info")
+    input_value = input("paste it here: ").strip()
+    set_cookies(input_value)
+
+while not check_cookies(domain=get_domain()):
+    print_status("Cloudflare cookies seem to be invalid or expired. Please update your Cloudflare cookies in the config.", "error")
+    print_status("Open anime-sama, press F12, go to Application then Cookies:", "info")
+    print_status("Take the cf_clearance cookie value and", "info")
+    input_value = input("paste it here: ").strip()
+    set_cookies(input_value)
+
 import sys
 import argparse
 from concurrent.futures                         import ThreadPoolExecutor, as_completed
@@ -6,14 +24,12 @@ from src.utils.fetch.fetch_video_source         import fetch_video_source
 from src.utils.print.print_episodes             import print_episodes
 from src.utils.get.get_player_choice            import get_player_choice
 from src.utils.get.get_episode_choice           import get_episode_choice
-from src.utils.print.print_status               import print_status
 from src.utils.check.check_package              import check_package
 from src.utils.check.check_ffmpeg_installed     import check_ffmpeg_installed
 from src.utils.validate_anime_sama_url          import validate_anime_sama_url
 from src.utils.extract.extract_anime_name       import extract_anime_name
 from src.utils.get.get_save_directory           import get_save_directory
 from src.utils.download.download_episode        import download_episode
-from src.var                                    import Colors, print_separator, print_header, print_tutorial
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
 
@@ -232,7 +248,9 @@ def main():
         if episode_indices is None or not episode_indices:
             return 1
 
-        save_dir = args.dest if args.dest else (get_save_directory() if interactive else "./videos")
+        get_anime_name = extract_anime_name(base_url)
+        get_saison_info = base_url.split('/')[-3]
+        save_dir = args.dest if args.dest else (get_save_directory(get_anime_name, get_saison_info) if interactive else "./videos/")
         
         if not args.dest and not interactive:
              import os
