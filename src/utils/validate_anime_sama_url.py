@@ -1,4 +1,5 @@
 import re
+from src.var import Colors, get_domain
 
 def validate_anime_sama_url(url):
     pattern = re.compile(
@@ -9,7 +10,7 @@ def validate_anime_sama_url(url):
         return True, ""
     else:
         return False, (
-            "Invalid URL. Format should be:\n"
-            "  https://anime-sama.fr/catalogue/<anime-name>/saison<NUMBER>/<language>/\n"
+            f"{url} Invalid URL. Format should be:\n"
+            f"  https://{get_domain()}/catalogue/<anime-name>/saison<NUMBER>/<language>/\n"
             "Where <language> is VOSTFR, VF, VO, etc. Also .org domain is accepted."
         )
