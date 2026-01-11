@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎌 Anime-Sama Video Downloader
+# 🎌 Anime-Sama Downloader
   
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux_(mostly_windows)-lightgrey.svg?style=for-the-badge" alt="Platform">
@@ -20,11 +20,9 @@ Looking for projects to do ! feel free to request in issue !
 
 ![Website Support](https://img.shields.io/badge/Website%20Support-100%25-brightgreen)
 
-### Scans support ? 5 stars and it will be added ! 
-
-
 ## ✨ Features
 
+### Supports videos/scans
 
 <table>
 <tr>
