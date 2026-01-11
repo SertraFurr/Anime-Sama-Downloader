@@ -353,7 +353,7 @@ def main():
                 print_status("Starting threaded downloads...", "info")
                 with ThreadPoolExecutor() as executor:
                     future_to_episode = {
-                        executor.submit(download_episode, ep_num, url, video_src, anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool): ep_num
+                        executor.submit(download_episode, ep_num, url, video_src, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool): ep_num
                         for ep_num, url, video_src in zip(episode_numbers, urls, video_sources)
                     }
                     for future in as_completed(future_to_episode):
@@ -366,7 +366,7 @@ def main():
                             failed_downloads += 1
             else:
                 for episode_num, url, video_source in zip(episode_numbers, urls, video_sources):
-                    success, _ = download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool)
+                    success, _ = download_episode(episode_num, url, video_source, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool)
                     if not success: failed_downloads += 1
 
             print_separator()
