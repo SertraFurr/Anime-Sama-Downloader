@@ -1,3 +1,6 @@
 {
-    "cf_clearance_cookie": ""
+    "cf_clearance_cookie": "",
+    "headers": {
+        "User-Agent": ""
+    }
 }
