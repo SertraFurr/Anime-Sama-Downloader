@@ -1,6 +1,6 @@
 import os
 import re
-import httpx
+import requests
 import threading
 
 from src.var                            import print_separator, print_status, Colors
@@ -8,61 +8,48 @@ from src.utils.download.download_video  import download_video
 from src.utils.ts.convert_ts_to_mp4     import convert_ts_to_mp4
 
 
-# ==================== NOUVELLES FONCTIONNALITÉS MAL ====================
-# Cache global pour stocker les résultats de recherche pendant la session
 _mal_search_cache = {}
-# Verrou pour éviter les appels simultanés
 _cache_lock = threading.Lock()
 
 
 def normalize(text: str) -> str:
-    """Normalise un texte pour la comparaison"""
     return re.sub(r"[^\w\s]", "", text.lower().strip())
 
 
 def _is_movie_title(title: str) -> bool:
-    """Détecte si un titre contient des mots-clés indiquant un film"""
     movie_keywords = ["movie", "film", "the movie", "le film"]
     title_lower = title.lower()
     return any(keyword in title_lower for keyword in movie_keywords)
 
 
 def _get_best_title(anime: dict) -> str:
-    """Récupère le meilleur titre disponible (priorité au titre anglais ou par défaut)"""
     titles = anime.get("titles", [])
     
-    # Priorité 1: Titre anglais
     for title in titles:
         if title.get("type") == "English":
             return title.get("title", "")
     
-    # Priorité 2: Titre par défaut
     for title in titles:
         if title.get("type") == "Default":
             return title.get("title", "")
     
-    # Priorité 3: Premier titre disponible
     if titles:
         return titles[0].get("title", "")
     
-    # Fallback: titre principal
     return anime.get("title", "Unknown")
 
 
 def _clean_anime_name(name: str) -> str:
-    """Nettoie le nom de l'anime pour améliorer la recherche"""
-    # Enlever les suffixes courants qui peuvent gêner la recherche
-    name = re.sub(r'\s*\(.*?\)\s*', '', name)  # Enlever les parenthèses et leur contenu
-    name = re.sub(r'\s*\[.*?\]\s*', '', name)  # Enlever les crochets et leur contenu
-    name = re.sub(r'\s*-\s*saison\s*\d+.*', '', name, flags=re.IGNORECASE)  # Enlever "- Saison X"
-    name = re.sub(r'\s*-\s*season\s*\d+.*', '', name, flags=re.IGNORECASE)  # Enlever "- Season X"
-    name = re.sub(r'\s*s\d+.*', '', name, flags=re.IGNORECASE)  # Enlever "S1", "S2", etc.
+    name = re.sub(r'\s*\(.*?\)\s*', '', name)
+    name = re.sub(r'\s*\[.*?\]\s*', '', name)
+    name = re.sub(r'\s*-\s*saison\s*\d+.*', '', name, flags=re.IGNORECASE)
+    name = re.sub(r'\s*-\s*season\s*\d+.*', '', name, flags=re.IGNORECASE)
+    name = re.sub(r'\s*s\d+.*', '', name, flags=re.IGNORECASE)
     name = name.strip()
     return name
 
 
 def _display_search_results(animes: list, query: str) -> dict | None:
-    """Affiche les résultats de recherche et demande à l'utilisateur de choisir"""
     if not animes:
         return None
     
@@ -72,7 +59,6 @@ def _display_search_results(animes: list, query: str) -> dict | None:
     print(f"\n{Colors.BOLD}{Colors.HEADER}Multiple results found for '{query}':{Colors.ENDC}")
     print_separator()
     
-    # Limiter à 10 résultats max
     display_animes = animes[:10]
     
     for idx, anime in enumerate(display_animes, 1):
@@ -80,9 +66,8 @@ def _display_search_results(animes: list, query: str) -> dict | None:
         mal_id = anime.get("mal_id", "?")
         title = _get_best_title(anime)
         
-        # Afficher les titres alternatifs
         alt_titles = []
-        for t in anime.get("titles", [])[:3]:  # Limiter à 3 titres
+        for t in anime.get("titles", [])[:3]:
             title_text = t.get("title", "")
             if title_text and title_text != title:
                 alt_titles.append(title_text)
@@ -119,20 +104,15 @@ def _display_search_results(animes: list, query: str) -> dict | None:
 
 
 def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | None:
-    """Recherche un anime sur MyAnimeList via l'API Jikan"""
-    # Vérifier le cache d'abord
     cache_key = anime_name.lower().strip()
     if cache_key in _mal_search_cache:
         print_status(f"Using cached MAL data for: {anime_name}", "info")
         return _mal_search_cache[cache_key]
     
-    # Nettoyer le nom avant la recherche
     cleaned_name = _clean_anime_name(anime_name)
     
-    # Tenter plusieurs variations du nom
     search_queries = [cleaned_name]
     
-    # Si le nom nettoyé est différent, ajouter aussi l'original
     if cleaned_name != anime_name:
         search_queries.append(anime_name)
     
@@ -144,7 +124,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         try:
             i = 0
             while True:
-                response = httpx.get(f"https://api.jikan.moe/v4/anime?q={query}&limit=20", timeout=15.0)
+                response = requests.get(f"https://api.jikan.moe/v4/anime?q={query}&limit=20", timeout=15.0)
                 i += 1
                 if response.status_code != 429 or i > 9:
                     break
@@ -155,12 +135,11 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
             if not animes:
                 continue
 
-            # Ajouter tous les résultats uniques
             for anime in animes:
                 if anime not in all_results:
                     all_results.append(anime)
 
-        except httpx.HTTPStatusError as e:
+        except requests.RequestException as e:
             print_status(f"Error fetching data from Jikan API: {str(e)}", "warning")
             continue
         except Exception as e:
@@ -172,7 +151,6 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         _mal_search_cache[cache_key] = None
         return None
     
-    # Séparer les résultats en séries et films
     tv_series = []
     other_types = []
     
@@ -183,11 +161,9 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
         else:
             other_types.append(anime)
     
-    # Chercher une correspondance exacte dans tous les titres
     for query in search_queries:
         name_normalized = normalize(query)
         
-        # D'abord dans les séries TV
         for anime in tv_series:
             for title in anime.get("titles", []):
                 title_normalized = normalize(title.get("title", ""))
@@ -201,7 +177,6 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
                     _mal_search_cache[cache_key] = result
                     return result
         
-        # Puis dans les autres types
         for anime in other_types:
             for title in anime.get("titles", []):
                 title_normalized = normalize(title.get("title", ""))
@@ -215,9 +190,7 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
                     _mal_search_cache[cache_key] = result
                     return result
     
-    # Pas de correspondance exacte, proposer à l'utilisateur
     if interactive:
-        # Filtrer les films si on ne cherche pas explicitement un film
         candidates = tv_series if tv_series and not _is_movie_title(anime_name) else all_results
         
         selected = _display_search_results(candidates, anime_name)
@@ -234,7 +207,6 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
             _mal_search_cache[cache_key] = None
             return None
     else:
-        # Mode non-interactif : retourner le premier résultat TV ou le premier tout court
         if tv_series and not _is_movie_title(anime_name):
             first_anime = tv_series[0]
         elif all_results:
@@ -254,23 +226,22 @@ def search_anime_on_mal(anime_name: str, interactive: bool = True) -> dict | Non
 
 
 def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) -> None:
-    """Crée le fichier .match avec les informations MAL"""
-    # Utiliser un verrou pour éviter les appels simultanés
     with _cache_lock:
         try:
+            if not anime_name:
+                print_status("Cannot create match file: anime_name is empty", "error")
+                return
+            
             match_file_path = os.path.join(save_dir, '.match')
             cache_key = anime_name.lower().strip()
             
-            # Vérifier le cache d'abord (peut avoir été rempli par un autre thread)
             if cache_key in _mal_search_cache:
                 print_status(f"Using cached MAL data (already in memory)", "info")
                 return
             
-            # Vérifier si le fichier existe déjà
             if os.path.exists(match_file_path):
                 print_status(f"Match file already exists: {match_file_path}", "info")
                 
-                # IMPORTANT : Charger les données du fichier dans le cache
                 try:
                     with open(match_file_path, 'r', encoding='utf-8') as f:
                         lines = f.readlines()
@@ -303,7 +274,6 @@ def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) 
             print(f"{Colors.BOLD}{Colors.HEADER}🔍 Searching for anime on MyAnimeList...{Colors.ENDC}")
             print_separator()
             
-            # Rechercher l'anime sur MAL
             mal_data = search_anime_on_mal(anime_name, interactive=interactive)
             
             if mal_data:
@@ -318,7 +288,6 @@ def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) 
                 print_status(f"  → Type: {mal_data['type']}", "info")
                 print_separator()
             else:
-                # Créer le fichier avec des valeurs par défaut si rien n'est trouvé
                 with open(match_file_path, 'w', encoding='utf-8') as match_file:
                     match_file.write(f"title: {anime_name}\n")
                     match_file.write("mal-id: unknown\n")
@@ -330,7 +299,6 @@ def create_match_file(save_dir: str, anime_name: str, interactive: bool = True) 
                 
         except Exception as e:
             print_status(f"Error creating match file: {str(e)}", "error")
-# ==================== FIN DES NOUVELLES FONCTIONNALITÉS ====================
 
 
 def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None):
@@ -342,17 +310,16 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
     print_status(f"Processing episode: {episode_num}", "info")
     print_status(f"Source: {url[:60]}...", "info")
     
-    # ==================== AJOUT : Dossier Saison 01 + fichier .match ====================
-    # Créer le dossier de saison
-    season_dir = os.path.join(save_dir, "Saison 01")
-    os.makedirs(season_dir, exist_ok=True)
+    if not anime_name:
+        print_status("anime_name is empty, skipping MAL matching", "warning")
+        season_dir = save_dir
+    else:
+        season_dir = save_dir
+        
+        os.makedirs(season_dir, exist_ok=True)
+        create_match_file(season_dir, anime_name)
     
-    # Créer le fichier .match (une seule fois grâce au cache)
-    create_match_file(season_dir, anime_name)
-    
-    # Modifier le chemin de sauvegarde pour inclure le dossier de saison
-    save_path = os.path.join(season_dir, f"{anime_name}_episode_{episode_num}.mp4")
-    # ==================== FIN AJOUT ====================
+    save_path = os.path.join(season_dir, f"{anime_name if anime_name else 'episode'}_{episode_num}.mp4")
     
     print(f"\n{Colors.BOLD}{Colors.HEADER}⬇️ DOWNLOADING EPISODE {episode_num}{Colors.ENDC}")
     print_separator()
