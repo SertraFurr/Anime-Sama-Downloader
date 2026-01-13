@@ -167,9 +167,43 @@ def main():
                                 base_url = results[idx]['url']
                                 options = expand_catalogue_url(base_url, headers=headers)
                                 if options:
-                                    base_url = options[0]['url']
-                                    valid_choice = True
-                                    break
+                                    anime_opts = []
+                                    scan_opts = []
+                                    for opt in options:
+                                        if '/scan' in opt['url'].lower():
+                                            scan_opts.append(opt)
+                                        else:
+                                            anime_opts.append(opt)
+                                    
+                                    options = anime_opts + scan_opts
+                                    
+                                    print(f"\n{Colors.BOLD}{Colors.HEADER}📅 AVAILABLE SEASONS/VERSIONS{Colors.ENDC}")
+                                    print_separator()
+                                    
+                                    idx_counter = 1
+                                    if anime_opts:
+                                         print(f"{Colors.BOLD}--- Anime ---{Colors.ENDC}")
+                                         for opt in anime_opts:
+                                             print(f"{Colors.OKCYAN}{idx_counter}. {opt['name']} ({opt['url']}){Colors.ENDC}")
+                                             idx_counter += 1
+                                    
+                                    if scan_opts:
+                                         print(f"{Colors.BOLD}--- Scans ---{Colors.ENDC}")
+                                         for opt in scan_opts:
+                                             print(f"{Colors.OKBLUE}{idx_counter}. {opt['name']} ({opt['url']}){Colors.ENDC}")
+                                             idx_counter += 1
+                                    
+                                    while True:
+                                        s_choice = input(f"{Colors.BOLD}Select season (1-{len(options)}): {Colors.ENDC}").strip()
+                                        if s_choice.isdigit():
+                                            s_idx = int(s_choice) - 1
+                                            if 0 <= s_idx < len(options):
+                                                base_url = options[s_idx]['url']
+                                                valid_choice = True
+                                                break
+                                        print_status("Invalid choice", "error")
+                                    if valid_choice:
+                                        break
                                 else:
                                     print_status("This page doesn't seem to contain any anime downloadable content.", "warning")
                                     continue
@@ -181,10 +215,31 @@ def main():
             print_status("Checking for seasons/versions...", "info")
             season_options = expand_catalogue_url(base_url, headers=headers)
             if season_options:
+                anime_opts = []
+                scan_opts = []
+                for opt in season_options:
+                     if '/scan' in opt['url'].lower():
+                         scan_opts.append(opt)
+                     else:
+                         anime_opts.append(opt)
+                
+                season_options = anime_opts + scan_opts
+
                 print(f"\n{Colors.BOLD}{Colors.HEADER}📅 AVAILABLE SEASONS/VERSIONS{Colors.ENDC}")
                 print_separator()
-                for i, opt in enumerate(season_options, 1):
-                    print(f"{Colors.OKCYAN}{i}. {opt['name']} ({opt['url']}){Colors.ENDC}")
+
+                idx_counter = 1
+                if anime_opts:
+                        print(f"{Colors.BOLD}--- Anime ---{Colors.ENDC}")
+                        for opt in anime_opts:
+                            print(f"{Colors.OKCYAN}{idx_counter}. {opt['name']} ({opt['url']}){Colors.ENDC}")
+                            idx_counter += 1
+                
+                if scan_opts:
+                        print(f"{Colors.BOLD}--- Scans ---{Colors.ENDC}")
+                        for opt in scan_opts:
+                            print(f"{Colors.OKBLUE}{idx_counter}. {opt['name']} ({opt['url']}){Colors.ENDC}")
+                            idx_counter += 1
                 
                 while True:
                     choice = input(f"{Colors.BOLD}Select season (1-{len(season_options)}): {Colors.ENDC}").strip()
@@ -202,7 +257,7 @@ def main():
             print_status(error_msg, "error")
             return 1
 
-        if "/scan/" in base_url.lower():
+        if "/scan" in base_url.lower():
             download_scan(base_url, headers)
             return 0
 
