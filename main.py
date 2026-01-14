@@ -72,6 +72,7 @@ def main():
     parser.add_argument("--mp4", action='store_true')
     parser.add_argument("--tool", default=None)
     parser.add_argument("--no-mal", action='store_true', help="Disable MyAnimeList research")
+    parser.add_argument("--latest", action='store_true', help="Download only the latest episode")
     
     args = parser.parse_args()
     interactive = len(sys.argv) == 1
@@ -338,25 +339,40 @@ def main():
             return 1
             
         episode_indices = None
-        if args.episodes:
-            if args.episodes.lower() == 'all':
-                episode_indices = []
-                for i in range(len(episodes[player_choice])):
-                    if 'vk.com' not in episodes[player_choice][i] and 'myvi.tv' not in episodes[player_choice][i]:
-                        episode_indices.append(i)
-            else:
-                try:
-                    episode_indices = []
-                    for x in args.episodes.split(','):
-                        if x.strip():
-                            val = int(x.strip())
-                            if 1 <= val <= len(episodes[player_choice]):
-                                episode_indices.append(val - 1)
-                except ValueError:
-                    print_status("Invalid episode list format", "error")
+        
+        if args.latest:
+            if episodes and player_choice in episodes:
+                count = len(episodes[player_choice])
+                if count > 0:
+                    episode_indices = [count - 1]
+                    print_status(f"Latest episode selected: Episode {count}", "info")
+                else:
+                    print_status("No episodes found to select latest.", "error")
                     return 1
-        else:
-            episode_indices = get_episode_choice(episodes, player_choice)
+            else:
+                return 1
+
+        if not episode_indices:
+            if args.episodes:
+                if args.episodes.lower() == 'all':
+                    episode_indices = []
+                    for i in range(len(episodes[player_choice])):
+                        if 'vk.com' not in episodes[player_choice][i] and 'myvi.tv' not in episodes[player_choice][i]:
+                            episode_indices.append(i)
+                else:
+                    try:
+                        episode_indices = []
+                        for x in args.episodes.split(','):
+                            if x.strip():
+                                val = int(x.strip())
+                                if 1 <= val <= len(episodes[player_choice]):
+                                    episode_indices.append(val - 1)
+                    except ValueError:
+                        print_status("Invalid episode list format", "error")
+                        return 1
+            else:
+                 if not args.latest:
+                    episode_indices = get_episode_choice(episodes, player_choice)
             
         if episode_indices is None or not episode_indices:
             return 1
