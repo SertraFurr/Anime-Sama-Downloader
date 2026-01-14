@@ -109,6 +109,8 @@ You can use the script entirely from the command line without interactive prompt
 | `--fast` | Enable multi-threaded .ts download (10x faster) | `--fast` |
 | `--mp4` | Auto-convert .ts to .mp4 | `--mp4` |
 | `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` |
+| `--latest` | Download only the latest episode | `--latest` |
+| `--no-mal` | Disable MyAnimeList research | `--no-mal` |
 
 ### ⚡ User Examples
 
