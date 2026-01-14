@@ -155,6 +155,10 @@ def main():
                              support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
                          elif res.get('support') == "Scans Supported":
                              support_text = f" {Colors.OKGREEN}(Scans Supported){Colors.ENDC}"
+                         elif res.get('support') == "Anime & Scans Supported":
+                             support_text = f" {Colors.OKGREEN}(Anime & Scans Supported){Colors.ENDC}"
+                         elif res.get('support') == "Unknown":
+                             support_text = f" {Colors.FAIL}(Status Unknown){Colors.ENDC}"
                          print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text}{Colors.ENDC}")
                     
                     valid_choice = False
