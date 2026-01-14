@@ -51,7 +51,7 @@ from src.utils.check.check_package              import check_package
 from src.utils.check.check_ffmpeg_installed     import check_ffmpeg_installed
 from src.utils.validate_anime_sama_url          import validate_anime_sama_url
 from src.utils.extract.extract_anime_name       import extract_anime_name
-from src.utils.get.get_save_directory           import get_save_directory
+from src.utils.get.get_save_directory           import get_save_directory, format_save_path
 from src.utils.download.download_episode        import download_episode
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
@@ -73,6 +73,7 @@ def main():
     parser.add_argument("--tool", default=None)
     parser.add_argument("--no-mal", action='store_true', help="Disable MyAnimeList research")
     parser.add_argument("--latest", action='store_true', help="Download only the latest episode")
+
     
     args = parser.parse_args()
     interactive = len(sys.argv) == 1
@@ -379,16 +380,14 @@ def main():
 
         get_anime_name = extract_anime_name(base_url)
         get_saison_info = base_url.split('/')[-3]
+
+        
         if args.dest:
-            save_dir = args.dest
+             save_dir = format_save_path(get_anime_name, get_saison_info, base_path=args.dest)
         elif interactive:
             save_dir = get_save_directory(get_anime_name, get_saison_info)
         else:
-            save_dir = "./videos/"
-            if get_anime_name:
-                save_dir = os.path.join(save_dir, get_anime_name)
-            if get_saison_info:
-                save_dir = os.path.join(save_dir, get_saison_info)
+            save_dir = format_save_path(get_anime_name, get_saison_info)
 
         if not args.dest and not interactive:
              os.makedirs(save_dir, exist_ok=True)
