@@ -98,19 +98,20 @@ python3 main.py --help
 
 You can use the script entirely from the command line without interactive prompts.
 
-| Argument | Description | Example |
-| :--- | :--- | :--- |
-| `--search` | Search for an anime by name | `--search "naruto"` |
-| `--url` | Direct URL to anime season/page | `--url "https://..."` |
-| `--episodes` | Select episodes to download | `--episodes "1,2,3"` or `--episodes "all"` |
-| `--player` | Select specific player (fuzzy match) | `--player "Sibnet"` |
-| `--dest` | Set download directory | `--dest "./my_downloads"` |
-| `--threads` | Enable threaded episode downloads | `--threads` |
-| `--fast` | Enable multi-threaded .ts download (10x faster) | `--fast` |
-| `--mp4` | Auto-convert .ts to .mp4 | `--mp4` |
-| `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` |
-| `--latest` | Download only the latest episode | `--latest` |
-| `--no-mal` | Disable MyAnimeList research | `--no-mal` |
+| Argument | Description | Example | Default |
+| :--- | :--- | :--- | :--- |
+| `--search` | Search for an anime by name | `--search "naruto"` | `None` |
+| `--url` | Direct URL to anime season/page | `--url "https://..."` | `None` |
+| `--episodes` | Select episodes to download | `--episodes "1,2"` | `None` |
+| `--player` | Select specific player (fuzzy match) | `--player "Sibnet"` | `None` |
+| `--dest` | Base download directory (auto-creates folders) | `--dest "C:/X"` | `Config Folder` |
+| `--threads` | Enable threaded episode downloads | `--threads` | `False` |
+| `--fast` | Enable multi-threaded .ts download (10x faster) | `--fast` | `False` |
+| `--mp4` | Auto-convert .ts to .mp4 | `--mp4` | `False` |
+| `--tool` | Select conversion tool (av/ffmpeg) | `--tool av` | `av` |
+| `--latest` | Download only the latest episode | `--latest` | `False` |
+| `--no-mal` | Disable MyAnimeList research | `--no-mal` | `False` |
+
 
 ### ⚡ User Examples
 
