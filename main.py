@@ -56,6 +56,7 @@ from src.utils.download.download_episode        import download_episode
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
 from src.utils.download.download_scan           import download_scan
+from src.utils.settings.settings_menu           import settings_menu
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
 
@@ -122,6 +123,8 @@ def main():
                 except KeyboardInterrupt:
                     return 1
 
+
+
         if not base_url:
             show_tutorial = input(f"{Colors.BOLD}Show tutorial? (y/n, default: n): {Colors.ENDC}").strip().lower()
             if show_tutorial in ['y', 'yes', '1']:
@@ -133,7 +136,8 @@ def main():
                 print_separator()
                 print(f"{Colors.OKCYAN}1. Paste URL{Colors.ENDC}")
                 print(f"{Colors.OKCYAN}2. Search Anime{Colors.ENDC}")
-                mode = input(f"{Colors.BOLD}Choice (1/2): {Colors.ENDC}").strip()
+                print(f"{Colors.OKCYAN}3. Settings{Colors.ENDC}")
+                mode = input(f"{Colors.BOLD}Choice (1/2/3): {Colors.ENDC}").strip()
                 
                 if mode == '1':
                     while True:
@@ -214,6 +218,10 @@ def main():
                                     continue
                     if valid_choice: 
                         break
+                elif mode == '3':
+                    settings_menu()
+                else:
+                    print_status("Invalid option", "error")
         
         is_valid, _ = validate_anime_sama_url(base_url)
         if not is_valid:
