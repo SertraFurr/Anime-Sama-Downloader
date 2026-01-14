@@ -8,7 +8,7 @@ from concurrent.futures                 import ThreadPoolExecutor, as_completed
 from src.var                            import Colors, print_status
 from src.utils.parse.parse_ts_segments  import parse_ts_segments
 
-def download_video(video_url, save_path, use_ts_threading=False, url='',automatic_mp4=False, threaded_mp4=False):
+def download_video(video_url, save_path, use_ts_threading=False, url='',automatic_mp4=False, threaded_mp4=False, interactive=True):
     print_status(f"Starting download: {os.path.basename(save_path)}", "loading")
     ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
 
@@ -100,10 +100,13 @@ def download_video(video_url, save_path, use_ts_threading=False, url='',automati
             random_string = os.path.basename(save_path).replace('.mp4', '.ts')
 
             if automatic_mp4 is False and use_ts_threading is False:
-                print(f"\n{Colors.BOLD}{Colors.OKCYAN}Threaded Download Option{Colors.ENDC}")
-                print_status("Threaded downloading is faster but should not be used on weak Wi-Fi.", "info")
-                use_threads = input(f"{Colors.BOLD}Use threaded download for faster performance? (y/n, default: n): {Colors.ENDC}").strip().lower()
-                use_threads = use_threads in ['y', 'yes', '1']
+                if interactive:
+                    print(f"\n{Colors.BOLD}{Colors.OKCYAN}Threaded Download Option{Colors.ENDC}")
+                    print_status("Threaded downloading is faster but should not be used on weak Wi-Fi.", "info")
+                    use_threads = input(f"{Colors.BOLD}Use threaded download for faster performance? (y/n, default: n): {Colors.ENDC}").strip().lower()
+                    use_threads = use_threads in ['y', 'yes', '1']
+                else:
+                    use_threads = False
             else:
                 use_threads = use_ts_threading
             
