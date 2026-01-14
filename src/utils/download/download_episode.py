@@ -304,7 +304,7 @@ def create_match_file(save_dir, anime_name, interactive=True):
             print_status(f"Error creating match file: {str(e)}", "error")
 
 
-def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None, no_mal=False):
+def download_episode(episode_num, url, video_source, anime_name, save_dir, use_ts_threading=False, automatic_mp4=False, pre_selected_tool=None, no_mal=False, interactive=True):
     if not video_source:
         print_status(f"Could not extract video source for episode {episode_num}", "error")
         return False, None
@@ -320,8 +320,8 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
         print_status("Skipping MAL matching (--no-mal)", "info")
     elif not anime_name:
         print_status("anime_name is empty, skipping MAL matching", "warning")
-    else:
-        create_match_file(season_dir, anime_name)
+    elif interactive:
+        create_match_file(season_dir, anime_name, interactive=interactive)
     
     save_path = os.path.join(season_dir, f"{anime_name if anime_name else 'episode'}_{episode_num}.mp4")
     
