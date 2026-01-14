@@ -329,7 +329,7 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
     print_separator()
     
     try:
-        success, output_path = download_video(video_source, save_path, use_ts_threading=use_ts_threading, url=url, automatic_mp4=automatic_mp4)
+        success, output_path = download_video(video_source, save_path, use_ts_threading=use_ts_threading, url=url, automatic_mp4=automatic_mp4, interactive=interactive)
     except Exception as e:
         print_status(f"Download failed for episode {episode_num}: {str(e)}", "error")
         return False, None
