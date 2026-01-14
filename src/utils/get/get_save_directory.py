@@ -6,32 +6,16 @@ from src.utils.config.config import get_setting
 def sanitize_path(path):
     return re.sub(r'[<>:"|?*]', '', path)
 
-def format_save_path(anime_name, saison_info, base_path=None, use_config_template=False):
+def format_save_path(anime_name, saison_info, base_path=None):
     template = get_setting("save_template", "./videos/{anime}/{season}")
     
-    # Defaults for formatting
     fmt_args = {
         "anime": anime_name if anime_name else "Unknown_Anime",
         "season": saison_info if saison_info else "Unknown_Season"
     }
 
     if base_path:
-        if use_config_template:
-            structure = template
-            if structure.startswith("./videos/"):
-                structure = structure[9:]
-            elif structure.startswith("videos/"):
-                structure = structure[7:]
-            elif structure.startswith("./"):
-                structure = structure[2:]
-                
-            try:
-                formatted_structure = structure.format(**fmt_args)
-                return os.path.normpath(os.path.join(base_path, formatted_structure))
-            except Exception:
-                return os.path.join(base_path, fmt_args["anime"], fmt_args["season"])
-        else:
-            return os.path.join(base_path, fmt_args["anime"], fmt_args["season"])
+        return os.path.join(base_path, fmt_args["anime"], fmt_args["season"])
 
     try:
         formatted_path = template.format(**fmt_args)
