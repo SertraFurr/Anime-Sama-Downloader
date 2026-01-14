@@ -32,6 +32,30 @@ def set_cookies(cf_clearance_value, user_agent_value):
         json.dump(config, f, indent=4)
 
 
+def get_setting(key, default=None):
+    try:
+        with open(CONFIG_PATH, 'r') as f:
+            config = json.load(f)
+            return config.get(key, default)
+    except FileNotFoundError:
+        return default
+
+
+def set_setting(key, value):
+    config = {}
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, 'r') as f:
+                config = json.load(f)
+        except json.JSONDecodeError:
+            pass
+
+    config[key] = value
+
+    with open(CONFIG_PATH, 'w') as f:
+        json.dump(config, f, indent=4)
+
+
 def check_cookies(domain, headers):
     stored = get_cookies()
     if stored is False:
