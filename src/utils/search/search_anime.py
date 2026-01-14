@@ -7,19 +7,44 @@ from urllib.parse import urljoin
 
 def check_link_support(res, headers):
     try:
+        from src.utils.search.expand_catalogue import is_valid_season
+        
         r = requests.get(res['url'], headers=headers, timeout=5)
         if r.status_code == 200:
             content = r.text
-            anime_matches = re.findall(r'panneauAnime\s*\(\s*["\']([^"\']+)["\']\s*,\s*["\']([^"\']+)["\']\s*\)', content)
-            valid_anime = [m for m in anime_matches if m[0] != "nom" and m[1] != "url"]
             
-            if valid_anime:
-                res['support'] = "Anime Supported"
-            else:
-                scan_matches = re.findall(r'panneauScan\s*\(\s*["\']([^"\']+)["\']\s*,\s*["\']([^"\']+)["\']\s*\)', content)
-                valid_scan = [m for m in scan_matches if m[0] != "nom" and m[1] != "url"]
+            anime_matches = re.findall(r'panneauAnime\s*\(\s*(["\'])(.*?)\1\s*,\s*(["\'])(.*?)\3\s*\)', content)
+            
+            has_valid_anime = False
+            
+            base_url = res['url']
+            if not base_url.endswith('/'):
+                base_url += '/'
+
+            for _, name, _, rel_url in anime_matches:
+                if name == "nom" or rel_url == "url": continue
+                
+                full_url = urljoin(base_url, rel_url)
+                if not full_url.endswith('/'): full_url += '/'
+                
+                if is_valid_season(full_url, headers):
+                    has_valid_anime = True
+                    break
+            
+            if has_valid_anime:
+                scan_matches = re.findall(r'panneauScan\s*\(\s*(["\'])(.*?)\1\s*,\s*(["\'])(.*?)\3\s*\)', content)
+                valid_scan = [m for m in scan_matches if m[1] != "nom" and m[3] != "url"]
+                
                 if valid_scan:
-                    res['support'] = "Scans Unsupported"
+                    res['support'] = "Anime & Scans Supported"
+                else:
+                    res['support'] = "Anime Supported"
+            else:
+                scan_matches = re.findall(r'panneauScan\s*\(\s*(["\'])(.*?)\1\s*,\s*(["\'])(.*?)\3\s*\)', content)
+                valid_scan = [m for m in scan_matches if m[1] != "nom" and m[3] != "url"]
+                
+                if valid_scan:
+                    res['support'] = "Scans Supported"
                 else:
                     res['support'] = "Unsupported"
         else:
