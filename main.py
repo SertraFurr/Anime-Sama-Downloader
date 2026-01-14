@@ -38,6 +38,7 @@ if cloudflare:
 else:
     headers = generate_requests_headers("None", "Mozilla/5.0")
 
+import os
 import sys
 import argparse
 from concurrent.futures                         import ThreadPoolExecutor, as_completed
@@ -354,10 +355,18 @@ def main():
 
         get_anime_name = extract_anime_name(base_url)
         get_saison_info = base_url.split('/')[-3]
-        save_dir = args.dest if args.dest else (get_save_directory(get_anime_name, get_saison_info) if interactive else "./videos/")
-        
+        if args.dest:
+            save_dir = args.dest
+        elif interactive:
+            save_dir = get_save_directory(get_anime_name, get_saison_info)
+        else:
+            save_dir = "./videos/"
+            if get_anime_name:
+                save_dir = os.path.join(save_dir, get_anime_name)
+            if get_saison_info:
+                save_dir = os.path.join(save_dir, get_saison_info)
+
         if not args.dest and not interactive:
-             import os
              os.makedirs(save_dir, exist_ok=True)
 
         if isinstance(episode_indices, int):
@@ -418,7 +427,7 @@ def main():
                 print_status("Starting threaded downloads...", "info")
                 with ThreadPoolExecutor() as executor:
                     future_to_episode = {
-                        executor.submit(download_episode, ep_num, url, video_src, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal): ep_num
+                        executor.submit(download_episode, ep_num, url, video_src, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive): ep_num
                         for ep_num, url, video_src in zip(episode_numbers, urls, video_sources)
                     }
                     for future in as_completed(future_to_episode):
@@ -431,7 +440,7 @@ def main():
                             failed_downloads += 1
             else:
                 for episode_num, url, video_source in zip(episode_numbers, urls, video_sources):
-                    success, _ = download_episode(episode_num, url, video_source, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal)
+                    success, _ = download_episode(episode_num, url, video_source, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive)
                     if not success: failed_downloads += 1
 
             print_separator()
