@@ -16,7 +16,7 @@ def print_episodes(episodes):
             elif 'movearnpre.com' in url:
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Movearnpre ✅{Colors.ENDC}")
             elif 'video.sibnet.ru' in url:
-                print(f"{Colors.RED}  {i:2d}. Episode {i} - Sibnet ❌ (IS FORBIDDING EVERY REQUESTS !){Colors.ENDC}")
+                print(f"{Colors.FAIL}  {i:2d}. Episode {i} - Sibnet ❌ (IS FORBIDDING EVERY REQUESTS !){Colors.ENDC}")
             elif 'oneupload.net' in url or 'oneupload.to' in url:
                 print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - OneUpload ✅{Colors.ENDC}")
             elif 'vidmoly.net' in url or 'vidmoly.to' in url:
