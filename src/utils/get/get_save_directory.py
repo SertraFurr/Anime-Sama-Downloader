@@ -1,27 +1,45 @@
 import os
+import re
 from src.var import Colors, print_status, print_separator
+from src.utils.config.config import get_setting
+
+def sanitize_path(path):
+    return re.sub(r'[<>:"|?*]', '', path)
 
 def get_save_directory(anime_name=None, saison_info=None):
+    template = get_setting("save_template", "./videos/{anime}/{season}")
+    
+    fmt_args = {
+        "anime": anime_name if anime_name else "Unknown_Anime",
+        "season": saison_info if saison_info else "Unknown_Season"
+    }
+    
+    try:
+        formatted_path = template.format(**fmt_args)
+        formatted_path = os.path.normpath(formatted_path)
+    except Exception as e:
+        print_status(f"Error formatting save path template: {e}", "error")
+        formatted_path = os.path.join("./videos", fmt_args["anime"], fmt_args["season"])
+    
     print(f"\n{Colors.BOLD}{Colors.HEADER}📁 SAVE LOCATION{Colors.ENDC}")
     print_separator()
-    
-    default_dir = "./videos/"
-    if anime_name:
-        default_dir += anime_name + "/"
-    if saison_info:
-        default_dir += saison_info + "/"
 
-    save_dir = input(f"{Colors.OKCYAN}Enter directory to save videos (default: {default_dir}): {Colors.ENDC}").strip()
+    print(f"{Colors.OKCYAN}Current save path (from config): {Colors.ENDC}{formatted_path}")
     
-    if not save_dir:
-        save_dir = default_dir
+    change = input(f"{Colors.BOLD}Press Enter to confirm or type new absolute path: {Colors.ENDC}").strip()
+    
+    if change:
+        save_dir = change
+    else:
+        save_dir = formatted_path
     
     try:
         os.makedirs(save_dir, exist_ok=True)
-        print_status(f"Save directory set to: {os.path.abspath(save_dir)}", "success")
+        print_status(f"Save directory confirmed: {os.path.abspath(save_dir)}", "success")
         return save_dir
     except Exception as e:
         print_status(f"Cannot create directory {save_dir}: {str(e)}", "error")
-        print_status(f"Using default directory: {default_dir}", "info")
-        os.makedirs(default_dir, exist_ok=True)
-        return default_dir
+        default_fallback = "./videos/"
+        print_status(f"Using fallback: {default_fallback}", "info")
+        os.makedirs(default_fallback, exist_ok=True)
+        return default_fallback
