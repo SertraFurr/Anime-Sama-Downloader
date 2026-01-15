@@ -1,4 +1,4 @@
-from src.var import Colors, print_status, print_separator
+from src.var import Colors, print_status, print_separator, SourceDomains
 
 def get_episode_choice(episodes, player_choice):
     print(f"\n{Colors.BOLD}{Colors.HEADER}📺 SELECT EPISODE - {player_choice}{Colors.ENDC}")
@@ -7,20 +7,9 @@ def get_episode_choice(episodes, player_choice):
     num_episodes = len(episodes[player_choice])
     working_episodes = []
 
-    source_types = {
-        "sendvid.com": "SendVid",
-        "video.sibnet.ru": "Sibnet",
-        "oneupload.net": "OneUpload",
-        "oneupload.to": "OneUpload",
-        "vidmoly.net": "Vidmoly",
-        "vidmoly.to": "Vidmoly",
-        "movearnpre.com": "Movearnpre",
-        "smoothpre.com": "Smoothpre",
-        "mivalyo.com": "Mivalyo",
-        "embed4me.com": "Embed4me",
-        "embed4me": "Embed4me",
-        "dingtezuni.com": "Dingtezuni",
-    }
+    source_types = {}
+    for domain in SourceDomains.PLAYERS:
+         source_types[domain] = SourceDomains.DISPLAY_NAMES.get(domain, domain.capitalize())
 
     for i, url in enumerate(episodes[player_choice], 1):
         url_lower = url.lower()
