@@ -1,6 +1,6 @@
 from src.utils.config.config import get_cookies, set_cookies, check_cookies
 from src.utils.print.print_status import print_status
-from src.var import Colors, get_domain, print_header, print_separator, print_tutorial, generate_requests_headers
+from src.var import Colors, get_domain, print_header, print_separator, print_tutorial, generate_requests_headers, SourceDomains
 from src.utils.check.is_cloudflare_here import check_if_cloudflare_enabled
 
 def tutorial_input():
@@ -298,17 +298,7 @@ def main():
                 
                 if not player_choice:
                     target = args.player.lower()
-                    domain_map = {
-                        "sibnet": "video.sibnet.ru",
-                        "sendvid": "sendvid.com",
-                        "vidmoly": ["vidmoly.net", "vidmoly.to"],
-                        "oneupload": ["oneupload.net", "oneupload.to"],
-                        "movearn": "movearnpre.com",
-                        "smooth": "smoothpre.com",
-                        "mivalyo": "mivalyo.com",
-                        "dingtezuni": "dingtezuni.com",
-                        "embed4me": "embed4me.com"
-                    }
+                    domain_map = SourceDomains.DOMAIN_MAP
                     
                     search_domains = []
                     if target in domain_map:
