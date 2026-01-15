@@ -1,29 +1,29 @@
 import random
 
 class SourceDomains:
-    ONEUPLOAD = ["oneupload.net", "oneupload.to"]
-    VIDMOLY = ["vidmoly.net", "vidmoly.to"]
-    MOVARNPRE = ["movearnpre.com", "ovaltinecdn.com"]
-    PLAYERS = [
-        "sendvid.com", "dingtezuni.com", "video.sibnet.ru",
-        *ONEUPLOAD, *VIDMOLY, *MOVARNPRE,
-        "mivalyo.com", "smoothpre.com", "Smoothpre.com", "embed4me.com", "embed4me"
-    ]
+    _SOURCES = {
+        "sendvid": ("SendVid", ["sendvid.com"]),
+        "dingtezuni": ("Dingtezuni", ["dingtezuni.com"]),
+        "sibnet": ("Sibnet", ["video.sibnet.ru"]),
+        "oneupload": ("OneUpload", ["oneupload.net", "oneupload.to"]),
+        "vidmoly": ("Vidmoly", ["vidmoly.net", "vidmoly.to"]),
+        "movearn": ("Movearnpre", ["movearnpre.com", "ovaltinecdn.com"]),
+        "mivalyo": ("Mivalyo", ["mivalyo.com"]),
+        "smooth": ("Smoothpre", ["smoothpre.com", "Smoothpre.com"]),
+        "embed4me": ("Embed4me", ["embed4me.com", "embed4me"]),
+    }
+
+    ONEUPLOAD = _SOURCES["oneupload"][1]
+    VIDMOLY = _SOURCES["vidmoly"][1]
+    MOVARNPRE = _SOURCES["movearn"][1]
+
+    PLAYERS = [d for _, domains in _SOURCES.values() for d in domains]
     
-    DISPLAY_NAMES = {
-        "sendvid.com": "SendVid",
-        "video.sibnet.ru": "Sibnet",
-        "vidmoly.net": "Vidmoly",
-        "vidmoly.to": "Vidmoly",
-        "oneupload.net": "OneUpload",
-        "oneupload.to": "OneUpload",
-        "movearnpre.com": "Movearnpre",
-        "ovaltinecdn.com": "Movearnpre",
-        "smoothpre.com": "Smoothpre",
-        "mivalyo.com": "Mivalyo",
-        "embed4me.com": "Embed4me",
-        "embed4me": "Embed4me",
-        "dingtezuni.com": "Dingtezuni",
+    DISPLAY_NAMES = {d: name for name, domains in _SOURCES.values() for d in domains}
+    
+    DOMAIN_MAP = {
+        k: (val[1] if len(val[1]) > 1 else val[1][0])
+        for k, val in _SOURCES.items()
     }
 
 def get_domain():
