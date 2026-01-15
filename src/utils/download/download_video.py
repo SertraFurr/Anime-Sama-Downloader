@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+from urllib.parse import urlparse
 import time
 from tqdm import tqdm
 from concurrent.futures                 import ThreadPoolExecutor, as_completed
@@ -12,27 +13,14 @@ def download_video(video_url, save_path, use_ts_threading=False, url='',automati
     print_status(f"Starting download: {os.path.basename(save_path)}", "loading")
     ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
 
-    if 'embed4me' in url or 'embed4me' in video_url or 'lpayer.embed4me.com' in url or 'lpayer.embed4me.com' in video_url:
-        referer = 'https://lpayer.embed4me.com/'
-        origin = 'https://lpayer.embed4me.com'
-    elif 'movearnpre.com' in url or 'ovaltinecdn.com' in url:
-        referer = 'https://movearnpre.com/'
-        origin = ''
-    elif 'dingtezuni.com' in url:
-        referer = 'https://dingtezuni.com/'
-        origin = ''
-    elif 'vidmoly.net' in url or 'vidmoly.to' in url:
-        referer = 'https://vidmoly.net/'
-        origin = ''
-    elif 'oneupload.net' in url:
-        referer = 'https://oneupload.net/'
-        origin = ''
-    elif 'sendvid.com' in url:
-        referer = 'https://sendvid.com/'
-        origin = ''
-    elif 'mivalyo.com' in url:
-        referer = 'https://mivalyo.com/'
-        origin = ''
+    target = url if url else video_url
+    if target and not target.startswith(('http://', 'https://')):
+        target = 'https://' + target
+
+    if target:
+        parsed = urlparse(target)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        referer = f"{origin}/"
     else:
         referer = 'https://vidmoly.net/'
         origin = ''
