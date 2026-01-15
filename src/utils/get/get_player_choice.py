@@ -1,14 +1,11 @@
-from src.var import Colors, print_status, print_separator
+from src.var import Colors, print_status, print_separator, SourceDomains
 
 def get_player_choice(episodes):
     print(f"\n{Colors.BOLD}{Colors.HEADER}🎮 SELECT PLAYER{Colors.ENDC}")
     print_separator()
     
     available_players = list(episodes.keys())
-    valid_sources = [
-        "sendvid.com", "dingtezuni.com", "video.sibnet.ru", "oneupload.net", "oneupload.to",
-        "vidmoly.net", "vidmoly.to", "movearnpre.com", "smoothpre.com", "mivalyo.com", 'embed4me.com'
-    ]
+    valid_sources = SourceDomains.PLAYERS
     for i, player in enumerate(available_players, 1):
         working_episodes = sum(
             1 for url in episodes[player]
