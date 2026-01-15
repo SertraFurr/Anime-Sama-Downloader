@@ -1,5 +1,31 @@
 import random
 
+class SourceDomains:
+    ONEUPLOAD = ["oneupload.net", "oneupload.to"]
+    VIDMOLY = ["vidmoly.net", "vidmoly.to"]
+    MOVARNPRE = ["movearnpre.com", "ovaltinecdn.com"]
+    PLAYERS = [
+        "sendvid.com", "dingtezuni.com", "video.sibnet.ru",
+        *ONEUPLOAD, *VIDMOLY, *MOVARNPRE,
+        "mivalyo.com", "smoothpre.com", "Smoothpre.com", "embed4me.com", "embed4me"
+    ]
+    
+    DISPLAY_NAMES = {
+        "sendvid.com": "SendVid",
+        "video.sibnet.ru": "Sibnet",
+        "vidmoly.net": "Vidmoly",
+        "vidmoly.to": "Vidmoly",
+        "oneupload.net": "OneUpload",
+        "oneupload.to": "OneUpload",
+        "movearnpre.com": "Movearnpre",
+        "ovaltinecdn.com": "Movearnpre",
+        "smoothpre.com": "Smoothpre",
+        "mivalyo.com": "Mivalyo",
+        "embed4me.com": "Embed4me",
+        "embed4me": "Embed4me",
+        "dingtezuni.com": "Dingtezuni",
+    }
+
 def get_domain():
     return "anime-sama.si"
 
@@ -75,7 +101,7 @@ def print_tutorial():
 ├─ https://anime-sama.fr/catalogue/roshidere/saison1/vostfr/
 ├─ https://anime-sama.fr/catalogue/demon-slayer/saison1/vf/
 ├─ https://anime-sama.fr/catalogue/attack-on-titan/saison3/vostfr/
-└─ https://anime-sama.fr/catalogue/one-piece/saison1/vostfr/
+├─ https://anime-sama.fr/catalogue/one-piece/saison1/vostfr/
 
 {Colors.BOLD}{'='*65}{Colors.ENDC}
 """
