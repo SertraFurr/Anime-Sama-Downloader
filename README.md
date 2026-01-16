@@ -148,7 +148,7 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 ### 1️⃣ Find Anime
 <img src="https://img.shields.io/badge/Step-1-blue?style=for-the-badge">
 
-Visit **[anime-sama.fr](https://anime-sama.fr/catalogue/)**
+Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
 
 🔍 Search your anime  
 📺 Select season & language  
