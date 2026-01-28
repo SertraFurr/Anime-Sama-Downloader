@@ -6,7 +6,7 @@ class SourceDomains:
         "dingtezuni": ("Dingtezuni", ["dingtezuni.com"]),
         "sibnet": ("Sibnet", ["video.sibnet.ru"]),
         "oneupload": ("OneUpload", ["oneupload.net", "oneupload.to"]),
-        "vidmoly": ("Vidmoly", ["vidmoly.net", "vidmoly.to"]),
+        "vidmoly": ("Vidmoly", ["vidmoly.net", "vidmoly.to", "vidmoly.biz"]),
         "movearn": ("Movearnpre", ["movearnpre.com", "ovaltinecdn.com"]),
         "mivalyo": ("Mivalyo", ["mivalyo.com"]),
         "smooth": ("Smoothpre", ["smoothpre.com", "Smoothpre.com"]),
