@@ -69,7 +69,7 @@ def fetch_video_source(url):
                 return None
             
         # VIDMOLY EXTRACTION
-        elif 'vidmoly.net' in single_url:
+        elif 'vidmoly.biz' in single_url:
             attempt = 0
             html_content = None
             
