@@ -204,8 +204,6 @@ Watch the magic happen
 </details>
 
 
-
-
 ## 🛠️ Video Source Support
 
 | Platform | Status | Performance | Notes |
@@ -224,7 +222,6 @@ Watch the magic happen
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
 
 ---
-
 
 
 ## 📸 Screenshots
@@ -264,7 +261,6 @@ Enter player number (1-3) or type player name:
 </details>
 
 ---
-
 
 
 ## ⚙️ Configuration
@@ -311,7 +307,6 @@ We welcome contributions! Here's how you can help:
 [![Discussions](https://img.shields.io/badge/Discussions-Join-purple?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/discussions)
 
 
-
 ### 🐛 Found a Bug?
  Check existing [issues](https://github.com/sertrafurr/issues)
  Create a new issue with:
@@ -328,7 +323,6 @@ We welcome contributions! Here's how you can help:
 ---
 
 
-
 ## 📄 License
 
 This project is licensed under the **GPL v3 License**
@@ -338,9 +332,7 @@ This project is licensed under the **GPL v3 License**
 *Feel free to use, modify, and distribute!*
 
 
-
 ---
-
 
 
 ## ⚠️ Disclaimer
@@ -352,7 +344,6 @@ This project is licensed under the **GPL v3 License**
  📺 Respect **copyright laws** in your jurisdiction  
 
  🔒 Use responsibly and in compliance with anime-sama.fr's terms
-
 
 
 
