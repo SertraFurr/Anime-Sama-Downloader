@@ -17,8 +17,11 @@ def fetch_video_source(url):
         print_status(f"Processing video URL: {single_url[:50]}...", "loading")
 
         # VIDMOLY DOMAIN FIX
-        if 'vidmoly.to' in single_url:
-            single_url = single_url.replace('vidmoly.to', 'vidmoly.net')
+        if 'vidmoly.to' in single_url or 'vidmoly.net' in single_url:
+            if 'vidmoly.to' in single_url:
+                single_url = single_url.replace('vidmoly.to', 'vidmoly.biz')
+            elif 'vidmoly.net' in single_url:
+                single_url = single_url.replace('vidmoly.net', 'vidmoly.biz')
             print_status("Converted vidmoly.to to vidmoly.net", "info")
         
         # SENDVID EXTRACTION
