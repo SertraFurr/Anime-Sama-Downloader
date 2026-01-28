@@ -22,7 +22,7 @@ def fetch_video_source(url):
                 single_url = single_url.replace('vidmoly.to', 'vidmoly.biz')
             elif 'vidmoly.net' in single_url:
                 single_url = single_url.replace('vidmoly.net', 'vidmoly.biz')
-            print_status("Converted vidmoly.to to vidmoly.net", "info")
+            print_status("Converted vidmoly.to to vidmoly.biz", "info")
         
         # SENDVID EXTRACTION
         if 'sendvid.com' in single_url:
