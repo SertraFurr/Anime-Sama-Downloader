@@ -21,6 +21,7 @@ def tutorial_input():
 cloudflare = check_if_cloudflare_enabled(domain=get_domain(), headers={"User-Agent": "Mozilla/5.0"})
 
 if cloudflare:
+    print("Cloudflare is enabled, either wait (Unknown time) or follow this:")
     cookies_info = get_cookies()
     if cookies_info is False:
         cf_clearance, user_agent = tutorial_input()
