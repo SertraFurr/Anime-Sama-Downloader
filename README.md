@@ -365,5 +365,3 @@ This project is licensed under the **GPL v3 License**
 [![Stars](https://img.shields.io/github/stars/sertrafurr/anime-sama-downloader?style=for-the-badge&logo=github)](https://github.com/sertrafurr/anime-sama-downloader/stargazers)
 
 You wish for something/a service to get removed/added, open an issue.
-
-
