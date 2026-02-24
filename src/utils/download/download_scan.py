@@ -3,6 +3,8 @@ import json
 import re
 from src.var import Colors, print_status, print_separator, get_domain
 from src.utils.extract.extract_anime_name import extract_anime_name
+import os
+from tqdm import tqdm
 
 def download_scan(url, headers):
     try:
@@ -11,17 +13,27 @@ def download_scan(url, headers):
         page_response.raise_for_status()
         html = page_response.text
 
-        id_match = re.search(r'id=["\']titreOeuvre["\'][^>]*>([^<]+)<', html)
-        if id_match:
-            anime_name = id_match.group(1).strip()
-            print_status(f"Found oeuvre ID (from HTML): {anime_name}", "success")
+        scan_path_match = re.search(r'id=["\']scansPlacement["\'].*?src=["\'](?:[^"\']*/)?s2/scans/([^/]+)/', html, re.DOTALL)
+        if not scan_path_match:
+            scan_path_match = re.search(r'src=["\'](?:[^"\']*/)?s2/scans/([^/]+)/', html)
+        
+        if scan_path_match:
+            anime_name = scan_path_match.group(1)
+            print_status(f"Found anime name from scan paths: '{anime_name}'", "success")
         else:
-            anime_name = extract_anime_name(url)
-            if anime_name and anime_name[0].islower():
-                 anime_name = anime_name.capitalize()
-            print_status(f"Could not find ID in HTML, trying: {anime_name}", "warning")
+            id_match = re.search(r'id=["\']titreOeuvre["\'][^>]*>(.*?)<', html, re.DOTALL)
+            if id_match:
+                anime_name = id_match.group(1).strip('\r\n\t')
+                print_status(f"Found oeuvre ID (from HTML): '{anime_name}'", "success")
+            else:
+                anime_name = extract_anime_name(url)
+                if anime_name and anime_name[0].islower():
+                     anime_name = anime_name.capitalize()
+                print_status(f"Could not find ID in HTML, trying: {anime_name}", "warning")
 
-        api_url = f"https://{get_domain()}/s2/scans/get_nb_chap_et_img.php?oeuvre={anime_name}"
+        from urllib.parse import quote
+        encoded_anime_name = quote(anime_name)
+        api_url = f"https://{get_domain()}/s2/scans/get_nb_chap_et_img.php?oeuvre={encoded_anime_name}"
         
         print_status(f"Fetching chapters for: {anime_name}", "info")
         response = requests.get(api_url, headers=headers, timeout=15)
@@ -146,10 +158,12 @@ def download_scan(url, headers):
             return
 
         base_scan_url = url.rstrip('/')
-        import os
-        from tqdm import tqdm
+        local_name = anime_name
+        local_name = re.sub(r'[<>:"/\\|?*]', '', local_name)
+        local_name = local_name.strip()
+        local_name = re.sub(r'[ .]+$', '', local_name)
         
-        save_base_dir = os.path.join("scans", anime_name)
+        save_base_dir = os.path.normpath(os.path.join("scans", local_name))
         os.makedirs(save_base_dir, exist_ok=True)
         
         print_separator()
@@ -160,11 +174,12 @@ def download_scan(url, headers):
         
         for idx, chap in enumerate(selected_chapters, 1):
             page_count = chapters_data[chap]
-            chap_dir = os.path.join(save_base_dir, f"Chapter {chap}")
+            safe_chap = re.sub(r'[<>:"/\\|?*]', '', str(chap)).strip()
+            chap_dir = os.path.join(save_base_dir, f"Chapter {safe_chap}")
             os.makedirs(chap_dir, exist_ok=True)
             
             print(f"{Colors.BOLD}Chapter {chap} ({idx}/{total_chapters}) - {page_count} pages{Colors.ENDC}")
-            scan_base_url = f"https://{get_domain()}/s2/scans/{anime_name}"
+            scan_base_url = f"https://{get_domain()}/s2/scans/{encoded_anime_name}"
             success_count = 0
             
             loop = tqdm(range(1, int(page_count) + 1), unit="img", leave=False)
