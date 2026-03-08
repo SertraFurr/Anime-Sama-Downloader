@@ -27,7 +27,7 @@ class SourceDomains:
     }
 
 def get_domain():
-    return "anime-sama.tv"
+    return "anime-sama.to"
 
 def generate_requests_headers(cf_clearance, user_agent=None):
     cookies = f"cf_clearance={cf_clearance}"
