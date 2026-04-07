@@ -348,9 +348,7 @@ This project is licensed under the **GPL v3 License**
  🔒 Use responsibly and in compliance with anime-sama.fr's terms
 
 
-
 ---
-
 
 
 ## 🙏 Acknowledgments
