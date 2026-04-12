@@ -30,21 +30,21 @@ Looking for projects to do ! feel free to request in issue !
 <tr>
 <td width="50%">
 
-### 🎯 **Smart & Intuitive**
-- 🌈 **Beautiful CLI Interface** with colors and emojis
-- 🔍 **Auto URL Validation** with helpful error messages
-- 📝 **Built-in Tutorial** for first-time users
-- ⚡ **Multi-threaded Downloads** for blazing fast performance
+###  **Smart & Intuitive**
+-  **Beautiful CLI Interface** with colors and emojis
+-  **Auto URL Validation** with helpful error messages
+-  **Built-in Tutorial** for first-time users
+-  **Multi-threaded Downloads** for blazing fast performance
 </td>
 <td width="50%">
 
-### ⚡ **Powerful & Reliable**  
-- 🎪 **Multiple Player Support** (Player 1, 2, 3...)
-- 🔄 **Smart Source Detection** (SendVid, Sibnet and others)
-- 📊 **Real-time Progress** with download speeds
-- 🛡️ **Robust Error Handling** with retry logic
-- 📺 **Multiple Episode Selection** with threads supports
-- 😊 **FFmpeg support** choose between 2 converters
+###  **Powerful & Reliable**  
+-  **Multiple Player Support** (Player 1, 2, 3...)
+-  **Smart Source Detection** (SendVid, Sibnet and others)
+-  **Real-time Progress** with download speeds
+-  **Robust Error Handling** with retry logic
+-  **Multiple Episode Selection** with threads supports
+-  **FFmpeg support** choose between 2 converters
 
 </td>
 </tr>
@@ -52,7 +52,7 @@ Looking for projects to do ! feel free to request in issue !
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 </div>
 
 ### 📋 Prerequisites
@@ -81,16 +81,16 @@ pip install requests beautifulsoup4 tqdm
 ### ⚡ Installation & Usage
 
 ```bash
-# 1. Clone the repository
+# 1. Clone the repository.
 git clone https://github.com/SertraFurr/Anime-Sama-Downloader.git
 
-# 2. Navigate into the project directory
+# 2. Navigate into the project directory.
 cd Anime-Sama-Downloader
 
-# 3. Run the magic! ✨
+# 3. Run it.
 python3 main.py
 
-# Or use the CLI arguments for faster usage!
+# Or use the CLI arguments.
 python3 main.py --help
 ```
 
@@ -140,7 +140,7 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 ## 📖 Complete Interactive Usage Guide
 
 
-<h3>🎯 Three Simple Steps</h3>
+<h3>Three Simple Steps</h3>
 
 
 <table>
@@ -152,9 +152,9 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 
 Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
 
-🔍 Search your anime  
-📺 Select season & language  
-📋 Copy the complete URL
+- Search your anime  
+- Select season & language  
+-  Copy the complete URL
 
 </td>
 <td width="33%" align="center">
@@ -164,9 +164,9 @@ Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
 
 Launch the downloader
 
-🖥️ Paste the URL  
-🎮 Choose player & episode  
-📁 Set download folder
+- Paste the URL  
+- Choose player & episode  
+- Set download folder
 
 </td>
 <td width="33%" align="center">
@@ -176,9 +176,9 @@ Launch the downloader
 
 Watch the magic happen
 
-⬇️ Auto-download starts  
-📊 Real-time progress  
-🎉 Episode ready to watch!
+- Auto-download starts  
+- Real-time progress  
+- Episode ready to watch!
 
 </td>
 </tr>
@@ -211,16 +211,17 @@ Watch the magic happen
 | Platform | Status | Performance | Notes |
 |:--------:|:------:|:-----------:|:------|
 | **⚠️ READ BEFORE DOING ANYTHING** | Threaded mode is only suitable for strong Wi-Fi connections that won't crash when handling multiple downloads simultaneously. |||
-| 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Primary recommended source |
-| 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 Good | Reliable backup source |
-| 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
-| 🎬 **ONEUPLOAD** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **EMBED4ME** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | 🔄 SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Primary recommended source |
+| 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Reliable backup source |
+| 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
+| 🎬 **ONEUPLOAD** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
+| 🎬 **EMBED4ME** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
+| 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
+| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
+| 🚫 **MINOCHINOS** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Does not work in some countries, useless to implement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
 
 ---
@@ -231,7 +232,7 @@ Watch the magic happen
 <details>
 <summary>🖼️ <strong>View CLI Interface Screenshots</strong></summary>
 
-### 🎨 Main Interface
+###  Main Interface
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                 ANIME-SAMA VIDEO DOWNLOADER                  ║
@@ -241,7 +242,7 @@ Watch the magic happen
 📺 Download anime episodes from anime-sama.fr easily!
 ```
 
-### 🎮 Player Selection
+###  Player Selection
 ```
 🎮 SELECT PLAYER
 ─────────────────────────────────────────────────────────────────
@@ -252,7 +253,7 @@ Watch the magic happen
 Enter player number (1-3) or type player name:
 ```
 
-### 📊 Download Progress
+###  Download Progress
 ```
 ⬇️ DOWNLOADING
 ─────────────────────────────────────────────────────────────────
@@ -282,7 +283,7 @@ Enter player number (1-3) or type player name:
 **Naming Convention**: `{anime_name}_episode_{number}.mp4`
 
 
-### 🎨 Color Themes
+###  Color Themes
 The script uses a beautiful color scheme:
 
 🔵 **Info**: Cyan messages
@@ -355,8 +356,8 @@ This project is licensed under the **GPL v3 License**
 
 <img src="https://img.shields.io/badge/Made_with-❤️-red?style=for-the-badge">
 
-**🧠 Core algorithms and video extraction logic: Human-developed**  
-**🎨 Code restructuring and user interface enhancements: AI-assisted**
+** Core algorithms and video extraction logic: Human-developed**  
+** Code restructuring and user interface enhancements: AI-assisted**
 
 ---
 
