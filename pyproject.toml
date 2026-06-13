@@ -1,0 +1,13 @@
+[project]
+name = "anime-sama-downloader-gui"
+version = "0.1.0"
+description = "A GUI made to program anime downloading"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "tqdm~=4.68.2",
+    "requests~=2.34.2",
+    "beautifulsoup4~=4.15.0",
+    "av~=17.1.0",
+    "pycryptodome~=3.23.0"
+]
