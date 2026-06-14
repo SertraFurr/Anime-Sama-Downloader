@@ -18,6 +18,4 @@ if __name__ == "__main__":
     port = int(os.getenv("APP_PORT", 8000))
     reload = os.getenv("APP_RELOAD", "true").lower() == "true"
 
-    print(f"🚀 Démarrage du serveur sur http://{host}:{port} (Reload: {reload})")
-
     uvicorn.run("gui.__main__:app", host=host, port=port, reload=reload)
