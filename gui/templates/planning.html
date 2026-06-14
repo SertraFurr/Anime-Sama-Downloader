@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Planning | Anime-Sama CLI GUI</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+</head>
+<body>
+
+    <div class="planning-container">
+        <div class="planning-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 10px;">
+                <path d="M12.75 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM7.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM8.25 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM9.75 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM10.5 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12.75 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM14.25 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 17.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 15.75a.75.75 0 100-1.5.75.75 0 000 1.5zM15 12.75a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM16.5 13.5a.75.75 0 100-1.5.75.75 0 000 1.5z"></path>
+                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd"></path>
+            </svg>
+            <h1>Planning</h1>
+        </div>
+
+        <div class="filters-wrapper">
+            <span class="filter-label">Filtrer par langue :</span>
+            <button class="filter-btn active" data-filter="all">Tous</button>
+            <button class="filter-btn" data-filter="fr">🇫🇷 FR (VF)</button>
+            <button class="filter-btn" data-filter="jp">🇯🇵 JP (VOSTFR)</button>
+            <button class="filter-btn" data-filter="ch">🇨🇳 CH (VCN)</button>
+            <button class="filter-btn" data-filter="en">🇺🇸 EN (VA)</button>
+        </div>
+
+        <div class="days-wrapper">
+
+            <div class="day-column">
+                <h2 class="day-title">Lundi</h2>
+                <p class="day-date">08/06</p>
+
+                <div class="anime-card" data-lang="en">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/rick-et-morty.jpg" alt="Rick et Morty">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VA</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Rick et Morty">Rick et Morty</h3>
+                        <div class="card-info">
+                            <span>🕒 12h00</span>
+                            <span>📺 S9</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Rick et Morty", "saison": "9", "langue": "VA"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+
+                <div class="anime-card" data-lang="fr">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/l-atelier-des-sorciers.jpg" alt="L'Atelier des Sorciers">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VF</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="L'Atelier des Sorciers">L'Atelier des Sorciers</h3>
+                        <div class="card-info">
+                            <span>🕒 17h15</span>
+                            <span>📺 S1</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "langue": "VF"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Mardi</h2>
+                <p class="day-date">09/06</p>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/the-most-heretical-last-boss-queen.jpg" alt="The Most Heretical">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="The Most Heretical Last Boss Queen">Heretical Boss Queen</h3>
+                        <div class="card-info">
+                            <span>🕒 15h50</span>
+                            <span>📺 S2</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "The Most Heretical Last Boss Queen", "saison": "2", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Mercredi</h2>
+                <p class="day-date">10/06</p>
+
+                <div class="anime-card" data-lang="ch">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/versatile-mage.jpg" alt="Versatile Mage">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VCN</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Versatile Mage">Versatile Mage</h3>
+                        <div class="card-info">
+                            <span>🕒 05h00</span>
+                            <span>📺 S7</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Versatile Mage", "saison": "7", "langue": "VCN"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Jeudi</h2>
+                <p class="day-date">11/06</p>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/the-barbarians-bride.jpg" alt="The Barbarian's Bride">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="The Barbarian's Bride">Barbarian's Bride</h3>
+                        <div class="card-info">
+                            <span>🕒 14h50</span>
+                            <span>📺 S1</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "The Barbarians Bride", "saison": "1", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/dr-stone.jpg" alt="Dr. Stone">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Dr. Stone">Dr. Stone</h3>
+                        <div class="card-info">
+                            <span>🕒 16h20</span>
+                            <span>📺 S4 P3</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Dr. Stone", "saison": "4.3", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Vendredi</h2>
+                <p class="day-date">12/06</p>
+
+                <div class="anime-card" data-lang="ch">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/hitori-no-shita-the-outcast.jpg" alt="Hitori no Shita">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VCN</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Hitori no Shita">Hitori no Shita</h3>
+                        <div class="card-info">
+                            <span>🕒 12h00</span>
+                            <span>📺 S6</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Hitori no Shita", "saison": "6", "langue": "VCN"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/observation-records-of-my-fiancee.jpg" alt="Observation Records">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Observation Records of My Fiancée">Observation Records...</h3>
+                        <div class="card-info">
+                            <span>🕒 15h20</span>
+                            <span>📺 S1</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Observation Records of My Fiancee", "saison": "1", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Samedi</h2>
+                <p class="day-date">13/06</p>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/ascendance-of-a-bookworm.jpg" alt="Ascendance of a Bookworm">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Ascendance of a Bookworm">Ascendance of a Book...</h3>
+                        <div class="card-info">
+                            <span>🕒 11h50</span>
+                            <span>📺 S2</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Ascendance of a Bookworm", "saison": "2", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/welcome-to-demon-school-iruma-kun.jpg" alt="Iruma-kun">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Welcome to Demon School Iruma-kun">Iruma-kun</h3>
+                        <div class="card-info">
+                            <span>🕒 12h45</span>
+                            <span>📺 S4</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Welcome to Demon School Iruma-kun", "saison": "4", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="day-column">
+                <h2 class="day-title">Dimanche</h2>
+                <p class="day-date">14/06</p>
+
+                <div class="anime-card" data-lang="jp">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/digimon.jpg" alt="Digimon">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Digimon Beatbreak">Digimon Beatbreak</h3>
+                        <div class="card-info">
+                            <span>🕒 09h30</span>
+                            <span>📺 S1</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "Digimon Beatbreak", "saison": "1", "langue": "VOSTFR"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+
+                <div class="anime-card" data-lang="fr">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/one-piece.jpg" alt="One Piece">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VF</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="One Piece">One Piece</h3>
+                        <div class="card-info">
+                            <span>🕒 20h20</span>
+                            <span>📺 Saga 12</span>
+                        </div>
+                        <button class="btn-schedule" hx-post="/api/schedule" hx-vals='{"anime": "One Piece", "saison": "12", "langue": "VF"}' hx-swap="outerHTML">Programmer</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const animeCards = document.querySelectorAll('.anime-card');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Mettre à jour l'apparence des boutons (classe 'active')
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    // Récupérer la langue sélectionnée
+                    const selectedLang = btn.getAttribute('data-filter');
+
+                    // Masquer/Afficher les cartes
+                    animeCards.forEach(card => {
+                        const cardLang = card.getAttribute('data-lang');
+
+                        if (selectedLang === 'all' || cardLang === selectedLang) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>

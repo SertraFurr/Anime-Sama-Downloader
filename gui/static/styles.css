@@ -1,0 +1,333 @@
+/* Variables globales pour retrouver l'ambiance Anime-Sama */
+:root {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --accent: #0ea5e9;
+    --accent-hover: #0284c7;
+    --btn-success: #10b981;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.planning-container {
+    max-width: 1600px; /* Élargi pour prendre plus de place sur grand écran */
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+.planning-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.planning-header h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+/* Grille des jours compacte */
+.days-wrapper {
+    display: flex;
+    gap: 0.5rem; /* Espace réduit entre les jours */
+    overflow-x: auto;
+    padding-bottom: 1rem;
+}
+
+.day-column {
+    min-width: 150px; /* Taille réduite pour faire rentrer 7 jours */
+    flex: 1; /* Permet aux colonnes de s'étirer équitablement */
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 6px;
+    padding: 0.5rem;
+    border: 1px solid #334155;
+}
+
+.day-title {
+    text-align: center;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    margin: 0 0 0.25rem 0;
+    color: var(--text-main);
+}
+
+.day-date {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 0.5rem;
+}
+
+/* Cartes Anime compactes */
+.anime-card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    transition: transform 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.anime-card:hover {
+    border-color: var(--accent);
+}
+
+.card-image-wrapper {
+    position: relative;
+    height: 90px; /* Image beaucoup plus petite */
+}
+
+.card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.badge {
+    position: absolute;
+    padding: 0.15rem 0.3rem;
+    border-radius: 3px;
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: white;
+}
+
+.badge-type {
+    top: 0.25rem;
+    left: 0.25rem;
+    background: rgba(2, 132, 199, 0.9);
+}
+
+.badge-lang {
+    top: 0.25rem;
+    right: 0.25rem;
+    background: rgba(15, 23, 42, 0.9);
+}
+
+.card-content {
+    padding: 0.5rem;
+}
+
+.card-title {
+    font-size: 0.8rem; /* Police réduite */
+    margin: 0 0 0.25rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.btn-schedule {
+    display: block;
+    width: 100%;
+    padding: 0.4rem;
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-schedule:hover {
+    background-color: var(--accent-hover);
+}
+
+.btn-schedule.htmx-request {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Barre de filtres */
+.filters-wrapper {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-label {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-muted);
+    margin-right: 0.5rem;
+}
+
+.filter-btn {
+    background: rgba(30, 41, 59, 0.8);
+    border: 1px solid #334155;
+    color: var(--text-muted);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--text-main);
+}
+
+/* État actif du bouton */
+.filter-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+}
+
+/* --- PAGE DÉTAIL --- */
+.detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 768px) {
+    .detail-container {
+        grid-template-columns: 350px 1fr; /* Colonne gauche fixe, colonne droite fluide */
+    }
+}
+
+/* Colonne Gauche (Image) */
+.detail-media img {
+    width: 100%;
+    border-radius: 8px;
+    border: 2px solid #334155;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Colonne Droite (Infos) */
+.detail-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+    color: var(--text-main);
+}
+
+.detail-alt-titles {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-synopsis {
+    background: rgba(30, 41, 59, 0.5);
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.detail-synopsis h3 {
+    margin-top: 0;
+    border-bottom: 1px solid #475569;
+    padding-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+/* Section Téléchargements */
+.download-section h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.lang-group {
+    margin-bottom: 2rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #334155;
+}
+
+.lang-header {
+    background: #334155;
+    padding: 0.75rem 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.season-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.season-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #334155;
+}
+
+.season-row:last-child {
+    border-bottom: none;
+}
+
+.season-name {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+/* Bouton de téléchargement HTMX */
+.btn-download {
+    background-color: var(--btn-success);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-download:hover {
+    background-color: var(--btn-success-hover);
+    transform: scale(1.02);
+}
+
+.btn-download.htmx-request {
+    opacity: 0.7;
+    pointer-events: none;
+    background-color: #f59e0b; /* Jaune pendant le chargement */
+}
