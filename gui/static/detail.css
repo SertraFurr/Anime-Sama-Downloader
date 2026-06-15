@@ -1,0 +1,241 @@
+/* --- MISE EN PAGE PRINCIPALE --- */
+.detail-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .detail-container {
+        flex-direction: row;
+    }
+}
+
+/* Colonne Gauche (Média/Trailer) */
+.detail-left {
+    flex-shrink: 0;
+    width: 100%;
+}
+@media (min-width: 1024px) {
+    .detail-left {
+        width: 600px;
+    }
+}
+
+.media-container {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    background: #000;
+}
+.media-container iframe {
+    width: 100%;
+    height: 350px;
+    display: block;
+    border: none;
+}
+
+/* Colonne Droite (Infos & Téléchargements) */
+.detail-right {
+    flex: 1;
+    min-width: 0; /* Évite le débordement flexbox */
+}
+
+/* --- INFOS DE L'OEUVRE --- */
+.detail-title {
+    font-size: 2.5rem;
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+}
+
+.detail-alt-titles {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Grille d'informations (Studio, Année, etc.) */
+.info-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(71,85,105,0.3);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+.info-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem 1rem;
+    align-items: baseline;
+}
+@media (min-width: 640px) {
+    .info-grid { grid-template-columns: auto 1fr auto 1fr; }
+}
+.info-lbl {
+    color: #8994a5;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.info-val {
+    color: #cbd5e1;
+    font-size: 0.85rem;
+}
+
+/* Synopsis et Genres */
+.section-title {
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid #334155;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+}
+
+.synopsis-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #cbd5e1;
+}
+.clamp-synopsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.clamp-synopsis.expanded {
+    -webkit-line-clamp: unset;
+}
+.voir-plus {
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.genres-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+.genre-pill {
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    background: rgba(51,65,85,0.5);
+    color: #94a3b8;
+    border: 1px solid rgba(71,85,105,0.3);
+}
+
+/* --- SECTION TÉLÉCHARGEMENTS --- */
+.lang-group {
+    margin-bottom: 1.5rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #334155;
+}
+
+.lang-header {
+    background: #334155;
+    padding: 0.75rem 1rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Accordéon Saison */
+.season-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-card);
+    cursor: pointer;
+    border-bottom: 1px solid #334155;
+    transition: background-color 0.2s ease;
+}
+.season-header:hover { background-color: #334155; }
+
+.season-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.season-name { font-weight: bold; font-size: 1.1rem; }
+
+.toggle-icon {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+.season-header.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Liste des épisodes */
+.episode-list {
+    display: none;
+    background-color: var(--bg-main);
+    padding: 0.5rem 1rem;
+}
+.episode-list.show { display: block; }
+
+.episode-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #334155;
+}
+.episode-row:last-child { border-bottom: none; }
+
+.episode-name {
+    font-size: 0.95rem;
+    color: var(--text-main);
+}
+
+/* Boutons de téléchargement */
+.btn-download, .btn-download-ep {
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.btn-download {
+    background-color: var(--btn-success);
+    padding: 0.5rem 1.2rem;
+    font-size: 0.9rem;
+}
+.btn-download:hover { background-color: var(--btn-success-hover); transform: scale(1.02); }
+
+.btn-download-ep {
+    background-color: var(--accent);
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+}
+.btn-download-ep:hover { background-color: var(--accent-hover); }
+
+.btn-download.htmx-request, .btn-download-ep.htmx-request {
+    opacity: 0.7;
+    pointer-events: none;
+}
