@@ -31,3 +31,11 @@ async def detail_page(request: Request):
         name="detail.html",
         context={"request": request}
     )
+
+@router.get("/settings", response_class=HTMLResponse)
+async def detail_page(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="settings.html",
+        context={"request": request}
+    )

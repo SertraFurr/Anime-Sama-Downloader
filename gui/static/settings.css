@@ -1,0 +1,164 @@
+.settings-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.settings-card {
+    background: var(--bg-card);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.settings-card h2 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.settings-card h2 svg {
+    color: var(--accent);
+}
+
+/* Formulaires */
+.form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: -0.2rem;
+}
+
+.form-control {
+    background: #0f172a;
+    border: 1px solid #334155;
+    color: var(--text-main);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+/* Widget Number Spinner (Input custom + boutons) */
+.number-spinner {
+    display: flex;
+    align-items: center;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    width: fit-content;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.number-spinner:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.btn-spinner {
+    background: #1e293b;
+    border: none;
+    color: var(--text-main);
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-spinner:hover {
+    background: #334155;
+    color: var(--accent);
+}
+
+.spinner-input {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    width: 60px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    outline: none;
+    -moz-appearance: textfield; /* Masquer les flèches Firefox */
+}
+
+/* Masquer les flèches Chrome/Safari/Edge */
+.spinner-input::-webkit-outer-spin-button,
+.spinner-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Zone de sauvegarde globale */
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    padding-bottom: 2rem; /* Espace en bas de page */
+}
+
+.btn-save {
+    background-color: var(--btn-success);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Ajout d'une petite ombre pour le mettre en valeur */
+}
+
+.btn-save:hover {
+    background-color: var(--btn-success-hover);
+    transform: translateY(-2px);
+}
+
+.btn-save.htmx-request {
+    opacity: 0.7;
+    pointer-events: none;
+}
