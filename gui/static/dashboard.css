@@ -1,0 +1,176 @@
+/* --- DASHBOARD LAYOUT --- */
+.dashboard-container {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.list-section h2 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+}
+
+/* Grille pour les cartes verticales */
+.dashboard-cards {
+    display: grid;
+    /* Adapte automatiquement le nombre de colonnes selon la largeur de l'écran */
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+}
+
+/* --- CARTES VERTICALES --- */
+.anime-card {
+    background: var(--bg-card);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.anime-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+}
+
+.card-image-wrapper {
+    position: relative;
+    height: 200px; /* Hauteur fixe pour le mode portrait */
+}
+
+.card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Badges sur l'image */
+.badge {
+    position: absolute;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    color: white;
+    top: 0.5rem;
+}
+.badge-type { left: 0.5rem; background: rgba(2, 132, 199, 0.9); }
+.badge-type.scans { background: rgba(100, 116, 139, 0.9); }
+.badge-lang { right: 0.5rem; background: rgba(15, 23, 42, 0.9); }
+
+.card-content {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1; /* Pousse le statut vers le bas si le titre est court */
+}
+
+.card-title {
+    font-size: 0.9rem;
+    margin: 0 0 0.5rem 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-main);
+}
+
+.card-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+
+.card-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: auto;
+}
+
+.card-status.done {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: var(--btn-success);
+    border: 1px solid var(--btn-success);
+}
+
+.card-status.pending {
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+}
+
+.card-status.history {
+    background-color: transparent;
+    border: 1px solid #475569;
+    color: var(--text-muted);
+}
+
+/* --- CONSOLE TERMINAL --- */
+.console-wrapper {
+    background: #050505;
+    border-radius: 10px;
+    border: 2px solid #334155;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.console-header {
+    background: #1e293b;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+}
+.window-dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot-red { background-color: #ff5f56; }
+.dot-yellow { background-color: #ffbd2e; }
+.dot-green { background-color: #27c93f; }
+
+.console-output {
+    padding: 1rem;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    flex: 1;
+    color: #e2e8f0;
+}
+
+.console-output::-webkit-scrollbar { width: 8px; }
+.console-output::-webkit-scrollbar-track { background: #050505; }
+.console-output::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+.log-line { margin: 0.2rem 0; word-wrap: break-word; }
+.log-info { color: #cbd5e1; }
+.log-success { color: #10b981; }
+.log-warning { color: #f59e0b; }
+.log-error { color: #ef4444; }
+.log-timestamp { color: #64748b; margin-right: 0.5rem; }

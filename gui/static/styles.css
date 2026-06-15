@@ -524,3 +524,255 @@ body {
     color: var(--accent);
     border-bottom-color: var(--accent);
 }
+
+/* --- DASHBOARD --- */
+.dashboard-grid {
+    max-width: 1400px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr; /* Deux colonnes égales sur grand écran */
+    }
+}
+
+/* Sections de listes (Aujourd'hui & Finis) */
+.list-section {
+    background: var(--bg-card);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.list-section h2 {
+    margin-top: 0;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 0.5rem;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+}
+
+.anime-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.anime-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.5);
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    border-left: 4px solid #334155;
+}
+
+.anime-item.done { border-left-color: var(--btn-success); }
+.anime-item.pending { border-left-color: var(--accent); }
+
+.item-title {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.item-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.item-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: bold;
+}
+
+.status-time { color: var(--accent); }
+.status-check { color: var(--btn-success); }
+
+/* Console */
+.console-wrapper {
+    background: #000;
+    border-radius: 8px;
+    border: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    height: 600px; /* Hauteur fixe pour le scroll */
+    overflow: hidden;
+}
+
+.console-header {
+    background: #1e293b;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #334155;
+}
+
+.console-output {
+    padding: 1rem;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+/* Lignes de log */
+.log-line { margin: 0.2rem 0; }
+.log-info { color: #cbd5e1; }
+.log-success { color: #10b981; }
+.log-warning { color: #f59e0b; }
+.log-error { color: #ef4444; }
+.log-timestamp { color: #64748b; margin-right: 0.5rem; }
+
+/* Grille pour les cartes du dashboard */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Statut en bas de la carte (remplace le bouton) */
+.card-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.card-status.done {
+    background-color: var(--btn-success);
+    color: white;
+}
+
+.card-status.pending {
+    background-color: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--accent);
+    color: var(--text-main);
+}
+
+/* --- CARTES HORIZONTALES (Historique) --- */
+.horizontal-card {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 90px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.horizontal-card:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+}
+
+.horizontal-image {
+    width: 140px;
+    height: 100%;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.horizontal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.horizontal-content {
+    flex: 1;
+    padding: 0 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.horizontal-status {
+    padding-right: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+}
+
+/* --- CONSOLE TERMINAL --- */
+.console-wrapper {
+    background: #0a0a0a; /* Noir très profond pour contraster */
+    border-radius: 8px;
+    border: 1px solid #1e293b;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5); /* Ombre pour l'effet d'élévation */
+    display: flex;
+    flex-direction: column;
+    height: 600px;
+    overflow: hidden;
+}
+
+.console-header {
+    background: #1e293b;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #000;
+}
+
+/* Fausses puces de fenêtre (Mac/Linux style) */
+.window-controls {
+    display: flex;
+    gap: 6px;
+}
+.window-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+.dot-red { background-color: #ff5f56; }
+.dot-yellow { background-color: #ffbd2e; }
+.dot-green { background-color: #27c93f; }
+
+.console-output {
+    padding: 1rem;
+    overflow-y: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace; /* Police système Terminal */
+    font-size: 0.9rem;
+    line-height: 1.6;
+    flex: 1;
+    color: #e2e8f0;
+}
+
+/* Scrollbar personnalisée pour la console */
+.console-output::-webkit-scrollbar { width: 8px; }
+.console-output::-webkit-scrollbar-track { background: #0a0a0a; }
+.console-output::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+.console-output::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* Lignes de log */
+.log-line { margin: 0.2rem 0; word-wrap: break-word; }
+.log-info { color: #cbd5e1; }
+.log-success { color: #10b981; }
+.log-warning { color: #f59e0b; }
+.log-error { color: #ef4444; }
+.log-timestamp { color: #64748b; margin-right: 0.5rem; }

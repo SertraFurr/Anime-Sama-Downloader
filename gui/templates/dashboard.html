@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dashboard | AS Downloader</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <link rel="stylesheet" href="/static/dashboard.css">
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            AS Downloader
+        </a>
+        <div class="nav-links">
+            <a href="/" class="nav-link active">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                Dashboard
+            </a>
+            <a href="/planning" class="nav-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" /></svg>
+                Planning
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+
+        <div class="list-section" hx-get="/api/today-anime" hx-trigger="every 10s">
+            <h2>Aujourd'hui</h2>
+
+            <div class="dashboard-cards">
+
+                <div class="anime-card">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/rick-et-morty.jpg" alt="Rick et Morty">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Rick et Morty">Rick et Morty</h3>
+                        <div class="card-info">
+                            <span>Épisode 1</span>
+                            <span>Saison 9</span>
+                        </div>
+                        <div class="card-status done">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                            Terminé
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anime-card">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/l-atelier-des-sorciers.jpg" alt="L'Atelier des Sorciers">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VF</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="L'Atelier des Sorciers">L'Atelier des Sorciers</h3>
+                        <div class="card-info">
+                            <span>Épisode 1</span>
+                            <span>Saison 1</span>
+                        </div>
+                        <div class="card-status pending">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Prévu à 17h15
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anime-card">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/one-piece.jpg" alt="One Piece" style="filter: grayscale(100%);">
+                        <span class="badge badge-type scans">Scans</span>
+                        <span class="badge badge-lang">VF</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="One Piece">One Piece</h3>
+                        <div class="card-info">
+                            <span>Chapitre 1120</span>
+                            <span>Manga</span>
+                        </div>
+                        <div class="card-status pending">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Prévu à 20h20
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="list-section">
+            <h2>Récemment terminés (14 jours)</h2>
+
+            <div class="dashboard-cards">
+
+                <div class="anime-card">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/demon-slayer.jpg" alt="Demon Slayer">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VOSTFR</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Demon Slayer">Demon Slayer</h3>
+                        <div class="card-info">
+                            <span>Épisode 8</span>
+                            <span>Saison 4</span>
+                        </div>
+                        <div class="card-status history">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Hier
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anime-card">
+                    <div class="card-image-wrapper">
+                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/kaiju-no-8.jpg" alt="Kaiju No. 8">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">VF</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title" title="Kaiju No. 8">Kaiju No. 8</h3>
+                        <div class="card-info">
+                            <span>Épisode 12</span>
+                            <span>Saison 1</span>
+                        </div>
+                        <div class="card-status history">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Il y a 5 jours
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="console-wrapper">
+            <div class="console-header">
+                <div class="window-controls">
+                    <div class="window-dot dot-red"></div>
+                    <div class="window-dot dot-yellow"></div>
+                    <div class="window-dot dot-green"></div>
+                </div>
+                <span>Terminal d'exécution CLI</span>
+                <span style="color: var(--btn-success); font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
+                    Connecté
+                </span>
+            </div>
+
+            <div class="console-output" id="console-logs" hx-ext="sse" sse-connect="/api/stream-logs" sse-swap="log" hx-swap="beforeend">
+                <div class="log-line log-info"><span class="log-timestamp">[10:30:41]</span> Daemon démarré. Attente des tâches...</div>
+                <div class="log-line log-success"><span class="log-timestamp">[12:00:05]</span> [Rick et Morty] S09E01 téléchargé avec succès (1.2 Go).</div>
+                <div class="log-line log-info"><span class="log-timestamp">[17:15:00]</span> [L'Atelier des Sorciers] Lancement du téléchargement S01E01...</div>
+                <div class="log-line log-warning"><span class="log-timestamp">[17:16:12]</span> [L'Atelier des Sorciers] Serveur lent, essai du miroir de secours...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const consoleOutput = document.getElementById('console-logs');
+        const observer = new MutationObserver(() => {
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        });
+        observer.observe(consoleOutput, { childList: true });
+    </script>
+</body>
+</html>
