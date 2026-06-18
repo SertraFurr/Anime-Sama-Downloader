@@ -1,0 +1,34 @@
+{% for jour, liste_animes in planning.items() %}
+<div class="day-column">
+    <h2 class="day-title">{{ jour }}</h2>
+
+    {% for anime in liste_animes %}
+
+    <div class="anime-card" data-lang="{{ lang_map.get(anime.language, 'all') }}">
+        <div class="card-image-wrapper">
+            <img src="{{ anime.image }}" alt="{{ anime.name }}">
+            {% if anime.season == "Manga" %}
+                <span class="badge badge-type scans" style="background: rgba(100, 116, 139, 0.9);">Scans</span>
+            {% else %}
+                <span class="badge badge-type">Anime</span>
+            {% endif %}
+            <span class="badge badge-lang">{{ anime.language }}</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title" title="{{ anime.name }}">{{ anime.name }}</h3>
+            <div class="card-info">
+                <span>🕒 {{ anime.release_hour }}</span>
+                <span>📺 {{ anime.season }}</span>
+            </div>
+            <button class="btn-schedule"
+                    hx-post="/api/schedule"
+                    hx-vals='{"anime": "{{ anime.name }}", "saison": "{{ anime.season }}", "langue": "{{ anime.language }}"}'
+                    hx-swap="outerHTML">
+                Programmer
+            </button>
+        </div>
+    </div>
+
+    {% endfor %}
+</div>
+{% endfor %}

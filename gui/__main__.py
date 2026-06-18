@@ -3,7 +3,9 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
+
 from gui.routers import web, api
+
 
 load_dotenv()
 
