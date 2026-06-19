@@ -16,6 +16,7 @@ class Anime:
     language: str
     image: str
     season: str
+    url: str
 
 
 def _parse_anime_card(card: Tag) -> Optional[Anime]:
@@ -24,11 +25,14 @@ def _parse_anime_card(card: Tag) -> Optional[Anime]:
     if not card_classes or "Anime" not in card_classes:
         return None
 
+    link_elem = card.find('a')
+    url = link_elem.get('href') if isinstance(link_elem, Tag) else ""
+
     title_elem = card.find('h2', class_='card-title')
     name = title_elem.text.strip() if isinstance(title_elem, Tag) else "Unknown"
 
     img_elem = card.find('img', class_='card-image')
-    image_url = img_elem.get('src') if isinstance(img_elem, Tag) else None
+    image_url = img_elem.get('src') if isinstance(img_elem, Tag) else ""
 
     lang_elem = card.find('div', class_='language-badge-top')
     language = "Unknown"
@@ -47,7 +51,7 @@ def _parse_anime_card(card: Tag) -> Optional[Anime]:
     if len(info_texts) > 1:
         season = info_texts[1].text.strip()
 
-    return Anime(name, release_hour, language, image_url, season)
+    return Anime(name, release_hour, language, image_url, season, url)
 
 
 def fetch_planning(headers: Optional[Dict[str, str]] = None) -> Optional[Dict[str, List[Anime]]]:

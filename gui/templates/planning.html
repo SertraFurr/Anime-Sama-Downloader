@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="/static/base.css">
     <link rel="stylesheet" href="/static/planning.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+    <style>
+        /* Animation de chargement pour HTMX */
+        .htmx-indicator { display: none; }
+        .htmx-request .htmx-indicator { display: inline-block; }
+        .htmx-request.htmx-indicator { display: inline-block; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
     <nav class="navbar">
@@ -37,53 +45,32 @@
 
     <div class="planning-container">
         <div class="planning-header">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" style="margin-right: 10px;" viewBox="0 0 24 24">
-                </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" style="margin-right: 10px;" viewBox="0 0 24 24"></svg>
             <h1>Planning</h1>
+
+            <svg id="loading-spinner" class="htmx-indicator" style="margin-left: 1rem; color: var(--accent); animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
         </div>
 
-        <div class="filters-wrapper">
+        <div class="filters-wrapper" hx-target="#planning-grid" hx-indicator="#loading-spinner">
             <span class="filter-label">Filtrer par langue :</span>
-            <button class="filter-btn active" data-filter="all">Tous</button>
-            <button class="filter-btn" data-filter="fr">🇫🇷 FR (VF)</button>
-            <button class="filter-btn" data-filter="jp">🇯🇵 JP (VOSTFR)</button>
-            <button class="filter-btn" data-filter="ch">🇨🇳 CH (VCN)</button>
-            <button class="filter-btn" data-filter="en">🇺🇸 EN (VA)</button>
+            <button class="filter-btn active" hx-get="/api/v1/planning-content?lang=all" onclick="updateActiveBtn(this)">Tous</button>
+            <button class="filter-btn" hx-get="/api/v1/planning-content?lang=fr" onclick="updateActiveBtn(this)">🇫🇷 FR (VF)</button>
+            <button class="filter-btn" hx-get="/api/v1/planning-content?lang=jp" onclick="updateActiveBtn(this)">🇯🇵 JP (VOSTFR)</button>
+            <button class="filter-btn" hx-get="/api/v1/planning-content?lang=ch" onclick="updateActiveBtn(this)">🇨🇳 CH (VCN)</button>
+            <button class="filter-btn" hx-get="/api/v1/planning-content?lang=en" onclick="updateActiveBtn(this)">🇺🇸 EN (VA)</button>
         </div>
 
-        <div class="days-wrapper" hx-get="/api/v1/planning-content" hx-trigger="load">
-            <div style="text-align: center; width: 100%; padding: 3rem; color: var(--accent);">
-                <svg class="animate-spin" xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <p>Récupération du planning...</p>
+        <div id="planning-grid" class="days-wrapper" hx-get="/api/v1/planning-content?lang=all" hx-trigger="load">
             </div>
-        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const animeCards = document.querySelectorAll('.anime-card');
-
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-
-                    const selectedLang = btn.getAttribute('data-filter');
-
-                    animeCards.forEach(card => {
-                        const cardLang = card.getAttribute('data-lang');
-                        if (selectedLang === 'all' || cardLang === selectedLang) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
-            });
-        });
+        function updateActiveBtn(clickedBtn) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            clickedBtn.classList.add('active');
+        }
     </script>
 </body>
 </html>

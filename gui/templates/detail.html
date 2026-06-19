@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>L'Atelier des Sorciers | Anime-Sama CLI GUI</title>
+    <title>{{ anime.title }} | AS Downloader</title>
     <link rel="stylesheet" href="/static/base.css">
     <link rel="stylesheet" href="/static/detail.css">
     <script src="https://unpkg.com/htmx.org@1.9.10"></script>
@@ -39,236 +39,137 @@
 
         <div class="detail-left">
             <div class="media-container">
-                <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/l-atelier-des-sorciers.jpg" alt="L'Atelier des Sorciers" style="width: 100%; border-radius: 8px; border: 2px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                <img src="{{ anime.image_url }}" alt="{{ anime.title }}" style="width: 100%; border-radius: 8px; border: 2px solid #334155; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
             </div>
+
+            {% if anime.trailer_url %}
+            <div class="media-container" style="margin-top: 1rem;">
+                <iframe src="{{ anime.trailer_url }}" allowfullscreen></iframe>
             </div>
+            {% endif %}
+        </div>
 
         <div class="detail-right">
 
-            <h1 class="detail-title">L'Atelier des Sorciers</h1>
-            <p class="detail-alt-titles">Tongari Boushi no Atelier, Tongari Boshi no Atorie, Witch Hat Atelier</p>
+            <h1 class="detail-title">{{ anime.title }}</h1>
+            {% if anime.alt_titles %}
+                <p class="detail-alt-titles">{{ anime.alt_titles }}</p>
+            {% endif %}
 
             <div class="info-card">
                 <div class="info-grid">
+                    {% if anime.status %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         État
                     </span>
-                    <span class="info-val">En cours</span>
+                    <span class="info-val">{{ anime.status }}</span>
+                    {% endif %}
 
+                    {% if anime.year %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         Année
                     </span>
-                    <span class="info-val">2026</span>
+                    <span class="info-val">{{ anime.year }}</span>
+                    {% endif %}
 
+                    {% if anime.episodes %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>
                         Épisodes
                     </span>
-                    <span class="info-val">13</span>
+                    <span class="info-val">{{ anime.episodes }}</span>
+                    {% endif %}
 
+                    {% if anime.chapters %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                         Chapitres
                     </span>
-                    <span class="info-val">65+</span>
+                    <span class="info-val">{{ anime.chapters }}</span>
+                    {% endif %}
 
+                    {% if anime.creator %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                         Créateur
                     </span>
-                    <span class="info-val">Kamome Shirahama</span>
+                    <span class="info-val">{{ anime.creator }}</span>
+                    {% endif %}
 
+                    {% if anime.studio %}
                     <span class="info-lbl">
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                         Studio
                     </span>
-                    <span class="info-val">BUG FILMS</span>
+                    <span class="info-val">{{ anime.studio }}</span>
+                    {% endif %}
                 </div>
             </div>
 
+            {% if anime.synopsis %}
             <div>
                 <h2 class="section-title">Synopsis</h2>
                 <p id="synopsisText" class="synopsis-text clamp-synopsis">
-                    Coco a toujours été passionnée par la magie. Hélas, les seules personnes habilitées à la pratiquer sont les sorciers. C'est un don qu'ils obtiennent à la naissance et qu'ils protègent jalousement. Un jour, un sorcier du nom de Kieffrey arrive dans le village de Coco et c'est en le voyant à l'œuvre qu'elle comprend la véritable nature de la magie : elle se dessine ! À partir de cet instant, Coco va découvrir un monde merveilleux dont elle ne soupçonnait pas l'existence...
+                    {{ anime.synopsis }}
                 </p>
                 <span class="voir-plus" id="vpSynopsis" onclick="toggleSynopsis()">Voir plus</span>
             </div>
+            {% endif %}
 
+            {% if anime.genres %}
             <div>
                 <h2 class="section-title">Genres</h2>
                 <div class="genres-wrap">
-                    <span class="genre-pill">Seinen</span>
-                    <span class="genre-pill">Fantastique</span>
-                    <span class="genre-pill">Slice of Life</span>
-                    <span class="genre-pill">Magie</span>
-                    <span class="genre-pill">Sorcières</span>
+                    {% for genre in anime.genres %}
+                        <span class="genre-pill">{{ genre }}</span>
+                    {% endfor %}
                 </div>
             </div>
+            {% endif %}
 
             <div class="download-section">
                 <h2 class="section-title">Téléchargements</h2>
 
                 <div class="lang-group">
-                    <div class="lang-header">🇫🇷 VF</div>
                     <div class="season-list">
 
+                        {% for season in seasons %}
                         <div class="season-container">
-                            <div class="season-header">
+                            <div class="season-header"
+                                 hx-get="/api/v1/episodes?season_url={{ season.url }}&anime_name={{ anime.title }}&season_name={{ season.name }}"
+                                 hx-target="next .episode-list"
+                                 hx-trigger="click once">
+
                                 <div class="season-title-group">
                                     <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                     </svg>
-                                    <span class="season-name">Saison 1</span>
+                                    <span class="season-name">{{ season.name }}</span>
                                 </div>
 
                                 <button
                                     class="btn-download"
                                     hx-post="/api/download/season"
-                                    hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "langue": "VF"}'
+                                    hx-vals='{"season_url": "{{ season.url }}", "season_name": "{{ season.name }}"}'
                                     hx-swap="outerHTML"
                                     onclick="event.stopPropagation();"
                                 >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg>
                                     Tout télécharger
                                 </button>
                             </div>
 
                             <div class="episode-list">
-                                <div class="episode-row">
-                                    <span class="episode-name">Épisode 1</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "episode": "1", "langue": "VF"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                                <div class="episode-row">
-                                    <span class="episode-name">Épisode 2</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "episode": "2", "langue": "VF"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                                <div class="episode-row">
-                                    <span class="episode-name">Épisode 3</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "episode": "3", "langue": "VF"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="season-container">
-                            <div class="season-header">
-                                <div class="season-title-group">
-                                    <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                <div style="padding: 1rem; text-align: center; color: var(--text-muted);">
+                                    <svg class="animate-spin" style="display:inline-block; width:20px; height:20px; color:var(--accent); animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                     </svg>
-                                    <span class="season-name">Scans</span>
-                                </div>
-
-                                <button
-                                    class="btn-download"
-                                    hx-post="/api/download/season"
-                                    hx-vals='{"anime": "L atelier des sorciers", "saison": "scans", "langue": "VF"}'
-                                    hx-swap="outerHTML"
-                                    onclick="event.stopPropagation();"
-                                >
-                                    Tout télécharger
-                                </button>
-                            </div>
-
-                            <div class="episode-list">
-                                <div class="episode-row">
-                                    <span class="episode-name">Tome 1 (Chapitres 1-5)</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "scans", "episode": "tome-1", "langue": "VF"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                                <div class="episode-row">
-                                    <span class="episode-name">Tome 2 (Chapitres 6-11)</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "scans", "episode": "tome-2", "langue": "VF"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
                                 </div>
                             </div>
                         </div>
-
-                    </div>
-                </div>
-
-                <div class="lang-group">
-                    <div class="lang-header">🇯🇵 VOSTFR</div>
-                    <div class="season-list">
-
-                        <div class="season-container">
-                            <div class="season-header">
-                                <div class="season-title-group">
-                                    <svg class="toggle-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                    <span class="season-name">Saison 1</span>
-                                </div>
-
-                                <button
-                                    class="btn-download"
-                                    hx-post="/api/download/season"
-                                    hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "langue": "VOSTFR"}'
-                                    hx-swap="outerHTML"
-                                    onclick="event.stopPropagation();"
-                                >
-                                    Tout télécharger
-                                </button>
-                            </div>
-
-                            <div class="episode-list">
-                                <div class="episode-row">
-                                    <span class="episode-name">Épisode 1</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "episode": "1", "langue": "VOSTFR"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                                <div class="episode-row">
-                                    <span class="episode-name">Épisode 2</span>
-                                    <button
-                                        class="btn-download-ep"
-                                        hx-post="/api/download/episode"
-                                        hx-vals='{"anime": "L atelier des sorciers", "saison": "1", "episode": "2", "langue": "VOSTFR"}'
-                                        hx-swap="outerHTML"
-                                    >
-                                        Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        {% endfor %}
 
                     </div>
                 </div>
@@ -293,6 +194,8 @@
         function toggleSynopsis() {
             const synopsis = document.getElementById('synopsisText');
             const btn = document.getElementById('vpSynopsis');
+
+            if (!synopsis) return;
 
             if (synopsis.classList.contains('expanded')) {
                 synopsis.classList.remove('expanded');

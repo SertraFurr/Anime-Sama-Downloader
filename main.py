@@ -230,6 +230,7 @@ def main():
         if not is_valid:
             print_status("Checking for seasons/versions...", "info")
             season_options = expand_catalogue_url(base_url, headers=headers)
+            print(season_options)
             if season_options:
                 anime_opts = []
                 scan_opts = []
@@ -283,7 +284,7 @@ def main():
         if not episodes:
             print_status("Failed to fetch episodes.", "error")
             return 1
-        
+        print(episodes)
         print_episodes(episodes)
         
         player_choice = None

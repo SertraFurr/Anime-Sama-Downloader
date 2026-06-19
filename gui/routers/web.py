@@ -3,8 +3,11 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
 from gui.cloudflare import get_headers
+from gui.utils import get_domain
+from utils.fetch.detail import fetch_anime_details
 from utils.fetch.planning import fetch_planning
 from cachetools import TTLCache, cached
+from utils.search.expand_catalogue import expand_catalogue_url
 
 router = APIRouter(tags=["Frontend"])
 templates = Jinja2Templates(directory="gui/templates")
@@ -17,7 +20,7 @@ def get_cached_planning():
 
 
 @router.get("/", response_class=HTMLResponse)
-async def detail_page(request: Request):
+async def dashboard_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
@@ -48,15 +51,28 @@ async def planning_page(request: Request):
 
 
 @router.get("/detail", response_class=HTMLResponse)
-async def detail_page(request: Request):
+async def detail_page(request: Request, url: str):
+    catalog_url: str = "/".join(url.split("/")[:3])
+    complete_url: str = f"https://{get_domain()}{catalog_url}"
+
+    anime_details = fetch_anime_details(complete_url, headers=get_headers())
+
+    season_options = expand_catalogue_url(complete_url, headers=get_headers())
+
+    anime_season_options = filter(lambda x: x["name"] != "Scans", season_options)
+
     return templates.TemplateResponse(
         request=request,
         name="detail.html",
-        context={"request": request}
+        context={
+            "request": request,
+            "anime": anime_details,
+            "seasons": anime_season_options
+        }
     )
 
 @router.get("/settings", response_class=HTMLResponse)
-async def detail_page(request: Request):
+async def settings_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="settings.html",
