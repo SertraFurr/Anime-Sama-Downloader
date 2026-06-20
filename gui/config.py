@@ -1,3 +1,5 @@
+import atexit
+
 from pydantic import BaseModel
 
 
@@ -9,6 +11,10 @@ class CloudflareConfig(BaseModel):
 class Config(BaseModel):
     cloudflare_config: CloudflareConfig
     domain: str
+
+    def save(self, _, __, ___):
+        with open(config_path, "w", encoding="utf-8") as f:
+            f.write(self.model_dump_json(indent=2))
 
 def _load_config(path: str) -> Config:
     try:
@@ -26,3 +32,5 @@ def _load_config(path: str) -> Config:
 
 config_path = "config.json"
 settings: Config = _load_config(config_path)
+
+atexit.register(settings.save, None, None, None)

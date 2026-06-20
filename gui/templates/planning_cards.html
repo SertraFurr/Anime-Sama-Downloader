@@ -1,8 +1,8 @@
-{% for jour, liste_animes in planning.items() %}
+{% for day, anime_list in planning.items() %}
     <div class="day-column">
-        <h2 class="day-title">{{ jour }}</h2>
+        <h2 class="day-title">{{ day }}</h2>
 
-        {% for anime in liste_animes %}
+        {% for anime in anime_list %}
         <div class="anime-card">
 
             <a href="/detail?url={{ anime.url }}" style="text-decoration: none; color: inherit; display: block;">
@@ -23,17 +23,32 @@
                 </a>
 
                 <div class="card-info">
-                    <span>🕒 {{ anime.release_hour }}</span>
+                    <span>🕒 {{ anime.release_hour }}h{{ '{:02d}'.format(anime.release_minute | int) }}</span>
                     <span>📺 {{ anime.season }}</span>
                 </div>
 
-                <button class="btn-schedule"
-                        hx-post="/api/v1/schedule"
-                        hx-vals='{"anime": "{{ anime.name | replace('\"', '\\\"') }}", "saison": "{{ anime.season | replace('\"', '\\\"') }}", "langue": "{{ anime.language }}"}'
-                        hx-swap="outerHTML"
-                        onclick="event.stopPropagation();">
-                    Programmer
-                </button>
+                {% if anime.has_been_programmed %}
+                    <button class="btn-schedule"
+                            style="background-color: var(--btn-success);"
+                            title="Cliquez pour annuler la programmation"
+                            hx-post="/api/v1/schedule/delete"
+                            hx-vals="{{ {'anime': anime.name, 'season': anime.season, 'lang': anime.language, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
+                            hx-swap="outerHTML"
+                            onclick="event.stopPropagation();">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                        </svg>
+                        Programmé
+                    </button>
+                {% else %}
+                    <button class="btn-schedule"
+                            hx-post="/api/v1/schedule"
+                            hx-vals="{{ {'anime': anime.name, 'season': anime.season, 'lang': anime.language, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
+                            hx-swap="outerHTML"
+                            onclick="event.stopPropagation();">
+                        Programmer
+                    </button>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

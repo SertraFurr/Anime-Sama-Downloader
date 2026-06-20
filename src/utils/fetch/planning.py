@@ -12,11 +12,13 @@ from gui.utils import get_domain
 @dataclass
 class Anime:
     name: str
-    release_hour: str
+    release_hour: int
+    release_minute: int
     language: str
     image: str
     season: str
     url: str
+    has_been_programmed: bool = False
 
 
 def _parse_anime_card(card: Tag) -> Optional[Anime]:
@@ -51,7 +53,23 @@ def _parse_anime_card(card: Tag) -> Optional[Anime]:
     if len(info_texts) > 1:
         season = info_texts[1].text.strip()
 
-    return Anime(name, release_hour, language, image_url, season, url)
+    hour_minute: list[str] = release_hour.split('h')
+    try:
+        release_hour = int(hour_minute[0])
+        release_minute = int(hour_minute[1]) if len(hour_minute) > 1 else 0
+    except ValueError:
+        release_hour = 12
+        release_minute = 0
+
+    return Anime(
+        name,
+        release_hour,
+        release_minute,
+        language,
+        str(image_url),
+        season,
+        str(url)
+    )
 
 
 def fetch_planning(headers: Optional[Dict[str, str]] = None) -> Optional[Dict[str, List[Anime]]]:
