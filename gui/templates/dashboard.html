@@ -164,11 +164,7 @@
                 </span>
             </div>
 
-            <div class="console-output" id="console-logs" hx-ext="sse" sse-connect="/api/stream-logs" sse-swap="log" hx-swap="beforeend">
-                <div class="log-line log-info"><span class="log-timestamp">[10:30:41]</span> Daemon démarré. Attente des tâches...</div>
-                <div class="log-line log-success"><span class="log-timestamp">[12:00:05]</span> [Rick et Morty] S09E01 téléchargé avec succès (1.2 Go).</div>
-                <div class="log-line log-info"><span class="log-timestamp">[17:15:00]</span> [L'Atelier des Sorciers] Lancement du téléchargement S01E01...</div>
-                <div class="log-line log-warning"><span class="log-timestamp">[17:16:12]</span> [L'Atelier des Sorciers] Serveur lent, essai du miroir de secours...</div>
+            <div class="console-output" id="console-logs" hx-ext="sse" sse-connect="/api/v1/stream-logs" sse-swap="log" hx-swap="beforeend">
             </div>
         </div>
 

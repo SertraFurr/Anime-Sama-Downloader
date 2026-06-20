@@ -28,9 +28,10 @@
                 </div>
 
                 <button class="btn-schedule"
-                        hx-post="/api/schedule"
-                        hx-vals='{"anime": "{{ anime.name }}", "saison": "{{ anime.season }}", "langue": "{{ anime.language }}"}'
-                        hx-swap="outerHTML">
+                        hx-post="/api/v1/schedule"
+                        hx-vals='{"anime": "{{ anime.name | replace('\"', '\\\"') }}", "saison": "{{ anime.season | replace('\"', '\\\"') }}", "langue": "{{ anime.language }}"}'
+                        hx-swap="outerHTML"
+                        onclick="event.stopPropagation();">
                     Programmer
                 </button>
             </div>
