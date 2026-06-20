@@ -48,6 +48,9 @@ class AnimeData(BaseModel):
         unique_key = f"{title}-{season}-{lang}"
         return unique_key in self.registered_animes_keys
 
+    def animes_from_day(self, day: int) -> list[RegisteredAnime]:
+        return self.registered_animes[day]
+
     def save(self, _, __, ___):
         with open(animes_path, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(indent=2))

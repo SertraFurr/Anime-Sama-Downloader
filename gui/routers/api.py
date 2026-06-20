@@ -1,6 +1,7 @@
 import asyncio
 import html
 import json
+from datetime import datetime
 
 from fastapi import APIRouter, Query, Form
 from starlette.requests import Request
@@ -51,12 +52,9 @@ async def start_download(
 
     try:
         await asyncio.sleep(2)
-
         app_logger.info(f"[{anime}] Épisode {episode} téléchargé avec succès !")
-
     except ConnectionError:
         app_logger.warning(f"[{anime}] Latence détectée, changement de miroir...")
-
     except Exception as e:
         app_logger.error(f"[{anime}] Échec critique du téléchargement : {str(e)}")
 
@@ -131,6 +129,66 @@ async def unschedule_anime(
         Programmer
     </button>
     """
+
+
+@router.get("/today-anime", response_class=HTMLResponse)
+async def get_today_anime():
+    now = datetime.now()
+    animes_day = app_datas.animes_from_day(now.weekday())
+
+    if not animes_day:
+        return """
+        <div style='grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic;'>
+            Aucun téléchargement prévu pour aujourd'hui.
+        </div>
+        """
+
+    animes_day = sorted(animes_day, key=lambda a: (int(a.release_hour), int(a.release_min)))
+
+    anime_cards = ""
+    for anime in animes_day:
+        release_date = create_datetime_from_day(anime.release_day, anime.release_hour, anime.release_min)
+
+        if release_date <= now:
+            status_html = """
+                <div class="card-status done">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    Téléchargé
+                </div>
+            """
+        else:
+            minute_str = str(anime.release_min).zfill(2)
+            status_html = f"""
+                <div class="card-status pending">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Prévu à {anime.release_hour}h{minute_str}
+                </div>
+            """
+
+        anime_cards += f"""
+            <div class="anime-card">
+                <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-image-wrapper">
+                        <img src="{anime.image}" alt="{anime.title}">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">{anime.lang}</span>
+                    </div>
+                </a>
+                <div class="card-content">
+                    <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit;">
+                        <h3 class="card-title" title="{anime.title}">{anime.title}</h3>
+                    </a>
+                    <div class="card-info">
+                        <span>Épisode {anime.week_episode}</span>
+                        <span>{anime.season}</span>
+                    </div>
+                    {status_html}
+                </div>
+            </div>
+        """
+
+    return anime_cards
+
 
 @router.get("/health")
 async def health_check():

@@ -17,12 +17,11 @@ def get_anime_catalog_url(catalog_url: str) -> str:
     return f"https://{get_domain()}{catalog_url}"
 
 
-def create_datetime_from_day(day_capitalized, heure, minute):
-    day_capitalized = day_capitalized.capitalize()
-    if day_capitalized not in DAY_INDEX:
-        raise ValueError("Invalid day name.")
-
-    target_index = DAY_INDEX[day_capitalized]
+def create_datetime_from_day(day: str | int, hour: int, minute: int):
+    if isinstance(day, str):
+        target_index = day_name_to_index(day)
+    else:
+        target_index = day
 
     now = datetime.now()
     current_index = now.weekday()
@@ -31,7 +30,11 @@ def create_datetime_from_day(day_capitalized, heure, minute):
 
     target_date = now + timedelta(days=days_to_target)
 
-    return target_date.replace(hour=heure, minute=minute, second=0, microsecond=0)
+    return target_date.replace(hour=hour, minute=minute, second=0, microsecond=0)
+
+
+def day_name_to_index(day_capitalized: str) -> int:
+    return DAY_INDEX[day_capitalized.capitalize()]
 
 
 def get_last_episode_released(episodes: dict[str, list[str]]) -> int:

@@ -39,66 +39,15 @@
 
     <div class="dashboard-container">
 
-        <div class="list-section" hx-get="/api/today-anime" hx-trigger="every 10s">
+        <div class="list-section">
             <h2>Aujourd'hui</h2>
 
-            <div class="dashboard-cards">
+            <div class="dashboard-cards" hx-get="/api/v1/today-anime" hx-trigger="load, every 10s">
 
-                <div class="anime-card">
-                    <div class="card-image-wrapper">
-                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/rick-et-morty.jpg" alt="Rick et Morty">
-                        <span class="badge badge-type">Anime</span>
-                        <span class="badge badge-lang">VOSTFR</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title" title="Rick et Morty">Rick et Morty</h3>
-                        <div class="card-info">
-                            <span>Épisode 1</span>
-                            <span>Saison 9</span>
-                        </div>
-                        <div class="card-status done">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
-                            Terminé
-                        </div>
-                    </div>
-                </div>
-
-                <div class="anime-card">
-                    <div class="card-image-wrapper">
-                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/l-atelier-des-sorciers.jpg" alt="L'Atelier des Sorciers">
-                        <span class="badge badge-type">Anime</span>
-                        <span class="badge badge-lang">VF</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title" title="L'Atelier des Sorciers">L'Atelier des Sorciers</h3>
-                        <div class="card-info">
-                            <span>Épisode 1</span>
-                            <span>Saison 1</span>
-                        </div>
-                        <div class="card-status pending">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Prévu à 17h15
-                        </div>
-                    </div>
-                </div>
-
-                <div class="anime-card">
-                    <div class="card-image-wrapper">
-                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/one-piece.jpg" alt="One Piece" style="filter: grayscale(100%);">
-                        <span class="badge badge-type scans">Scans</span>
-                        <span class="badge badge-lang">VF</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title" title="One Piece">One Piece</h3>
-                        <div class="card-info">
-                            <span>Chapitre 1120</span>
-                            <span>Manga</span>
-                        </div>
-                        <div class="card-status pending">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Prévu à 20h20
-                        </div>
-                    </div>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <svg class="animate-spin" style="display:inline-block; width:24px; height:24px; color:var(--accent); animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                 </div>
 
             </div>
