@@ -13,6 +13,10 @@ def get_domain() -> str:
     return settings.domain
 
 
+def get_anime_catalog_url(catalog_url: str) -> str:
+    return f"https://{get_domain()}{catalog_url}"
+
+
 def create_datetime_from_day(day_capitalized, heure, minute):
     day_capitalized = day_capitalized.capitalize()
     if day_capitalized not in DAY_INDEX:
@@ -28,3 +32,7 @@ def create_datetime_from_day(day_capitalized, heure, minute):
     target_date = now + timedelta(days=days_to_target)
 
     return target_date.replace(hour=heure, minute=minute, second=0, microsecond=0)
+
+
+def get_last_episode_released(episodes: dict[str, list[str]]) -> int:
+    return max(len(episodes[season]) for season in episodes)

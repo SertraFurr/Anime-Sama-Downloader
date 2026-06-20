@@ -3,7 +3,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
 from gui.cloudflare import get_headers
-from gui.utils import get_domain
+from gui.utils import get_domain, get_anime_catalog_url
 from utils.fetch.detail import fetch_anime_details
 from utils.fetch.planning import fetch_planning
 from cachetools import TTLCache, cached
@@ -53,7 +53,7 @@ async def planning_page(request: Request):
 @router.get("/detail", response_class=HTMLResponse)
 async def detail_page(request: Request, url: str):
     catalog_url: str = "/".join(url.split("/")[:3])
-    complete_url: str = f"https://{get_domain()}{catalog_url}"
+    complete_url: str = get_anime_catalog_url(catalog_url)
 
     anime_details = fetch_anime_details(complete_url, headers=get_headers())
 

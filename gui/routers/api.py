@@ -10,7 +10,7 @@ from gui.cloudflare import get_headers
 from gui.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
 from gui.storage.anime_data import app_datas
-from gui.utils import create_datetime_from_day
+from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.planning import Anime
 
@@ -66,17 +66,22 @@ async def start_download(
 async def schedule_anime(
     anime: str = Form(...), season: str = Form(...), lang: str = Form(...),
     day: str = Form(...), hour: int = Form(...), minute: int = Form(...),
-    anime_url: str = Form(...), image: str = Form(...), week_episode: int = Form(...)
+    anime_url: str = Form(...), image: str = Form(...)
 ):
     anime_date = create_datetime_from_day(day, hour, minute)
-    app_datas.add_new_anime(anime_url=anime_url, image=image, title=anime, lang=lang, season=season, week_episode=week_episode, release_date=anime_date)
+    available_episodes = fetch_episodes(get_anime_catalog_url(anime_url), headers=get_headers())
+    last_episode_released: int = get_last_episode_released(available_episodes) if available_episodes else 0
+
+    week_episode = last_episode_released + 1 if anime_date > anime_date.now() else last_episode_released
+
+    app_datas.add_new_anime(anime_url, image, anime, lang, season, week_episode, anime_date)
     app_logger.info(f"Ajout au planning : {anime} ({season} - {lang})")
     app_datas.save(None, None, None)
 
     payload = {
         "anime": anime, "season": season, "lang": lang, "day": day,
         "hour": hour, "minute": minute, "anime_url": anime_url,
-        "image": image, "week_episode": week_episode
+        "image": image
     }
     safe_hx_vals = html.escape(json.dumps(payload))
 
@@ -100,10 +105,10 @@ async def schedule_anime(
 async def unschedule_anime(
     anime: str = Form(...), season: str = Form(...), lang: str = Form(...),
     day: str = Form(...), hour: int = Form(...), minute: int = Form(...),
-    anime_url: str = Form(...), image: str = Form(...), week_episode: int = Form(...)
+    anime_url: str = Form(...), image: str = Form(...)
 ):
     try:
-        app_datas.remove_anime(title=anime, lang=lang, season=season)
+        app_datas.remove_anime(anime, season, lang)
     except ValueError:
         app_logger.error(f"Anime introuvable : {anime} ({season} - {lang})")
 
@@ -113,7 +118,7 @@ async def unschedule_anime(
     payload = {
         "anime": anime, "season": season, "lang": lang, "day": day,
         "hour": hour, "minute": minute, "anime_url": anime_url,
-        "image": image, "week_episode": week_episode
+        "image": image
     }
     safe_hx_vals = html.escape(json.dumps(payload))
 
