@@ -4,10 +4,13 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
+from gui.cloudflare import get_headers
 from gui.routers import web, api
-
+from utils.search.search_bar import search_anime_query
 
 load_dotenv()
+
+print(search_anime_query("tsue", headers=get_headers()))
 
 app = FastAPI(title="Anime-Sama Downloader GUI")
 

@@ -151,6 +151,7 @@ def main():
                 elif mode == '2':
                     query = input(f"{Colors.BOLD}Enter search query: {Colors.ENDC}").strip()
                     results = search_anime(query, headers=headers)
+                    print(results)
                     if not results:
                         print_status("No results found.", "error")
                         continue
@@ -178,6 +179,7 @@ def main():
                             if 0 <= idx < len(results):
                                 base_url = results[idx]['url']
                                 options = expand_catalogue_url(base_url, headers=headers)
+                                print(options)
                                 if options:
                                     anime_opts = []
                                     scan_opts = []

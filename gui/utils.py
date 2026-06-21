@@ -39,3 +39,16 @@ def day_name_to_index(day_capitalized: str) -> int:
 
 def get_last_episode_released(episodes: dict[str, list[str]]) -> int:
     return max(len(episodes[season]) for season in episodes)
+
+
+def normalize_catalog_url(url: str) -> str:
+    splitted_url: list[str] = url.split("/")
+    i = len(splitted_url) - 1
+    while i >= 0 and splitted_url[i-1] != "catalogue":
+        i -= 1
+
+    catalog_url = "/".join(splitted_url[:i+1])
+
+    if not catalog_url.startswith(f"https://{get_domain()}"):
+        return get_anime_catalog_url(catalog_url)
+    return catalog_url

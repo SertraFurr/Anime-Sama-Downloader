@@ -14,6 +14,7 @@ from gui.storage.anime_data import app_datas
 from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.planning import Anime
+from utils.search.search_bar import search_anime_query
 
 router = APIRouter(tags=["Backend / Download API"])
 
@@ -40,6 +41,30 @@ async def log_generator(request: Request):
 @router.get("/stream-logs")
 async def stream_logs(request: Request):
     return StreamingResponse(log_generator(request), media_type="text/event-stream")
+
+
+@router.get("/search", response_class=HTMLResponse)
+async def search_anime(q: str = Query("")):
+    if not q or len(q.strip()) < 2:
+        return ""
+
+    results = search_anime_query(q, headers=get_headers())
+
+    if not results:
+        return "<div style='padding: 1rem; text-align: center; color: #94a3b8;'>Aucun résultat trouvé.</div>"
+
+    html_content = ""
+    for item in results:
+        html_content += f"""
+        <a href="/detail?url={item['url']}" class="search-item">
+            <img src="{item['img']}" alt="{item['title']}" class="search-img">
+            <div class="search-info">
+                <p class="search-title">{item['title']}</p>
+            </div>
+        </a>
+        """
+
+    return html_content
 
 
 @router.post("/download/episode")
