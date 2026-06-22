@@ -171,8 +171,8 @@
 
                                 <button
                                     class="btn-download"
-                                    hx-post="/api/download/season"
-                                    hx-vals='{"season_url": "{{ season.url }}", "season_name": "{{ season.name }}"}'
+                                    hx-post="/api/v1/download/season"
+                                    hx-vals='{"season_url": "{{ season.url }}", "anime_name": "{{ anime.title }}"}'
                                     hx-swap="outerHTML"
                                     onclick="event.stopPropagation();"
                                 >

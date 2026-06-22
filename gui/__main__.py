@@ -10,8 +10,6 @@ from utils.search.search_bar import search_anime_query
 
 load_dotenv()
 
-print(search_anime_query("tsue", headers=get_headers()))
-
 app = FastAPI(title="Anime-Sama Downloader GUI")
 
 app.mount("/static", StaticFiles(directory="gui/static"), name="static")

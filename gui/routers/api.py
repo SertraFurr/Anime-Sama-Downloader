@@ -2,16 +2,19 @@ import asyncio
 import html
 import json
 from datetime import datetime
+from typing import Iterable
 
-from fastapi import APIRouter, Query, Form
+from fastapi import APIRouter, Query, Form, BackgroundTasks
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
 
 from gui.cloudflare import get_headers
+from gui.error import DownloadError
 from gui.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
 from gui.storage.anime_data import app_datas
 from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
+from utils.download.download_gui import download_season_from_url
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.planning import Anime
 from utils.search.search_bar import search_anime_query
@@ -36,6 +39,17 @@ async def log_generator(request: Request):
             yield log_message
     finally:
         log_clients.remove(client_queue)
+
+
+def run_download_task(season_url: str, anime_name: str, episodes: Iterable[int], full_season: bool):
+    try:
+        download_season_from_url(season_url, episodes, full_season, True, True)
+    except DownloadError as e:
+        app_logger.error(f"Erreur de téléchargement pour {anime_name} : {str(e)}")
+    except Exception as e:
+         app_logger.error(f"Erreur inattendue pour {anime_name} : {str(e)}")
+    else:
+        app_logger.info(f"Téléchargement de {anime_name} terminé avec succès !")
 
 
 @router.get("/stream-logs")
@@ -66,24 +80,6 @@ async def search_anime(q: str = Query("")):
 
     return html_content
 
-
-@router.post("/download/episode")
-async def start_download(
-        anime: str = Form(...),
-        saison: str = Form(...),
-        episode: str = Form(...)
-):
-    app_logger.info(f"Initialisation du téléchargement pour {anime} (S{saison} E{episode})")
-
-    try:
-        await asyncio.sleep(2)
-        app_logger.info(f"[{anime}] Épisode {episode} téléchargé avec succès !")
-    except ConnectionError:
-        app_logger.warning(f"[{anime}] Latence détectée, changement de miroir...")
-    except Exception as e:
-        app_logger.error(f"[{anime}] Échec critique du téléchargement : {str(e)}")
-
-    return "<button class='btn-download-ep' style='background: var(--btn-success)'>Ajouté !</button>"
 
 @router.post("/schedule", response_class=HTMLResponse)
 async def schedule_anime(
@@ -270,12 +266,21 @@ async def get_episodes(_: Request, season_url: str, anime_name: str, season_name
 
     html_content = ""
     for i in range(1, episodes_count + 1):
+        # 1. On crée le dictionnaire des valeurs à envoyer
+        payload = {
+            "season_url": season_url,
+            "episode": i,
+            "anime_name": anime_name
+        }
+
+        safe_hx_vals = html.escape(json.dumps(payload))
+
         html_content += f"""
         <div class="episode-row">
             <span class="episode-name">Épisode {i}</span>
             <button class="btn-download-ep"
-                    hx-post="/api/download/episode"
-                    hx-vals='{{"anime": "{anime_name}", "saison": "{season_name}", "episode": "{i}"}}'
+                    hx-post="/api/v1/download/episode"
+                    hx-vals="{safe_hx_vals}"
                     hx-swap="outerHTML">
                 Télécharger
             </button>
@@ -286,3 +291,52 @@ async def get_episodes(_: Request, season_url: str, anime_name: str, season_name
         html_content = "<div class='episode-row'><span class='episode-name'>Aucun épisode trouvé.</span></div>"
 
     return html_content
+
+
+@router.post("/download/season", response_class=HTMLResponse)
+async def download_season(background_tasks: BackgroundTasks, season_url: str = Form(), anime_name: str = Form()):
+    app_logger.info(f"Téléchargement de la saison {season_url}...")
+
+    background_tasks.add_task(
+        run_download_task,
+        season_url=season_url,
+        anime_name=anime_name,
+        episodes=set(),
+        full_season=True
+    )
+
+    return """
+        <button class='btn-download' style='background: var(--btn-success); cursor: default;' disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Démarré
+        </button>
+        """
+
+
+@router.post("/download/episode", response_class=HTMLResponse)
+async def download_episode(
+    background_tasks: BackgroundTasks,
+    season_url: str = Form(...),
+    episode: int = Form(...),
+    anime_name: str = Form(...)
+):
+    app_logger.info(f"Lancement de la tâche : Épisode {episode} de {anime_name}")
+
+    background_tasks.add_task(
+        run_download_task,
+        season_url=season_url,
+        anime_name=anime_name,
+        episodes=[episode],
+        full_season=False
+    )
+
+    return """
+    <button class='btn-download-ep' style='background: var(--btn-success); cursor: default;' disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Démarré
+    </button>
+    """
