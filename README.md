@@ -18,6 +18,8 @@ docker run --rm `
   anime-sama-downloader-gui
 ````
 
+N'hésitez pas à rajouter un volume également.
+
 
 <div align="center">
 
