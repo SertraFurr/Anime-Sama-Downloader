@@ -1,3 +1,24 @@
+# Anime Sama Downloader GUI
+## Lancement
+Via ``uv`` sur Windows :
+````
+$env:PYTHONPATH="." ; uv run python -m gui
+
+uv run -m gui
+````
+
+Via ``Docker`` :
+````
+docker run --rm `
+  -e APP_HOST="0.0.0.0" `
+  -e APP_PORT=8080 `
+  -e APP_RELOAD="false" `
+  -e TZ="Europe/Paris" `
+  -p 8080:8080 `
+  anime-sama-downloader-gui
+````
+
+
 <div align="center">
 
 # 🎌 Anime-Sama Downloader
