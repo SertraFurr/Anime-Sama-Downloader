@@ -4,7 +4,7 @@ from typing import Iterable
 
 from gui.utils.cloudflare import get_headers
 from gui.utils.error import DownloadError, FetchError
-from gui.utils import order_episodes_sources
+from gui.utils.utils import order_episodes_sources
 from utils.download.download_video import download_video
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.fetch_video_source import fetch_video_source

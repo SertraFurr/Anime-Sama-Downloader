@@ -14,7 +14,7 @@ from gui.utils.error import DownloadError
 from gui.utils.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
 from gui.storage.anime_data import app_datas
-from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
+from gui.utils.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
 from utils.download.download_gui import download_episodes_from_url
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.planning import Anime

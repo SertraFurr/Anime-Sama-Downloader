@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from gui.utils import get_domain
+from gui.utils.utils import get_domain
 
 
 def search_anime_query(query, headers=None):

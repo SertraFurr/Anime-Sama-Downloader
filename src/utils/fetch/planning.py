@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from requests import RequestException
 
-from gui.utils import get_domain, day_name_to_index
+from gui.utils.utils import get_domain, day_name_to_index
 
 
 @dataclass
