@@ -2,21 +2,14 @@ from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
+from gui.cached import get_cached_planning
 from gui.cloudflare import get_headers
 from gui.utils import normalize_catalog_url
 from utils.fetch.detail import fetch_anime_details
-from utils.fetch.planning import fetch_planning
-from cachetools import TTLCache, cached
 from utils.search.expand_catalogue import expand_catalogue_url
 
 router = APIRouter(tags=["Frontend"])
 templates = Jinja2Templates(directory="gui/templates")
-
-planning_cache = TTLCache(maxsize=1, ttl=3600)
-
-@cached(planning_cache)
-def get_cached_planning():
-    return fetch_planning(get_headers())
 
 
 @router.get("/", response_class=HTMLResponse)

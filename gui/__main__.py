@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
-from gui.daemon import check_and_download_scheduled
+from gui.daemon import check_and_download_scheduled, scheduler
 from gui.routers import web, api
 
 
@@ -18,9 +18,12 @@ load_dotenv()
 async def lifespan(_):
     daemon_task = asyncio.create_task(check_and_download_scheduled())
 
+    scheduler.start()
+
     yield
 
     daemon_task.cancel()
+    scheduler.shutdown()
 
 app = FastAPI(title="Anime-Sama Downloader GUI", lifespan=lifespan)
 

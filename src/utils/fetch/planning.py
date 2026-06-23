@@ -6,22 +6,23 @@ from bs4 import BeautifulSoup
 from bs4.element import Tag
 from requests import RequestException
 
-from gui.utils import get_domain
+from gui.utils import get_domain, day_name_to_index
 
 
 @dataclass
 class Anime:
-    name: str
+    title: str
     release_hour: int
     release_minute: int
-    language: str
+    release_day: int
+    lang: str
     image: str
     season: str
     url: str
     has_been_programmed: bool = False
 
 
-def _parse_anime_card(card: Tag) -> Optional[Anime]:
+def _parse_anime_card(card: Tag, day: str) -> Optional[Anime]:
     card_classes = card.get('class')
 
     if not card_classes or "Anime" not in card_classes:
@@ -65,6 +66,7 @@ def _parse_anime_card(card: Tag) -> Optional[Anime]:
         name,
         release_hour,
         release_minute,
+        day_name_to_index(day),
         language,
         str(image_url),
         season,
@@ -104,7 +106,7 @@ def fetch_planning(headers: Optional[Dict[str, str]] = None) -> Optional[Dict[st
             if not isinstance(card, Tag):
                 continue
 
-            parsed_anime = _parse_anime_card(card)
+            parsed_anime = _parse_anime_card(card, day_name)
             if parsed_anime:
                 planning_schedule[day_name].append(parsed_anime)
 

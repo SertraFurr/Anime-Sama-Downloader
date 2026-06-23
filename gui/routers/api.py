@@ -9,7 +9,7 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
 
 from gui.cloudflare import get_headers
-from gui.daemon import run_single_check
+from gui.daemon import run_single_check, verify_planning_integrity
 from gui.error import DownloadError
 from gui.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
@@ -128,7 +128,7 @@ async def unschedule_anime(
     anime_url: str = Form(...), image: str = Form(...)
 ):
     try:
-        app_datas.remove_anime(anime, season, lang)
+        app_datas.unregister_anime(anime, season, lang)
     except ValueError:
         app_logger.error(f"Anime introuvable : {anime} ({season} - {lang})")
 
@@ -212,6 +212,49 @@ async def get_today_anime():
     return anime_cards
 
 
+@router.get("/recent-anime", response_class=HTMLResponse)
+async def get_recent_anime():
+    finished_anime = app_datas.finished_animes
+
+    if not finished_anime:
+        return """
+        <div style='grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic;'>
+            Aucun téléchargement récent.
+        </div>
+        """
+
+    anime_cards = ""
+    for anime in finished_anime.values():
+        date_difference = datetime.now() - anime.last_download_date
+        time_text = f"{date_difference.days} jours" if date_difference.days > 0 else f"{date_difference.seconds // 3600} heures"
+
+        anime_cards += f"""
+            <div class="anime-card">
+                <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-image-wrapper">
+                        <img src="{anime.image}" alt="{anime.title}">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">{anime.lang}</span>
+                    </div>
+                </a>
+                <div class="card-content">
+                    <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit;">
+                        <h3 class="card-title" title="{anime.title}">{anime.title}</h3>
+                    </a>
+                    <div class="card-info">
+                        <span>Épisode {anime.week_episode - 1}</span> <span>Saison {anime.season}</span>
+                    </div>
+                    <div class="card-status history">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {time_text}
+                    </div>
+                </div>
+            </div>
+        """
+
+    return anime_cards
+
+
 @router.get("/health")
 async def health_check():
     return {"status": "ok", "message": "Working API !"}
@@ -240,14 +283,14 @@ async def get_planning_content(request: Request, lang: str = Query("all")):
         for day, animes in full_planning.items():
             anime_filter = [
                 anime for anime in animes
-                if lang_mapping.get(anime.language, "all") == lang
+                if lang_mapping.get(anime.lang, "all") == lang
             ]
             if anime_filter:
                 filtered_planning[day] = anime_filter
 
     for animes in filtered_planning.values():
         for anime in animes:
-            anime.has_been_programmed = app_datas.has_been_registered(anime.name, anime.season, anime.language)
+            anime.has_been_programmed = app_datas.has_been_registered(anime.title, anime.season, anime.lang)
 
     return templates.TemplateResponse(
         request=request,
@@ -347,6 +390,7 @@ async def force_check(background_tasks: BackgroundTasks):
     app_logger.info("Vérification forcée lancée manuellement par l'utilisateur...")
 
     background_tasks.add_task(run_single_check)
+    background_tasks.add_task(verify_planning_integrity)
 
     return """
     <button type="button" 
@@ -366,7 +410,6 @@ async def force_check(background_tasks: BackgroundTasks):
 
 @router.get("/force-check-button", response_class=HTMLResponse)
 async def restore_force_check_button():
-    """Cette route ne sert qu'à renvoyer le code HTML du bouton initial."""
     return """
     <button type="button" 
             class="btn-save" 

@@ -76,44 +76,12 @@
         <div class="list-section">
             <h2>Récemment terminés (14 jours)</h2>
 
-            <div class="dashboard-cards">
+            <div class="dashboard-cards" hx-get="/api/v1/recent-anime" hx-trigger="load">
 
-                <div class="anime-card">
-                    <div class="card-image-wrapper">
-                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/demon-slayer.jpg" alt="Demon Slayer">
-                        <span class="badge badge-type">Anime</span>
-                        <span class="badge badge-lang">VOSTFR</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title" title="Demon Slayer">Demon Slayer</h3>
-                        <div class="card-info">
-                            <span>Épisode 8</span>
-                            <span>Saison 4</span>
-                        </div>
-                        <div class="card-status history">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Hier
-                        </div>
-                    </div>
-                </div>
-
-                <div class="anime-card">
-                    <div class="card-image-wrapper">
-                        <img src="https://raw.githubusercontent.com/Anime-Sama/IMG/img/contenu/kaiju-no-8.jpg" alt="Kaiju No. 8">
-                        <span class="badge badge-type">Anime</span>
-                        <span class="badge badge-lang">VF</span>
-                    </div>
-                    <div class="card-content">
-                        <h3 class="card-title" title="Kaiju No. 8">Kaiju No. 8</h3>
-                        <div class="card-info">
-                            <span>Épisode 12</span>
-                            <span>Saison 1</span>
-                        </div>
-                        <div class="card-status history">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Il y a 5 jours
-                        </div>
-                    </div>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <svg class="animate-spin" style="display:inline-block; width:24px; height:24px; color:var(--accent); animation: spin 1s linear infinite;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
                 </div>
 
             </div>

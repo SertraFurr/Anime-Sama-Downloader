@@ -28,8 +28,8 @@ def _extract_name_and_season_from_url(url: str) -> tuple[str, str]:
     return anime_name, season
 
 
-def download_episodes_from_url(season_url: str, episode_to_download: Iterable[int], download_all: bool, use_threading: bool, automatic_mp4: bool,
-                               pre_selected_tool="ffmpeg"):
+def download_episodes_from_url(season_url: str, episode_to_download: Iterable[int], download_all: bool,
+                               use_threading: bool, automatic_mp4: bool, pre_selected_tool: str="ffmpeg"):
     anime_name, season = _extract_name_and_season_from_url(season_url)
     output_path = format_save_path(anime_name, season)
 
@@ -66,7 +66,7 @@ def download_episodes_from_url(season_url: str, episode_to_download: Iterable[in
             for future in as_completed(futures):
                 try:
                     future.result()
-                except DownloadError | FetchError as e:
+                except (DownloadError, FetchError) as e:
                     downloading_errors.append(e)
                 except Exception as e:
                     downloading_errors.append(DownloadError(f"Unexpected error on episode: {e}"))

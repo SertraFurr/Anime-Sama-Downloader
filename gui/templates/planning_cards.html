@@ -7,19 +7,19 @@
 
             <a href="/detail?url={{ anime.url }}" style="text-decoration: none; color: inherit; display: block;">
                 <div class="card-image-wrapper">
-                    <img src="{{ anime.image }}" alt="{{ anime.name }}">
+                    <img src="{{ anime.image }}" alt="{{ anime.title }}">
                     {% if anime.season == "Manga" %}
                         <span class="badge badge-type scans" style="background: rgba(100, 116, 139, 0.9);">Scans</span>
                     {% else %}
                         <span class="badge badge-type">Anime</span>
                     {% endif %}
-                    <span class="badge badge-lang">{{ anime.language }}</span>
+                    <span class="badge badge-lang">{{ anime.lang }}</span>
                 </div>
             </a>
 
             <div class="card-content">
                 <a href="/detail?url={{ anime.url }}" style="text-decoration: none; color: inherit;">
-                    <h3 class="card-title" title="{{ anime.name }}">{{ anime.name }}</h3>
+                    <h3 class="card-title" title="{{ anime.title }}">{{ anime.title }}</h3>
                 </a>
 
                 <div class="card-info">
@@ -32,7 +32,7 @@
                             style="background-color: var(--btn-success);"
                             title="Cliquez pour annuler la programmation"
                             hx-post="/api/v1/schedule/delete"
-                            hx-vals="{{ {'anime': anime.name, 'season': anime.season, 'lang': anime.language, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
+                            hx-vals="{{ {'anime': anime.title, 'season': anime.season, 'lang': anime.lang, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
                             hx-swap="outerHTML"
                             onclick="event.stopPropagation();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
@@ -43,7 +43,7 @@
                 {% else %}
                     <button class="btn-schedule"
                             hx-post="/api/v1/schedule"
-                            hx-vals="{{ {'anime': anime.name, 'season': anime.season, 'lang': anime.language, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
+                            hx-vals="{{ {'anime': anime.title, 'season': anime.season, 'lang': anime.lang, 'day': day, 'hour': anime.release_hour, 'minute': anime.release_minute, 'anime_url': anime.url, 'image': anime.image, 'week_episode': anime.week_episode | default(1)} | tojson | forceescape }}"
                             hx-swap="outerHTML"
                             onclick="event.stopPropagation();">
                         Programmer
