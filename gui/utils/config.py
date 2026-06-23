@@ -11,8 +11,9 @@ class CloudflareConfig(BaseModel):
 class Config(BaseModel):
     cloudflare_config: CloudflareConfig
     domain: str
+    refresh_interval: int
 
-    def save(self, _, __, ___):
+    def save(self):
         with open(config_path, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(indent=2))
 
@@ -26,11 +27,12 @@ def _load_config(path: str) -> Config:
                 cf_clearance="None",
                 user_agent="Mozilla/5.0"
             ),
-            domain="anime-sama.to"
+            domain="anime-sama.to",
+            refresh_interval=15
         )
 
 
 config_path = "config.json"
 settings: Config = _load_config(config_path)
 
-atexit.register(settings.save, None, None, None)
+atexit.register(settings.save)

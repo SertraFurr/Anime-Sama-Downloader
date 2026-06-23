@@ -4,6 +4,7 @@ from starlette.responses import HTMLResponse
 
 from gui.utils.cached import get_cached_planning
 from gui.utils.cloudflare import get_headers
+from gui.utils.config import settings
 from gui.utils.utils import normalize_catalog_url
 from utils.fetch.detail import fetch_anime_details
 from utils.search.expand_catalogue import expand_catalogue_url
@@ -68,5 +69,8 @@ async def settings_page(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="settings.html",
-        context={"request": request}
+        context={
+            "request": request,
+            "settings": settings
+        }
     )

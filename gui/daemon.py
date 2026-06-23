@@ -7,6 +7,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
 from gui.utils.cached import get_cached_planning
+from gui.utils.config import settings
 from gui.utils.error import DownloadError, FetchError
 from gui.utils.logger import app_logger
 from gui.storage.anime_data import app_datas, AnimeData
@@ -65,7 +66,7 @@ async def check_and_download_scheduled():
         except Exception as e:
             app_logger.error(f"Erreur globale dans le daemon de vérification : {str(e)}")
 
-        await asyncio.sleep(900)
+        await asyncio.sleep(settings.refresh_interval * 60)
 
 
 async def verify_planning_integrity():

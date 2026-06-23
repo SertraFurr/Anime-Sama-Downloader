@@ -10,6 +10,7 @@ from starlette.responses import HTMLResponse, StreamingResponse
 
 from gui.utils.cloudflare import get_headers
 from gui.daemon import run_single_check, verify_planning_integrity
+from gui.utils.config import settings
 from gui.utils.error import DownloadError
 from gui.utils.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
@@ -393,33 +394,77 @@ async def force_check(background_tasks: BackgroundTasks):
     background_tasks.add_task(verify_planning_integrity)
 
     return """
-    <button type="button" 
-            class="btn-save" 
-            style="margin-top: 0.5rem; background-color: var(--btn-success); border: 1px solid var(--btn-success); color: white; cursor: default;"
-            hx-get="/api/v1/force-check-button"
-            hx-trigger="load delay:2s"
-            hx-swap="outerHTML"
-            disabled>
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-        </svg>
-        Vérification lancée !
-    </button>
-    """
+        <button type="button"
+                class="btn-save"
+                style="margin-top: 0.5rem; background-color: var(--btn-success); border: 1px solid var(--btn-success); color: white; cursor: default;"
+                hx-get="/api/v1/force-check-button"
+                hx-target="this" 
+                hx-trigger="load delay:2s"
+                hx-swap="outerHTML"
+                disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Vérification lancée !
+        </button>
+        """
 
 
 @router.get("/force-check-button", response_class=HTMLResponse)
 async def restore_force_check_button():
     return """
-    <button type="button" 
-            class="btn-save" 
+    <button type="button"
+            class="btn-save"
             style="margin-top: 0.5rem; background-color: var(--bg-main); border: 1px solid var(--accent); color: var(--text-main);"
             hx-post="/api/v1/force-check"
+            hx-target="this"
             hx-swap="outerHTML">
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
             <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
         </svg>
         Forcer la vérification maintenant
+    </button>
+    """
+
+
+@router.post("/settings/save", response_class=HTMLResponse)
+async def save_settings(
+        domain: str = Form(""),
+        user_agent: str = Form(""),
+        cf_clearance: str = Form(""),
+        refresh_interval: int = Form(15)
+):
+    settings.domain = domain
+    settings.cloudflare_config.user_agent = user_agent
+    settings.cloudflare_config.cf_clearance = cf_clearance
+    settings.refresh_interval = refresh_interval
+
+    settings.save()
+
+    return """
+    <button type="button" 
+            id="save-settings-btn" 
+            class="btn-save" 
+            style="background-color: var(--btn-success); border-color: var(--btn-success); pointer-events: none;"
+            hx-get="/api/v1/settings/save-button"
+            hx-trigger="load delay:2s"
+            hx-swap="outerHTML">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Paramètres sauvegardés !
+    </button>
+    """
+
+
+@router.get("/settings/save-button", response_class=HTMLResponse)
+async def get_original_save_button():
+    return """
+    <button type="submit" id="save-settings-btn" class="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Sauvegarder les paramètres
     </button>
     """
 
