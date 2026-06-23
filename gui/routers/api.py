@@ -9,12 +9,13 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
 
 from gui.cloudflare import get_headers
+from gui.daemon import run_single_check
 from gui.error import DownloadError
 from gui.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
 from gui.storage.anime_data import app_datas
 from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
-from utils.download.download_gui import download_season_from_url
+from utils.download.download_gui import download_episodes_from_url
 from utils.fetch.fetch_episodes import fetch_episodes
 from utils.fetch.planning import Anime
 from utils.search.search_bar import search_anime_query
@@ -43,7 +44,7 @@ async def log_generator(request: Request):
 
 def run_download_task(season_url: str, anime_name: str, episodes: Iterable[int], full_season: bool):
     try:
-        download_season_from_url(season_url, episodes, full_season, True, True)
+        download_episodes_from_url(season_url, episodes, full_season, True, True)
     except DownloadError as e:
         app_logger.error(f"Erreur de téléchargement pour {anime_name} : {str(e)}")
     except Exception as e:
@@ -95,7 +96,7 @@ async def schedule_anime(
 
     app_datas.add_new_anime(anime_url, image, anime, lang, season, week_episode, anime_date)
     app_logger.info(f"Ajout au planning : {anime} ({season} - {lang})")
-    app_datas.save(None, None, None)
+    app_datas.save()
 
     payload = {
         "anime": anime, "season": season, "lang": lang, "day": day,
@@ -132,7 +133,7 @@ async def unschedule_anime(
         app_logger.error(f"Anime introuvable : {anime} ({season} - {lang})")
 
     app_logger.info(f"Retrait du planning : {anime} ({season} - {lang})")
-    app_datas.save(None, None, None)
+    app_datas.save()
 
     payload = {
         "anime": anime, "season": season, "lang": lang, "day": day,
@@ -266,7 +267,6 @@ async def get_episodes(_: Request, season_url: str, anime_name: str, season_name
 
     html_content = ""
     for i in range(1, episodes_count + 1):
-        # 1. On crée le dictionnaire des valeurs à envoyer
         payload = {
             "season_url": season_url,
             "episode": i,
@@ -340,3 +340,43 @@ async def download_episode(
         Démarré
     </button>
     """
+
+
+@router.post("/force-check", response_class=HTMLResponse)
+async def force_check(background_tasks: BackgroundTasks):
+    app_logger.info("Vérification forcée lancée manuellement par l'utilisateur...")
+
+    background_tasks.add_task(run_single_check)
+
+    return """
+    <button type="button" 
+            class="btn-save" 
+            style="margin-top: 0.5rem; background-color: var(--btn-success); border: 1px solid var(--btn-success); color: white; cursor: default;"
+            hx-get="/api/v1/force-check-button"
+            hx-trigger="load delay:2s"
+            hx-swap="outerHTML"
+            disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Vérification lancée !
+    </button>
+    """
+
+
+@router.get("/force-check-button", response_class=HTMLResponse)
+async def restore_force_check_button():
+    """Cette route ne sert qu'à renvoyer le code HTML du bouton initial."""
+    return """
+    <button type="button" 
+            class="btn-save" 
+            style="margin-top: 0.5rem; background-color: var(--bg-main); border: 1px solid var(--accent); color: var(--text-main);"
+            hx-post="/api/v1/force-check"
+            hx-swap="outerHTML">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Forcer la vérification maintenant
+    </button>
+    """
+

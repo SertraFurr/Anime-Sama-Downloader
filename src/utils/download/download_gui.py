@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Iterable
 
 from gui.cloudflare import get_headers
-from gui.error import DownloadError
+from gui.error import DownloadError, FetchError
 from gui.utils import order_episodes_sources
 from utils.download.download_video import download_video
 from utils.fetch.fetch_episodes import fetch_episodes
@@ -28,14 +28,14 @@ def _extract_name_and_season_from_url(url: str) -> tuple[str, str]:
     return anime_name, season
 
 
-def download_season_from_url(season_url: str, episode_to_download: Iterable[int], download_all: bool, use_threading: bool, automatic_mp4: bool,
-                             pre_selected_tool="ffmpeg"):
+def download_episodes_from_url(season_url: str, episode_to_download: Iterable[int], download_all: bool, use_threading: bool, automatic_mp4: bool,
+                               pre_selected_tool="ffmpeg"):
     anime_name, season = _extract_name_and_season_from_url(season_url)
     output_path = format_save_path(anime_name, season)
 
     episodes_data = fetch_episodes(season_url, headers=get_headers())
     if not episodes_data:
-        raise DownloadError(f"Failed to fetch episodes for {anime_name} from {season_url}")
+        raise FetchError(f"Failed to fetch episodes for {anime_name} from {season_url}")
 
     downloading_errors = []
 
@@ -45,6 +45,9 @@ def download_season_from_url(season_url: str, episode_to_download: Iterable[int]
 
     def process_episode(episode_num_to_process):
         episode_sources = _extract_episode_sources_from_data(episodes_data, episode_num_to_process)
+        if not episode_sources:
+            raise FetchError(f"Failed to fetch episode sources for {anime_name} - {season} - Episode {episode_num_to_process}")
+
         episode_sources = order_episodes_sources(episode_sources)
         download_episode_from_sources(
             episode_num_to_process,
@@ -63,7 +66,7 @@ def download_season_from_url(season_url: str, episode_to_download: Iterable[int]
             for future in as_completed(futures):
                 try:
                     future.result()
-                except DownloadError as e:
+                except DownloadError | FetchError as e:
                     downloading_errors.append(e)
                 except Exception as e:
                     downloading_errors.append(DownloadError(f"Unexpected error on episode: {e}"))
@@ -94,7 +97,6 @@ def download_episode_from_sources(episode_num: int, video_sources: list[str], an
 
 def download_episode_from_source(episode_num: int, url: str, anime_name: str, save_dir: str, use_ts_threading: bool, automatic_mp4: bool, pre_selected_tool="ffmpeg"):
     season_dir = save_dir
-    print(save_dir)
     os.makedirs(season_dir, exist_ok=True)
 
     video_source = fetch_video_source(url)

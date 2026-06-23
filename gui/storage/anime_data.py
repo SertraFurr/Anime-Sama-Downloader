@@ -1,6 +1,6 @@
 import atexit
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pydantic import BaseModel
 
@@ -51,7 +51,7 @@ class AnimeData(BaseModel):
     def animes_from_day(self, day: int) -> list[RegisteredAnime]:
         return self.registered_animes[day]
 
-    def save(self, _, __, ___):
+    def save(self):
         with open(animes_path, "w", encoding="utf-8") as f:
             f.write(self.model_dump_json(indent=2))
 
@@ -66,6 +66,44 @@ class AnimeData(BaseModel):
                 anime for anime in animes
                 if anime.title != title or anime.season != season or anime.lang != lang
             ]
+
+    def get_pending_scheduled_animes(self, current_time: datetime) -> list[RegisteredAnime]:
+        pending_animes = []
+
+        for animes_in_day in self.registered_animes:
+            for anime in animes_in_day:
+                days_since_release = (current_time.weekday() - anime.release_day) % 7
+
+                last_theoretical_release = current_time - timedelta(days=days_since_release)
+                last_theoretical_release = last_theoretical_release.replace(
+                    hour=anime.release_hour,
+                    minute=anime.release_min,
+                    second=0,
+                    microsecond=0
+                )
+
+                if last_theoretical_release > current_time:
+                    last_theoretical_release -= timedelta(days=7)
+
+                if anime.last_download_date < last_theoretical_release:
+                    pending_animes.append(anime)
+
+        return pending_animes
+
+    def mark_as_downloaded(self, title: str, season: str, lang: str):
+        if not self.has_been_registered(title, season, lang):
+            return
+
+        for animes_in_day in self.registered_animes:
+            for anime in animes_in_day:
+                if anime.title == title and anime.season == season and anime.lang == lang:
+                    anime.last_download_date = datetime.now()
+
+                    anime.downloaded_episodes.add(anime.week_episode)
+                    anime.week_episode += 1
+
+                    self.save()
+                    return
 
 
 def _load_animes(path: str) -> AnimeData:
@@ -82,4 +120,4 @@ def _load_animes(path: str) -> AnimeData:
 animes_path = "anime_data.json"
 app_datas: AnimeData = _load_animes(animes_path)
 
-atexit.register(app_datas.save, None, None, None)
+atexit.register(app_datas.save)

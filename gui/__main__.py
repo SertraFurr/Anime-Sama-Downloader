@@ -1,16 +1,28 @@
+import asyncio
 import os
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
-from gui.cloudflare import get_headers
+from gui.daemon import check_and_download_scheduled
 from gui.routers import web, api
-from utils.search.search_bar import search_anime_query
+
 
 load_dotenv()
 
-app = FastAPI(title="Anime-Sama Downloader GUI")
+
+@asynccontextmanager
+async def lifespan(_):
+    daemon_task = asyncio.create_task(check_and_download_scheduled())
+
+    yield
+
+    daemon_task.cancel()
+
+app = FastAPI(title="Anime-Sama Downloader GUI", lifespan=lifespan)
 
 app.mount("/static", StaticFiles(directory="gui/static"), name="static")
 app.include_router(web.router)
