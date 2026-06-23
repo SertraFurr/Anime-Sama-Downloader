@@ -1,4 +1,4 @@
-from gui.config import CloudflareConfig, settings
+from gui.utils.config import CloudflareConfig, settings
 from var import generate_requests_headers
 
 

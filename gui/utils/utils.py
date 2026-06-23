@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 
-from gui.config import settings
+from gui.utils.config import settings
 
 
 DAY_INDEX = {

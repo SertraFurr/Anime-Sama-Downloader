@@ -6,9 +6,9 @@ from urllib.parse import urljoin
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from gui.cached import get_cached_planning
-from gui.error import DownloadError, FetchError
-from gui.logger import app_logger
+from gui.utils.cached import get_cached_planning
+from gui.utils.error import DownloadError, FetchError
+from gui.utils.logger import app_logger
 from gui.storage.anime_data import app_datas, AnimeData
 from gui.utils import get_domain
 from utils.download.download_gui import download_episodes_from_url

@@ -2,8 +2,8 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Iterable
 
-from gui.cloudflare import get_headers
-from gui.error import DownloadError, FetchError
+from gui.utils.cloudflare import get_headers
+from gui.utils.error import DownloadError, FetchError
 from gui.utils import order_episodes_sources
 from utils.download.download_video import download_video
 from utils.fetch.fetch_episodes import fetch_episodes

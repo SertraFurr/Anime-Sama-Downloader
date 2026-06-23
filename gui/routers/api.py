@@ -8,10 +8,10 @@ from fastapi import APIRouter, Query, Form, BackgroundTasks
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
 
-from gui.cloudflare import get_headers
+from gui.utils.cloudflare import get_headers
 from gui.daemon import run_single_check, verify_planning_integrity
-from gui.error import DownloadError
-from gui.logger import log_clients, log_history, app_logger
+from gui.utils.error import DownloadError
+from gui.utils.logger import log_clients, log_history, app_logger
 from gui.routers.web import templates, get_cached_planning
 from gui.storage.anime_data import app_datas
 from gui.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
