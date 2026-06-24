@@ -20,6 +20,10 @@ docker run --rm `
 
 N'hésitez pas à rajouter un volume également.
 
+Utilisation de l'IA :
+- Quasi totalité du frontend réalisé par l'IA
+- 50-60% du backend par IA (chaque fonction individuellement, la structure a bien été réalisée par un humain)
+
 
 <div align="center">
 
