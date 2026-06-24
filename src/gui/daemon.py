@@ -6,14 +6,14 @@ from urllib.parse import urljoin
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from gui.utils.cached import get_cached_planning
-from gui.utils.config import settings
-from gui.utils.error import DownloadError, FetchError
-from gui.utils.logger import app_logger
-from gui.storage.anime_data import app_datas, AnimeData
-from gui.utils.utils import get_domain
-from utils.download.download_gui import download_episodes_from_url
-from utils.fetch.planning import Anime
+from src.gui.utils.cached import get_cached_planning
+from src.gui.utils.config import settings
+from src.gui.utils.error import DownloadError, FetchError
+from src.gui.utils.logger import app_logger
+from src.gui.storage.anime_data import app_datas, AnimeData
+from src.gui.utils.utils import get_domain
+from src.utils.download.download_gui import download_episodes_from_url
+from src.utils.fetch.planning import Anime
 
 
 async def run_single_check():

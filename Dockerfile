@@ -13,4 +13,4 @@ COPY . .
 
 ENV PYTHONPATH="/app/src:/app/gui"
 
-CMD ["uv", "run", "-m", "gui"]
+CMD ["uv", "run", "-m", "src.gui"]

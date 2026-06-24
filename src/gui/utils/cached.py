@@ -1,7 +1,7 @@
 from cachetools import cached, TTLCache
 
-from gui.utils.cloudflare import get_headers
-from utils.fetch.planning import fetch_planning
+from src.gui.utils.cloudflare import get_headers
+from src.utils.fetch.planning import fetch_planning
 
 planning_cache = TTLCache(maxsize=1, ttl=3600)
 

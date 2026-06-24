@@ -8,18 +8,18 @@ from fastapi import APIRouter, Query, Form, BackgroundTasks
 from starlette.requests import Request
 from starlette.responses import HTMLResponse, StreamingResponse
 
-from gui.utils.cloudflare import get_headers
-from gui.daemon import run_single_check, verify_planning_integrity
-from gui.utils.config import settings
-from gui.utils.error import DownloadError
-from gui.utils.logger import log_clients, log_history, app_logger
-from gui.routers.web import templates, get_cached_planning
-from gui.storage.anime_data import app_datas
-from gui.utils.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
-from utils.download.download_gui import download_episodes_from_url
-from utils.fetch.fetch_episodes import fetch_episodes
-from utils.fetch.planning import Anime
-from utils.search.search_bar import search_anime_query
+from src.gui.utils.cloudflare import get_headers
+from src.gui.daemon import run_single_check, verify_planning_integrity
+from src.gui.utils.config import settings
+from src.gui.utils.error import DownloadError
+from src.gui.utils.logger import log_clients, log_history, app_logger
+from src.gui.routers.web import templates, get_cached_planning
+from src.gui.storage.anime_data import app_datas
+from src.gui.utils.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
+from src.utils.download.download_gui import download_episodes_from_url
+from src.utils.fetch.fetch_episodes import fetch_episodes
+from src.utils.fetch.planning import Anime
+from src.utils.search.search_bar import search_anime_query
 
 router = APIRouter(tags=["Backend / Download API"])
 
