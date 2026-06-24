@@ -1,0 +1,470 @@
+import asyncio
+import html
+import json
+from datetime import datetime
+from typing import Iterable
+
+from fastapi import APIRouter, Query, Form, BackgroundTasks
+from starlette.requests import Request
+from starlette.responses import HTMLResponse, StreamingResponse
+
+from gui.utils.cloudflare import get_headers
+from gui.daemon import run_single_check, verify_planning_integrity
+from gui.utils.config import settings
+from gui.utils.error import DownloadError
+from gui.utils.logger import log_clients, log_history, app_logger
+from gui.routers.web import templates, get_cached_planning
+from gui.storage.anime_data import app_datas
+from gui.utils.utils import create_datetime_from_day, get_last_episode_released, get_anime_catalog_url
+from utils.download.download_gui import download_episodes_from_url
+from utils.fetch.fetch_episodes import fetch_episodes
+from utils.fetch.planning import Anime
+from utils.search.search_bar import search_anime_query
+
+router = APIRouter(tags=["Backend / Download API"])
+
+
+async def log_generator(request: Request):
+    for historical_msg in list(log_history):
+        yield historical_msg
+        await asyncio.sleep(0.01)
+
+    client_queue = asyncio.Queue()
+    log_clients.add(client_queue)
+
+    try:
+        while True:
+            if await request.is_disconnected():
+                break
+
+            log_message = await client_queue.get()
+            yield log_message
+    finally:
+        log_clients.remove(client_queue)
+
+
+def run_download_task(season_url: str, anime_name: str, episodes: Iterable[int], full_season: bool):
+    try:
+        download_episodes_from_url(season_url, episodes, full_season, True, True)
+    except DownloadError as e:
+        app_logger.error(f"Erreur de téléchargement pour {anime_name} : {str(e)}")
+    except Exception as e:
+         app_logger.error(f"Erreur inattendue pour {anime_name} : {str(e)}")
+    else:
+        app_logger.info(f"Téléchargement de {anime_name} terminé avec succès !")
+
+
+@router.get("/stream-logs")
+async def stream_logs(request: Request):
+    return StreamingResponse(log_generator(request), media_type="text/event-stream")
+
+
+@router.get("/search", response_class=HTMLResponse)
+async def search_anime(q: str = Query("")):
+    if not q or len(q.strip()) < 2:
+        return ""
+
+    results = search_anime_query(q, headers=get_headers())
+
+    if not results:
+        return "<div style='padding: 1rem; text-align: center; color: #94a3b8;'>Aucun résultat trouvé.</div>"
+
+    html_content = ""
+    for item in results:
+        html_content += f"""
+        <a href="/detail?url={item['url']}" class="search-item">
+            <img src="{item['img']}" alt="{item['title']}" class="search-img">
+            <div class="search-info">
+                <p class="search-title">{item['title']}</p>
+            </div>
+        </a>
+        """
+
+    return html_content
+
+
+@router.post("/schedule", response_class=HTMLResponse)
+async def schedule_anime(
+    anime: str = Form(...), season: str = Form(...), lang: str = Form(...),
+    day: str = Form(...), hour: int = Form(...), minute: int = Form(...),
+    anime_url: str = Form(...), image: str = Form(...)
+):
+    anime_date = create_datetime_from_day(day, hour, minute)
+    available_episodes = fetch_episodes(get_anime_catalog_url(anime_url), headers=get_headers())
+    last_episode_released: int = get_last_episode_released(available_episodes) if available_episodes else 0
+
+    week_episode = last_episode_released + 1 if anime_date > anime_date.now() else last_episode_released
+
+    app_datas.add_new_anime(anime_url, image, anime, lang, season, week_episode, anime_date)
+    app_logger.info(f"Ajout au planning : {anime} ({season} - {lang})")
+    app_datas.save()
+
+    payload = {
+        "anime": anime, "season": season, "lang": lang, "day": day,
+        "hour": hour, "minute": minute, "anime_url": anime_url,
+        "image": image
+    }
+    safe_hx_vals = html.escape(json.dumps(payload))
+
+    return f"""
+    <button class="btn-schedule"
+            style="background-color: var(--btn-success);"
+            title="Cliquez pour annuler la programmation"
+            hx-post="/api/v1/schedule/delete"
+            hx-vals="{safe_hx_vals}"
+            hx-swap="outerHTML"
+            onclick="event.stopPropagation();">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Programmé
+    </button>
+    """
+
+
+@router.post("/schedule/delete", response_class=HTMLResponse)
+async def unschedule_anime(
+    anime: str = Form(...), season: str = Form(...), lang: str = Form(...),
+    day: str = Form(...), hour: int = Form(...), minute: int = Form(...),
+    anime_url: str = Form(...), image: str = Form(...)
+):
+    try:
+        app_datas.unregister_anime(anime, season, lang)
+    except ValueError:
+        app_logger.error(f"Anime introuvable : {anime} ({season} - {lang})")
+
+    app_logger.info(f"Retrait du planning : {anime} ({season} - {lang})")
+    app_datas.save()
+
+    payload = {
+        "anime": anime, "season": season, "lang": lang, "day": day,
+        "hour": hour, "minute": minute, "anime_url": anime_url,
+        "image": image
+    }
+    safe_hx_vals = html.escape(json.dumps(payload))
+
+    return f"""
+    <button class="btn-schedule"
+            hx-post="/api/v1/schedule"
+            hx-vals="{safe_hx_vals}"
+            hx-swap="outerHTML"
+            onclick="event.stopPropagation();">
+        Programmer
+    </button>
+    """
+
+
+@router.get("/today-anime", response_class=HTMLResponse)
+async def get_today_anime():
+    now = datetime.now()
+    animes_day = app_datas.animes_from_day(now.weekday())
+
+    if not animes_day:
+        return """
+        <div style='grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic;'>
+            Aucun téléchargement prévu pour aujourd'hui.
+        </div>
+        """
+
+    animes_day = sorted(animes_day, key=lambda a: (int(a.release_hour), int(a.release_min)))
+
+    anime_cards = ""
+    for anime in animes_day:
+        release_date = create_datetime_from_day(anime.release_day, anime.release_hour, anime.release_min)
+
+        if release_date <= now:
+            status_html = """
+                <div class="card-status done">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                    Téléchargé
+                </div>
+            """
+        else:
+            minute_str = str(anime.release_min).zfill(2)
+            status_html = f"""
+                <div class="card-status pending">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Prévu à {anime.release_hour}h{minute_str}
+                </div>
+            """
+
+        anime_cards += f"""
+            <div class="anime-card">
+                <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-image-wrapper">
+                        <img src="{anime.image}" alt="{anime.title}">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">{anime.lang}</span>
+                    </div>
+                </a>
+                <div class="card-content">
+                    <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit;">
+                        <h3 class="card-title" title="{anime.title}">{anime.title}</h3>
+                    </a>
+                    <div class="card-info">
+                        <span>Épisode {anime.week_episode}</span>
+                        <span>{anime.season}</span>
+                    </div>
+                    {status_html}
+                </div>
+            </div>
+        """
+
+    return anime_cards
+
+
+@router.get("/recent-anime", response_class=HTMLResponse)
+async def get_recent_anime():
+    finished_anime = app_datas.finished_animes
+
+    if not finished_anime:
+        return """
+        <div style='grid-column: 1 / -1; text-align: center; padding: 2rem; color: var(--text-muted); font-style: italic;'>
+            Aucun téléchargement récent.
+        </div>
+        """
+
+    anime_cards = ""
+    for anime in finished_anime.values():
+        date_difference = datetime.now() - anime.last_download_date
+        time_text = f"{date_difference.days} jours" if date_difference.days > 0 else f"{date_difference.seconds // 3600} heures"
+
+        anime_cards += f"""
+            <div class="anime-card">
+                <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit; display: block;">
+                    <div class="card-image-wrapper">
+                        <img src="{anime.image}" alt="{anime.title}">
+                        <span class="badge badge-type">Anime</span>
+                        <span class="badge badge-lang">{anime.lang}</span>
+                    </div>
+                </a>
+                <div class="card-content">
+                    <a href="/detail?url={anime.anime_url}" style="text-decoration: none; color: inherit;">
+                        <h3 class="card-title" title="{anime.title}">{anime.title}</h3>
+                    </a>
+                    <div class="card-info">
+                        <span>Épisode {anime.week_episode - 1}</span> <span>Saison {anime.season}</span>
+                    </div>
+                    <div class="card-status history">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        {time_text}
+                    </div>
+                </div>
+            </div>
+        """
+
+    return anime_cards
+
+
+@router.get("/health")
+async def health_check():
+    return {"status": "ok", "message": "Working API !"}
+
+
+@router.get("/planning-content")
+async def get_planning_content(request: Request, lang: str = Query("all")):
+    full_planning: dict[str, list[Anime]] | None = get_cached_planning()
+
+    if full_planning is None:
+        app_logger.error("Failed to fetch planning data")
+        return None
+
+    lang_mapping = {
+        "VOSTFR": "jp",
+        "VF": "fr",
+        "VCN": "ch",
+        "VA": "en"
+    }
+
+    filtered_planning = {}
+
+    if lang == "all":
+        filtered_planning = full_planning
+    else:
+        for day, animes in full_planning.items():
+            anime_filter = [
+                anime for anime in animes
+                if lang_mapping.get(anime.lang, "all") == lang
+            ]
+            if anime_filter:
+                filtered_planning[day] = anime_filter
+
+    for animes in filtered_planning.values():
+        for anime in animes:
+            anime.has_been_programmed = app_datas.has_been_registered(anime.title, anime.season, anime.lang)
+
+    return templates.TemplateResponse(
+        request=request,
+        name="planning_cards.html",
+        context={
+            "request": request,
+            "planning": filtered_planning
+        }
+    )
+
+
+@router.get("/episodes", response_class=HTMLResponse)
+async def get_episodes(_: Request, season_url: str, anime_name: str, season_name: str):
+    episodes_data = fetch_episodes(season_url, headers=get_headers())
+
+    episodes_count = len(list(episodes_data.values())[0]) if episodes_data else 0
+
+    html_content = ""
+    for i in range(1, episodes_count + 1):
+        payload = {
+            "season_url": season_url,
+            "episode": i,
+            "anime_name": anime_name
+        }
+
+        safe_hx_vals = html.escape(json.dumps(payload))
+
+        html_content += f"""
+        <div class="episode-row">
+            <span class="episode-name">Épisode {i}</span>
+            <button class="btn-download-ep"
+                    hx-post="/api/v1/download/episode"
+                    hx-vals="{safe_hx_vals}"
+                    hx-swap="outerHTML">
+                Télécharger
+            </button>
+        </div>
+        """
+
+    if not html_content:
+        html_content = "<div class='episode-row'><span class='episode-name'>Aucun épisode trouvé.</span></div>"
+
+    return html_content
+
+
+@router.post("/download/season", response_class=HTMLResponse)
+async def download_season(background_tasks: BackgroundTasks, season_url: str = Form(), anime_name: str = Form()):
+    app_logger.info(f"Téléchargement de la saison {season_url}...")
+
+    background_tasks.add_task(
+        run_download_task,
+        season_url=season_url,
+        anime_name=anime_name,
+        episodes=set(),
+        full_season=True
+    )
+
+    return """
+        <button class='btn-download' style='background: var(--btn-success); cursor: default;' disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Démarré
+        </button>
+        """
+
+
+@router.post("/download/episode", response_class=HTMLResponse)
+async def download_episode(
+    background_tasks: BackgroundTasks,
+    season_url: str = Form(...),
+    episode: int = Form(...),
+    anime_name: str = Form(...)
+):
+    app_logger.info(f"Lancement de la tâche : Épisode {episode} de {anime_name}")
+
+    background_tasks.add_task(
+        run_download_task,
+        season_url=season_url,
+        anime_name=anime_name,
+        episodes=[episode],
+        full_season=False
+    )
+
+    return """
+    <button class='btn-download-ep' style='background: var(--btn-success); cursor: default;' disabled>
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display:inline; vertical-align: text-bottom; margin-right: 4px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Démarré
+    </button>
+    """
+
+
+@router.post("/force-check", response_class=HTMLResponse)
+async def force_check(background_tasks: BackgroundTasks):
+    app_logger.info("Vérification forcée lancée manuellement par l'utilisateur...")
+
+    background_tasks.add_task(run_single_check)
+    background_tasks.add_task(verify_planning_integrity)
+
+    return """
+        <button type="button"
+                class="btn-save"
+                style="margin-top: 0.5rem; background-color: var(--btn-success); border: 1px solid var(--btn-success); color: white; cursor: default;"
+                hx-get="/api/v1/force-check-button"
+                hx-target="this" 
+                hx-trigger="load delay:2s"
+                hx-swap="outerHTML"
+                disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+            Vérification lancée !
+        </button>
+        """
+
+
+@router.get("/force-check-button", response_class=HTMLResponse)
+async def restore_force_check_button():
+    return """
+    <button type="button"
+            class="btn-save"
+            style="margin-top: 0.5rem; background-color: var(--bg-main); border: 1px solid var(--accent); color: var(--text-main);"
+            hx-post="/api/v1/force-check"
+            hx-target="this"
+            hx-swap="outerHTML">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="display: inline; vertical-align: text-bottom; margin-right: 6px;">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+        </svg>
+        Forcer la vérification maintenant
+    </button>
+    """
+
+
+@router.post("/settings/save", response_class=HTMLResponse)
+async def save_settings(
+        domain: str = Form(""),
+        user_agent: str = Form(""),
+        cf_clearance: str = Form(""),
+        refresh_interval: int = Form(15)
+):
+    settings.domain = domain
+    settings.cloudflare_config.user_agent = user_agent
+    settings.cloudflare_config.cf_clearance = cf_clearance
+    settings.refresh_interval = refresh_interval
+
+    settings.save()
+
+    return """
+    <button type="button" 
+            id="save-settings-btn" 
+            class="btn-save" 
+            style="background-color: var(--btn-success); border-color: var(--btn-success); pointer-events: none;"
+            hx-get="/api/v1/settings/save-button"
+            hx-trigger="load delay:2s"
+            hx-swap="outerHTML">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Paramètres sauvegardés !
+    </button>
+    """
+
+
+@router.get("/settings/save-button", response_class=HTMLResponse)
+async def get_original_save_button():
+    return """
+    <button type="submit" id="save-settings-btn" class="btn-save">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+        Sauvegarder les paramètres
+    </button>
+    """
+

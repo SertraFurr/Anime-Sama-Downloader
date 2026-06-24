@@ -19,7 +19,7 @@ def settings_menu():
         choice = input(f"{Colors.BOLD}Select option: {Colors.ENDC}").strip()
         
         if choice == '1':
-            print(f"\n{Colors.BOLD}Enter new save path template:{Colors.ENDC}")
+            print(f"\n{Colors.BOLD}Enter new save path templates:{Colors.ENDC}")
             print(f"You can use keywords {Colors.WARNING}{{anime}}{Colors.ENDC} and {Colors.WARNING}{{season}}{Colors.ENDC} which will be automatically replaced.")
             print(f"You can also remove them if you want a simpler structure.")
             print(f"\n{Colors.BOLD}Examples (for anime 'Roshidere' season 'saison1'):{Colors.ENDC}")
@@ -31,7 +31,7 @@ def settings_menu():
             new_template = input(f"{Colors.BOLD}Template: {Colors.ENDC}").strip()
             if new_template:
                 set_setting("save_template", new_template)
-                print_status("Save path template updated!", "success")
+                print_status("Save path templates updated!", "success")
             else:
                 print_status("Cancelled.", "warning")
             input("Press Enter to continue...")
