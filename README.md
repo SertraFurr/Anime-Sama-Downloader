@@ -15,7 +15,7 @@ docker run --rm `
   -e APP_RELOAD="false" `
   -e TZ="Europe/Paris" `
   -p 8080:8080 `
-  anime-sama-downloader-gui
+  flastar/anime-sama-downloader-gui
 ````
 
 N'hésitez pas à rajouter un volume également.
