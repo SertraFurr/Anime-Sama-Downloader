@@ -8,7 +8,7 @@
  
 **A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.(any)**
 
-(✨31 STARS✨! Thanks!)
+(✨33 STARS✨! Thanks!)
 
 *Enhanced with colorful interface, smart source detection, and robust error handling*
 
