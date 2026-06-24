@@ -3,6 +3,8 @@ LABEL authors="flastar"
 
 WORKDIR /app
 
+RUN apk add --no-cache ffmpeg
+
 COPY pyproject.toml uv.lock ./
 
 RUN uv sync --frozen --no-cache
