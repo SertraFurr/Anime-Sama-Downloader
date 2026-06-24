@@ -1,5 +1,5 @@
-from gui.utils.config import CloudflareConfig, settings
-from var import generate_requests_headers
+from src.gui.utils.config import CloudflareConfig, settings
+from src.var import generate_requests_headers
 
 
 def get_headers():

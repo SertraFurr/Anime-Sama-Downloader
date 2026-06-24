@@ -2,14 +2,14 @@ import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Iterable
 
-from gui.utils.cloudflare import get_headers
-from gui.utils.error import DownloadError, FetchError
-from gui.utils.utils import order_episodes_sources
-from utils.download.download_video import download_video
-from utils.fetch.fetch_episodes import fetch_episodes
-from utils.fetch.fetch_video_source import fetch_video_source
-from utils.get.get_save_directory import format_save_path
-from utils.ts.convert_ts_to_mp4 import convert_ts_to_mp4
+from src.gui.utils.cloudflare import get_headers
+from src.gui.utils.error import DownloadError, FetchError
+from src.gui.utils.utils import order_episodes_sources
+from src.utils.download.download_video import download_video
+from src.utils.fetch.fetch_episodes import fetch_episodes
+from src.utils.fetch.fetch_video_source import fetch_video_source
+from src.utils.get.get_save_directory import format_save_path
+from src.utils.ts.convert_ts_to_mp4 import convert_ts_to_mp4
 
 
 def _extract_episode_sources_from_data(episode_data: dict[str, list[str]], episode_num: int):

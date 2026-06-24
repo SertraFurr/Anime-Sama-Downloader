@@ -2,15 +2,15 @@ from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from starlette.responses import HTMLResponse
 
-from gui.utils.cached import get_cached_planning
-from gui.utils.cloudflare import get_headers
-from gui.utils.config import settings
-from gui.utils.utils import normalize_catalog_url
-from utils.fetch.detail import fetch_anime_details
-from utils.search.expand_catalogue import expand_catalogue_url
+from src.gui.utils.cached import get_cached_planning
+from src.gui.utils.cloudflare import get_headers
+from src.gui.utils.config import settings
+from src.gui.utils.utils import normalize_catalog_url
+from src.utils.fetch.detail import fetch_anime_details
+from src.utils.search.expand_catalogue import expand_catalogue_url
 
 router = APIRouter(tags=["Frontend"])
-templates = Jinja2Templates(directory="gui/templates")
+templates = Jinja2Templates(directory="src/gui/templates")
 
 
 @router.get("/", response_class=HTMLResponse)

@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
-from gui.daemon import check_and_download_scheduled, scheduler
-from gui.routers import web, api
+from src.gui.daemon import check_and_download_scheduled, scheduler
+from src.gui.routers import web, api
 
 
 load_dotenv()
@@ -27,7 +27,7 @@ async def lifespan(_):
 
 app = FastAPI(title="Anime-Sama Downloader GUI", lifespan=lifespan)
 
-app.mount("/static", StaticFiles(directory="gui/static"), name="static")
+app.mount("/static", StaticFiles(directory="./src/gui/static"), name="static")
 app.include_router(web.router)
 app.include_router(api.router, prefix="/api/v1")
 
@@ -36,4 +36,4 @@ if __name__ == "__main__":
     port = int(os.getenv("APP_PORT", 8000))
     reload = os.getenv("APP_RELOAD", "true").lower() == "true"
 
-    uvicorn.run("gui.__main__:app", host=host, port=port, reload=reload)
+    uvicorn.run("src.gui.__main__:app", host=host, port=port, reload=reload)
