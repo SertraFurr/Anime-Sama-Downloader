@@ -1,7 +1,7 @@
 ---
 name: Rapport de bug
 about: Signaler un problème pour nous aider à améliorer le projet
-title: ''
+title: '[Bug] '
 labels: 'bug'
 assignees: ''
 
