@@ -1,38 +1,38 @@
 ---
-name: Bug report
-about: Create a report to help us improve
+name: Rapport de bug
+about: Signaler un problème pour nous aider à améliorer le projet
 title: ''
-labels: ''
+labels: 'bug'
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Description du bug**
+Une description claire et concise de ce qu'est le bug.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Pour reproduire**
+Étapes pour reproduire le comportement :
+1. Aller sur '...'
+2. Cliquer sur '....'
+3. Faire défiler vers le bas jusqu'à '....'
+4. Constater l'erreur
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Comportement attendu**
+Une description claire et concise de ce que vous vous attendiez à voir se produire.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Captures d'écran**
+Le cas échéant, ajoutez des captures d'écran pour aider à expliquer votre problème.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Ordinateur (merci de compléter les informations suivantes) :**
+ - OS (Système d'exploitation) : [ex: Windows, macOS]
+ - Navigateur : [ex: Chrome, Safari]
+ - Version : [ex: 124]
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+**Smartphone (merci de compléter les informations suivantes) :**
+ - Appareil : [ex: iPhone 15, Samsung S24]
+ - OS (Système d'exploitation) : [ex: iOS 17, Android 14]
+ - Navigateur : [ex: Safari, Chrome Mobile]
+ - Version : [ex: 124]
 
-**Additional context**
-Add any other context about the problem here.
+**Contexte de l'erreur**
+Ajoutez ici tout autre contexte ou information concernant le problème.
