@@ -23,3 +23,9 @@ N'hésitez pas à rajouter un volume également.
 Utilisation de l'IA :
 - Quasi totalité du frontend réalisé par l'IA
 - 50-60% du backend par IA (chaque fonction individuellement, la structure a bien été réalisée par un humain)
+
+# Disclaimer
+Cet outil est à but éducatif est n'est pas voué à être utilisé.
+Respectez les lois locales en vigueur chez vous.
+Utilisez le responsablement pour être en accord avec les termes du site anime-sama.pw.
+
