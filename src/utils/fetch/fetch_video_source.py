@@ -11,6 +11,7 @@ from src.utils.extract.extract_vidmoly_video_source     import extract_vidmoly_v
 from src.utils.fetch.fetch_page_content                 import fetch_page_content
 from src.utils.extract.extract_sibnet_video_source      import extract_sibnet_video_source
 from src.utils.fetch.fetch_sibnet_redirect_location     import fetch_sibnet_redirect_location
+from src.utils.extract.extract_uqload_video_source      import fetch_uqload_location
 
 def fetch_video_source(url):
     def process_single_url(single_url):
@@ -43,6 +44,14 @@ def fetch_video_source(url):
             if video_source:
                 print_status("Getting direct download link...", "loading")
                 return fetch_sibnet_redirect_location(video_source)
+            return None
+        # UQLOAD EXTRACTION
+
+        elif 'uqload' in single_url:
+            video_source = fetch_uqload_location(single_url)
+            if video_source:
+                print_status("Getting direct download link...", "loading")
+                return video_source
             return None
         
         # ONEUPLOAD EXTRACTION
