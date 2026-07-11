@@ -213,6 +213,7 @@ Watch the magic happen
 | **⚠️ READ BEFORE DOING ANYTHING** | Threaded mode is only suitable for strong Wi-Fi connections that won't crash when handling multiple downloads simultaneously. |||
 | 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Primary recommended source |
 | 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Reliable backup source |
+| 🎬 **Uqload.is** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Reliable backup source |
 | 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
 | 🎬 **ONEUPLOAD** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
 | 🎬 **EMBED4ME** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
@@ -220,7 +221,6 @@ Watch the magic happen
 | 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. INCONSISTENT |
 | 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
 | 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🤔 **Uqload.is** | ![Will be added later](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Later i'm sleepy. |
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
 | 🚫 **MINOCHINOS** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Useless to implement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
