@@ -46,13 +46,32 @@ def fetch_video_source(url):
                 return fetch_sibnet_redirect_location(video_source)
             return None
         # UQLOAD EXTRACTION
-
         elif 'uqload' in single_url:
-            video_source = fetch_uqload_location(single_url)
-            if video_source:
-                print_status("Getting direct download link...", "loading")
-                return video_source
-            return None
+            master_m3u8 = extract_m3u8(single_url)
+            if not master_m3u8:
+                return None
+            try:
+                headers = {"accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8", "accept-language": "fr-FR,fr;q=0.8", "cache-control": "no-cache", "sec-gpc": "1", "upgrade-insecure-requests": "1", "user-agent": "Chrome/150.0.0.0 Safari/67.67"}
+
+                response = requests.get(master_m3u8,headers=headers,timeout=10
+                )
+
+                response.raise_for_status()
+
+                streams = parse_m3u8_content(response.text)
+                if not streams:
+                    print_status("No video streams found in UQLoad playlist","error")
+                    return master_m3u8
+
+                best_stream = max(streams, key=lambda x: int(x.get("BANDWIDTH", 0)) )
+                return best_stream["url"]
+
+            except requests.RequestException as e:
+                print_status(
+                    f"Failed to fetch UQLoad playlist: {e}",
+                    "error"
+                )
+                return master_m3u8
         
         # ONEUPLOAD EXTRACTION
         elif 'oneupload.net' in single_url or 'oneupload.to' in single_url:
