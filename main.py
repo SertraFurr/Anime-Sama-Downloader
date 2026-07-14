@@ -18,6 +18,7 @@ def tutorial_input():
 
     return cf_clearance, user_agent
 
+print("Checking if cloudflare is enabled..")
 cloudflare = check_if_cloudflare_enabled(domain=get_domain(), headers={"User-Agent": "Mozilla/5.0"})
 
 if cloudflare:
