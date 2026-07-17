@@ -2,11 +2,12 @@ import os
 import re
 import requests
 import threading
-
 from src.var                            import print_separator, print_status, Colors
 from src.utils.download.download_video  import download_video
 from src.utils.ts.convert_ts_to_mp4     import convert_ts_to_mp4
+import time
 
+PREFIX_URL = "https://myanimelist.net/search/prefix.json"
 
 _mal_search_cache = {}
 _cache_lock = threading.Lock()
@@ -15,14 +16,6 @@ _cache_lock = threading.Lock()
 def normalize(text):
     if text is None: return ""
     return re.sub(r"[^\w\s]", "", str(text).lower().strip())
-
-
-def _is_movie_title(title):
-    if not title: return False
-    movie_keywords = ["movie", "film", "the movie", "le film"]
-    title_lower = title.lower()
-    return any(keyword in title_lower for keyword in movie_keywords)
-
 
 def _get_best_title(anime):
     titles = anime.get("titles", [])
@@ -40,70 +33,70 @@ def _get_best_title(anime):
     
     return anime.get("title") or "Unknown"
 
-
-def _clean_anime_name(name):
-    if not name: return ""
-    name = re.sub(r'\s*\(.*?\)\s*', '', name)
-    name = re.sub(r'\s*\[.*?\]\s*', '', name)
-    name = re.sub(r'\s*-\s*saison\s*\d+.*', '', name, flags=re.IGNORECASE)
-    name = re.sub(r'\s*-\s*season\s*\d+.*', '', name, flags=re.IGNORECASE)
-    name = re.sub(r'\s*s\d+.*', '', name, flags=re.IGNORECASE)
-    name = name.strip()
-    return name
-
-
-def _display_search_results(animes, query):
-    if not animes:
-        return None
-    
-    if len(animes) == 1:
-        return animes[0]
-    
-    print(f"\n{Colors.BOLD}{Colors.HEADER}Multiple results found for '{query}':{Colors.ENDC}")
-    print_separator()
-    
-    display_animes = animes[:10]
-    
-    for idx, anime in enumerate(display_animes, 1):
-        anime_type = anime.get("type") or "Unknown"
-        mal_id = anime.get("mal_id") or "?"
-        title = _get_best_title(anime)
-        
-        alt_titles = []
-        for t in anime.get("titles", [])[:3]:
-            title_text = t.get("title") or ""
-            if title_text and title_text != title:
-                alt_titles.append(title_text)
-        
-        print(f"{Colors.OKGREEN}[{idx}]{Colors.ENDC} {Colors.BOLD}{title}{Colors.ENDC}")
-        print(f"    Type: {anime_type} | MAL ID: {mal_id}")
-        if alt_titles:
-            print(f"    Alt: {' / '.join(alt_titles[:2])}")
-        print()
-    
-    print(f"{Colors.OKGREEN}[0]{Colors.ENDC} None of the above (skip MAL matching)")
-    print_separator()
-    
-    while True:
+def _fetch_prefix_json(query, media_type="all", timeout=15.0, max_retries=5):
+    params = {"type": media_type, "keyword": query, "v": 1}
+ 
+    for attempt in range(max_retries):
         try:
-            choice = input(f"{Colors.BOLD}Select the correct anime [0-{len(display_animes)}]: {Colors.ENDC}").strip()
-            choice_num = int(choice)
-            
-            if choice_num == 0:
-                print_status("Skipping MAL matching", "warning")
-                return None
-            
-            if 1 <= choice_num <= len(display_animes):
-                selected = display_animes[choice_num - 1]
-                print_status(f"Selected: {_get_best_title(selected)}", "success")
-                return selected
-            else:
-                print_status(f"Please enter a number between 0 and {len(display_animes)}", "error")
-        except ValueError:
-            print_status("Please enter a valid number", "error")
-        except KeyboardInterrupt:
-            print_status("\nSkipping MAL matching", "warning")
-            return None
+            resp = requests.get(PREFIX_URL, params=params, timeout=timeout)
+        except requests.RequestException as e:
+            print_status(f"Request error (attempt {attempt + 1}): {e}", "warning")
+            time.sleep(1.5 * (attempt + 1))
+            continue
+ 
+        if resp.status_code == 429:
+            wait = 1.5 * (attempt + 1)
+            print_status(f"Rate limited (429). Waiting {wait:.1f}s...", "warning")
+            time.sleep(wait)
+            continue
+ 
+        break
+ 
+    if resp is None or resp.status_code != 200:
+        status = resp.status_code if resp is not None else "no response"
+        print_status(f"Failed to fetch prefix.json (status: {status})", "warning")
+        return None
+ 
+    try:
+        return resp.json()
+    except ValueError:
+        print_status("Failed to parse JSON response", "warning")
+        return None
+ 
+ 
+def _flatten_categories(data, wanted_type=None):
+    if not data:
+        return []
+ 
+    results = []
+    for category in data.get("categories", []):
+        cat_type = category.get("type")
+        if wanted_type and cat_type != wanted_type:
+            continue
+        for item in category.get("items", []):
+            results.append(item)
+    return results
+
+def _auto_select_by_es_score(results, gap_ratio=2.0):
+    if not results:
+        return None
+
+    if len(results) == 1:
+        return results[0]
+
+    scored = sorted(results, key=lambda r: r.get("es_score", 0), reverse=True)
+    top, runner_up = scored[0], scored[1]
+
+    top_score = top.get("es_score", 0)
+    runner_up_score = runner_up.get("es_score", 0)
+
+    if runner_up_score <= 0:
+        return top
+
+    if top_score >= runner_up_score * gap_ratio:
+        return top
+
+    return None
 
 
 def search_anime_on_mal(anime_name, interactive=True):
@@ -111,122 +104,81 @@ def search_anime_on_mal(anime_name, interactive=True):
     if cache_key in _mal_search_cache:
         print_status(f"Using cached MAL data for: {anime_name}", "info")
         return _mal_search_cache[cache_key]
-    
-    cleaned_name = _clean_anime_name(anime_name)
-    
-    search_queries = [cleaned_name]
-    
-    if cleaned_name != anime_name:
-        search_queries.append(anime_name)
-    
-    print_status(f"Searching MAL for: {cleaned_name}", "info")
-    
-    all_results = []
-    
-    for query in search_queries:
-        try:
-            i = 0
-            while True:
-                response = requests.get(f"https://api.jikan.moe/v4/anime?q={query}&limit=20", timeout=15.0)
-                i += 1
-                if response.status_code != 429 or i > 9:
-                    break
 
-            response.raise_for_status()
-            animes = response.json().get("data", [])
+    print_status(f"Searching MAL for: {anime_name}", "info")
 
-            if not animes:
-                continue
+    data = _fetch_prefix_json(anime_name, media_type="anime")
+    all_results = _flatten_categories(data, wanted_type="anime")
 
-            for anime in animes:
-                if anime not in all_results:
-                    all_results.append(anime)
-
-        except requests.RequestException as e:
-            print_status(f"Error fetching data from Jikan API: {str(e)}", "warning")
-            continue
-        except Exception as e:
-            print_status(f"Unexpected error while searching MAL: {str(e)}", "warning")
-            continue
-    
     if not all_results:
         print_status(f"No results found for '{anime_name}'", "warning")
         _mal_search_cache[cache_key] = None
         return None
-    
+
     tv_series = []
     other_types = []
-    
-    for anime in all_results:
-        anime_type = (anime.get("type") or "").lower()
-        if anime_type in ["tv", "ona"]:
-            tv_series.append(anime)
+    for item in all_results:
+        media_type = (item.get("payload", {}).get("media_type") or "").lower()
+        if media_type in ["tv", "ona"]:
+            tv_series.append(item)
         else:
-            other_types.append(anime)
-    
-    for query in search_queries:
-        name_normalized = normalize(query)
-        
-        for anime in tv_series:
-            for title in anime.get("titles", []):
-                title_normalized = normalize(title.get("title"))
-                if name_normalized == title_normalized:
-                    print_status(f"Found exact match: {_get_best_title(anime)}", "success")
-                    result = {
-                        "mal_id": anime.get("mal_id"),
-                        "title": _get_best_title(anime),
-                        "type": anime.get("type")
-                    }
-                    _mal_search_cache[cache_key] = result
-                    return result
-        
-        for anime in other_types:
-            for title in anime.get("titles", []):
-                title_normalized = normalize(title.get("title"))
-                if name_normalized == title_normalized:
-                    print_status(f"Found exact match: {_get_best_title(anime)}", "success")
-                    result = {
-                        "mal_id": anime.get("mal_id"),
-                        "title": _get_best_title(anime),
-                        "type": anime.get("type")
-                    }
-                    _mal_search_cache[cache_key] = result
-                    return result
-    
-    if interactive:
-        candidates = tv_series if tv_series and not _is_movie_title(anime_name) else all_results
-        
-        selected = _display_search_results(candidates, anime_name)
-        
-        if selected:
+            other_types.append(item)
+
+    name_normalized = normalize(anime_name)
+    for item in tv_series + other_types:
+        if normalize(item.get("name")) == name_normalized:
+            print_status(f"Found exact match: {item['name']}", "success")
             result = {
-                "mal_id": selected.get("mal_id"),
-                "title": _get_best_title(selected),
-                "type": selected.get("type")
+                "mal_id": item.get("id"),
+                "title": item.get("name"),
+                "type": item.get("payload", {}).get("media_type"),
             }
             _mal_search_cache[cache_key] = result
             return result
-        else:
-            _mal_search_cache[cache_key] = None
-            return None
-    else:
-        if tv_series and not _is_movie_title(anime_name):
-            first_anime = tv_series[0]
-        elif all_results:
-            first_anime = all_results[0]
-        else:
-            _mal_search_cache[cache_key] = None
-            return None
-        
-        print_status(f"Using first result: {_get_best_title(first_anime)}", "info")
+
+    auto_match = _auto_select_by_es_score(all_results)
+    if auto_match:
+        print_status(f"Auto-selected top result: {auto_match['name']}", "success")
         result = {
-            "mal_id": first_anime.get("mal_id"),
-            "title": _get_best_title(first_anime),
-            "type": first_anime.get("type")
+            "mal_id": auto_match.get("id"),
+            "title": auto_match.get("name"),
+            "type": auto_match.get("payload", {}).get("media_type"),
         }
         _mal_search_cache[cache_key] = result
         return result
 
+    if interactive:
+        candidates = tv_series if tv_series else all_results
+        print_status("No exact match. Candidates:", "info")
+        for idx, item in enumerate(candidates):
+            payload = item.get("payload", {})
+            print(f"  [{idx}] {item['name']} "
+                  f"({payload.get('media_type')}, {payload.get('start_year')}, "
+                  f"score {payload.get('score')})")
+
+        choice = input("Select index (or blank to skip): ").strip()
+        if not choice.isdigit() or int(choice) >= len(candidates):
+            _mal_search_cache[cache_key] = None
+            return None
+
+        selected = candidates[int(choice)]
+        result = {
+            "mal_id": selected.get("id"),
+            "title": selected.get("name"),
+            "type": selected.get("payload", {}).get("media_type"),
+        }
+        _mal_search_cache[cache_key] = result
+        return result
+    else:
+        first_item = tv_series[0] if tv_series else all_results[0]
+        print_status(f"Using first result: {first_item['name']}", "info")
+        result = {
+            "mal_id": first_item.get("id"),
+            "title": first_item.get("name"),
+            "type": first_item.get("payload", {}).get("media_type"),
+        }
+        _mal_search_cache[cache_key] = result
+        return result
 
 def create_match_file(save_dir, anime_name, interactive=True):
     with _cache_lock:
