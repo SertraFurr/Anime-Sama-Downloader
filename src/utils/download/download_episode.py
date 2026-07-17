@@ -127,7 +127,7 @@ def search_anime_on_mal(anime_name, interactive=True):
         try:
             i = 0
             while True:
-                response = requests.get(f"https://api.jikan.moe/v4/anime?q={query}&limit=20", timeout=15.0)
+                response = requests.get(f"https://api.tenrai.org/v1/anime?q={query}&limit=20", timeout=15.0)
                 i += 1
                 if response.status_code != 429 or i > 9:
                     break
@@ -143,7 +143,7 @@ def search_anime_on_mal(anime_name, interactive=True):
                     all_results.append(anime)
 
         except requests.RequestException as e:
-            print_status(f"Error fetching data from Jikan API: {str(e)}", "warning")
+            print_status(f"Error fetching data from Tenrai API: {str(e)}", "warning")
             continue
         except Exception as e:
             print_status(f"Unexpected error while searching MAL: {str(e)}", "warning")
