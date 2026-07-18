@@ -392,9 +392,6 @@ def main():
         episode_numbers = [index + 1 for index in episode_indices]
         player_order = [player_choice] + [p for p in episodes.keys() if p != player_choice]
 
-        # Resolve the MAL match once, up front, before any threaded downloads start.
-        # Otherwise whichever worker thread gets there first triggers the interactive
-        # prompt in the middle of concurrent download output.
         if not args.no_mal and get_anime_name and interactive:
             os.makedirs(save_dir, exist_ok=True)
             create_match_file(save_dir, get_anime_name, interactive=interactive)
