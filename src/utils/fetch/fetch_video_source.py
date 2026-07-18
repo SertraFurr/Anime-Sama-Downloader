@@ -11,7 +11,7 @@ from src.utils.extract.extract_vidmoly_video_source     import extract_vidmoly_v
 from src.utils.fetch.fetch_page_content                 import fetch_page_content
 from src.utils.extract.extract_sibnet_video_source      import extract_sibnet_video_source
 from src.utils.fetch.fetch_sibnet_redirect_location     import fetch_sibnet_redirect_location
-from src.utils.extract.extract_uqload_video_source      import fetch_uqload_location
+from src.utils.extract.extract_uqload_video_source      import extract_m3u8
 
 def fetch_video_source(url):
     def process_single_url(single_url):

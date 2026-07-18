@@ -54,7 +54,8 @@ from src.utils.check.check_ffmpeg_installed     import check_ffmpeg_installed
 from src.utils.validate_anime_sama_url          import validate_anime_sama_url
 from src.utils.extract.extract_anime_name       import extract_anime_name
 from src.utils.get.get_save_directory           import get_save_directory, format_save_path
-from src.utils.download.download_episode        import download_episode
+from src.utils.download.download_episode        import download_episode, create_match_file
+from src.utils.download.download_episode_with_fallback import download_episode_with_fallback
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
 from src.utils.download.download_scan           import download_scan
@@ -389,7 +390,15 @@ def main():
         
         urls = [episodes[player_choice][index] for index in episode_indices]
         episode_numbers = [index + 1 for index in episode_indices]
-        
+        player_order = [player_choice] + [p for p in episodes.keys() if p != player_choice]
+
+        # Resolve the MAL match once, up front, before any threaded downloads start.
+        # Otherwise whichever worker thread gets there first triggers the interactive
+        # prompt in the middle of concurrent download output.
+        if not args.no_mal and get_anime_name and interactive:
+            os.makedirs(save_dir, exist_ok=True)
+            create_match_file(save_dir, get_anime_name, interactive=interactive)
+
         print(f"\n{Colors.BOLD}{Colors.HEADER}🎬 PROCESSING EPISODES{Colors.ENDC}")
         print_separator()
         print_status(f"Player: {player_choice}", "info")
@@ -442,8 +451,8 @@ def main():
                 print_status("Starting threaded downloads...", "info")
                 with ThreadPoolExecutor() as executor:
                     future_to_episode = {
-                        executor.submit(download_episode, ep_num, url, video_src, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive): ep_num
-                        for ep_num, url, video_src in zip(episode_numbers, urls, video_sources)
+                        executor.submit(download_episode_with_fallback, ep_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_src, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive): ep_num
+                        for ep_num, ep_idx, video_src in zip(episode_numbers, episode_indices, video_sources)
                     }
                     for future in as_completed(future_to_episode):
                         ep_num = future_to_episode[future]
@@ -454,8 +463,8 @@ def main():
                             print_status(f"Error ep {ep_num}: {e}", "error")
                             failed_downloads += 1
             else:
-                for episode_num, url, video_source in zip(episode_numbers, urls, video_sources):
-                    success, _ = download_episode(episode_num, url, video_source, get_anime_name, save_dir, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive)
+                for episode_num, ep_idx, video_source in zip(episode_numbers, episode_indices, video_sources):
+                    success, _ = download_episode_with_fallback(episode_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_source, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive)
                     if not success: failed_downloads += 1
 
             print_separator()
