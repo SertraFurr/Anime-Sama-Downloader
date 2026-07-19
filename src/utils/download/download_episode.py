@@ -99,53 +99,66 @@ def _auto_select_by_es_score(results, gap_ratio=2.0):
     return None
 
 
-def search_anime_on_mal(anime_name, interactive=True):
+def search_anime_on_mal(anime_name, interactive=True, alt_names=None):
     cache_key = anime_name.lower().strip()
     if cache_key in _mal_search_cache:
         print_status(f"Using cached MAL data for: {anime_name}", "info")
         return _mal_search_cache[cache_key]
 
-    print_status(f"Searching MAL for: {anime_name}", "info")
+    # MAL's search only understands English/romaji titles. anime-sama URLs
+    # (and thus anime_name) are French, so that query alone usually misses.
+    # alt_names carries the English/romaji names scraped from the anime-sama
+    # page itself, tried in order after the original name.
+    seen = set()
+    queries = []
+    for name in [anime_name] + list(alt_names or []):
+        key = name.lower().strip()
+        if name and key not in seen:
+            seen.add(key)
+            queries.append(name)
 
-    data = _fetch_prefix_json(anime_name, media_type="anime")
-    all_results = _flatten_categories(data, wanted_type="anime")
+    all_results = []
+    for query in queries:
+        print_status(f"Searching MAL for: {query}", "info")
+
+        data = _fetch_prefix_json(query, media_type="anime")
+        results = _flatten_categories(data, wanted_type="anime")
+        if not results:
+            continue
+        all_results = results
+
+        tv_series = [r for r in results if (r.get("payload", {}).get("media_type") or "").lower() in ["tv", "ona"]]
+        other_types = [r for r in results if r not in tv_series]
+
+        name_normalized = normalize(query)
+        for item in tv_series + other_types:
+            if normalize(item.get("name")) == name_normalized:
+                print_status(f"Found exact match: {item['name']}", "success")
+                result = {
+                    "mal_id": item.get("id"),
+                    "title": item.get("name"),
+                    "type": item.get("payload", {}).get("media_type"),
+                }
+                _mal_search_cache[cache_key] = result
+                return result
+
+        auto_match = _auto_select_by_es_score(results)
+        if auto_match:
+            print_status(f"Auto-selected top result: {auto_match['name']}", "success")
+            result = {
+                "mal_id": auto_match.get("id"),
+                "title": auto_match.get("name"),
+                "type": auto_match.get("payload", {}).get("media_type"),
+            }
+            _mal_search_cache[cache_key] = result
+            return result
 
     if not all_results:
         print_status(f"No results found for '{anime_name}'", "warning")
         _mal_search_cache[cache_key] = None
         return None
 
-    tv_series = []
-    other_types = []
-    for item in all_results:
-        media_type = (item.get("payload", {}).get("media_type") or "").lower()
-        if media_type in ["tv", "ona"]:
-            tv_series.append(item)
-        else:
-            other_types.append(item)
-
-    name_normalized = normalize(anime_name)
-    for item in tv_series + other_types:
-        if normalize(item.get("name")) == name_normalized:
-            print_status(f"Found exact match: {item['name']}", "success")
-            result = {
-                "mal_id": item.get("id"),
-                "title": item.get("name"),
-                "type": item.get("payload", {}).get("media_type"),
-            }
-            _mal_search_cache[cache_key] = result
-            return result
-
-    auto_match = _auto_select_by_es_score(all_results)
-    if auto_match:
-        print_status(f"Auto-selected top result: {auto_match['name']}", "success")
-        result = {
-            "mal_id": auto_match.get("id"),
-            "title": auto_match.get("name"),
-            "type": auto_match.get("payload", {}).get("media_type"),
-        }
-        _mal_search_cache[cache_key] = result
-        return result
+    tv_series = [r for r in all_results if (r.get("payload", {}).get("media_type") or "").lower() in ["tv", "ona"]]
 
     if interactive:
         candidates = tv_series if tv_series else all_results
@@ -180,7 +193,7 @@ def search_anime_on_mal(anime_name, interactive=True):
         _mal_search_cache[cache_key] = result
         return result
 
-def create_match_file(save_dir, anime_name, interactive=True):
+def create_match_file(save_dir, anime_name, interactive=True, alt_names=None):
     with _cache_lock:
         try:
             if not anime_name:
@@ -229,7 +242,7 @@ def create_match_file(save_dir, anime_name, interactive=True):
             print(f"{Colors.BOLD}{Colors.HEADER}🔍 Searching for anime on MyAnimeList...{Colors.ENDC}")
             print_separator()
             
-            mal_data = search_anime_on_mal(anime_name, interactive=interactive)
+            mal_data = search_anime_on_mal(anime_name, interactive=interactive, alt_names=alt_names)
             
             if mal_data:
                 with open(match_file_path, 'w', encoding='utf-8') as match_file:

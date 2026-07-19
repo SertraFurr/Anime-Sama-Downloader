@@ -55,6 +55,7 @@ from src.utils.validate_anime_sama_url          import validate_anime_sama_url
 from src.utils.extract.extract_anime_name       import extract_anime_name
 from src.utils.get.get_save_directory           import get_save_directory, format_save_path
 from src.utils.download.download_episode        import download_episode, create_match_file
+from src.utils.fetch.fetch_alt_titles           import fetch_alt_titles
 from src.utils.download.download_episode_with_fallback import download_episode_with_fallback
 from src.utils.search.search_anime              import search_anime
 from src.utils.search.expand_catalogue          import expand_catalogue_url
@@ -394,7 +395,8 @@ def main():
 
         if not args.no_mal and get_anime_name and interactive:
             os.makedirs(save_dir, exist_ok=True)
-            create_match_file(save_dir, get_anime_name, interactive=interactive)
+            alt_names = fetch_alt_titles(base_url, headers=headers)
+            create_match_file(save_dir, get_anime_name, interactive=interactive, alt_names=alt_names)
 
         print(f"\n{Colors.BOLD}{Colors.HEADER}🎬 PROCESSING EPISODES{Colors.ENDC}")
         print_separator()
