@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🎌 Anime-Sama Downloader
+# Anime-Sama Downloader
   
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux_(mostly_windows)-lightgrey.svg?style=for-the-badge" alt="Platform">
@@ -8,7 +8,7 @@
  
 **A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.(any)**
 
-(✨45 STARS✨! Thanks!) 
+(✨46 STARS✨! Thanks!) 
 
 *Questions? Unworking urls? Open an issue, will be added fastly (hopefully)*
 
