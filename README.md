@@ -56,7 +56,7 @@ Looking for projects to do ! feel free to request in issue !
 ### 📋 Prerequisites
 
 <details>
-<summary>🐍 <strong> <align="center">Python Requirements</strong></summary>
+<summary> <strong> <align="center">Python Requirements</strong></summary>
 
 Make sure you have **Python 3.6+** installed:
 
@@ -76,7 +76,7 @@ pip install requests beautifulsoup4 tqdm
 </details>
 
 
-### ⚡ Installation & Usage
+### Installation & Usage
 
 ```bash
 # 1. Clone the repository.
@@ -94,7 +94,7 @@ python3 main.py --help
 
 ---
 
-## 📖 CLI Arguments & Usage
+## CLI Arguments & Usage
 
 You can use the script entirely from the command line without interactive prompts.
 
@@ -113,7 +113,7 @@ You can use the script entirely from the command line without interactive prompt
 | `--no-mal` | Disable MyAnimeList research | `--no-mal` | `False` |
 
 
-### ⚡ User Examples
+### User Examples
 
 **1. Search and Download Interactively:**
 ```bash
@@ -135,7 +135,7 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 <div align="center">
 
 
-## 📖 Complete Interactive Usage Guide
+## Complete Interactive Usage Guide
 
 
 <h3>Three Simple Steps</h3>
@@ -145,7 +145,7 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 <tr>
 <td width="33%" align="center">
 
-### 1️⃣ Find Anime
+###  Find Anime
 <img src="https://img.shields.io/badge/Step-1-blue?style=for-the-badge">
 
 Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
@@ -157,7 +157,7 @@ Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
 </td>
 <td width="33%" align="center">
 
-### 2️⃣ Run Script  
+### Run Script  
 <img src="https://img.shields.io/badge/Step-2-green?style=for-the-badge">
 
 Launch the downloader
@@ -169,7 +169,7 @@ Launch the downloader
 </td>
 <td width="33%" align="center">
 
-### 3️⃣ Enjoy!
+### Enjoy!
 <img src="https://img.shields.io/badge/Step-3-purple?style=for-the-badge">
 
 Watch the magic happen
@@ -187,7 +187,7 @@ Watch the magic happen
 <details>
 <summary>🔗 Example URLs</summary>
 
-**✅ Works**
+* Works**
 ```
 - https://anime-sama.fr/catalogue/roshidere/saison1/vostfr/
 - https://anime-sama.fr/catalogue/demon-slayer/saison1/vf/
@@ -196,7 +196,7 @@ Watch the magic happen
 ```
 
 
-**❌ Won’t work**
+* Won’t work**
 ```
 - https://anime-sama.fr/catalogue/roshidere/
 - https://anime-sama.fr/
@@ -226,7 +226,7 @@ Watch the magic happen
 ---
 
 
-## 📸 Screenshots
+## Screenshots
 
 <details>
 <summary>🖼️ <strong>View CLI Interface Screenshots</strong></summary>
@@ -270,10 +270,10 @@ Enter player number (1-3) or type player name:
 
 
 <details>
-<summary>🔧 <strong>Customization Options</strong></summary>
+<summary> <strong>Customization Options</strong></summary>
 
 
-### 📁 Default Settings
+### Default Settings
 
 **Download Directory**: `./videos/`
 
