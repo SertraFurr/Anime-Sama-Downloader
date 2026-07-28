@@ -223,7 +223,7 @@ Watch the magic happen
 | 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
 | 🚫 **MINOCHINOS** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Useless to implement. |
 | 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
-ansembed
+
 ---
 
 
