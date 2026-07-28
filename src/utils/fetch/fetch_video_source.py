@@ -12,6 +12,7 @@ from src.utils.fetch.fetch_page_content                 import fetch_page_conten
 from src.utils.extract.extract_sibnet_video_source      import extract_sibnet_video_source
 from src.utils.fetch.fetch_sibnet_redirect_location     import fetch_sibnet_redirect_location
 from src.utils.extract.extract_uqload_video_source      import extract_m3u8
+from src.utils.extract.extract_ansembed_video_source   import extract_ansembed_video_source
 
 def fetch_video_source(url):
     def process_single_url(single_url):
@@ -72,7 +73,7 @@ def fetch_video_source(url):
                     "error"
                 )
                 return master_m3u8
-        
+            
         # ONEUPLOAD EXTRACTION
         elif 'oneupload.net' in single_url or 'oneupload.to' in single_url:
             single_url = single_url.replace('oneupload.to', 'oneupload.net')
@@ -117,6 +118,28 @@ def fetch_video_source(url):
                 headers = {
                     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
                     'Referer': 'https://vidmoly.net/'
+                }
+                response = requests.get(m3u8_url, headers=headers, timeout=10)
+                response.raise_for_status()
+                streams = parse_m3u8_content(response.text)
+                if not streams:
+                    print_status("No video streams found in M3U8 playlist", "error")
+                    return None
+                return max(streams, key=lambda x: int(x.get('BANDWIDTH', 0)))['url']
+            except requests.RequestException as e:
+                print_status(f"Failed to fetch M3U8 playlist: {str(e)}", "error")
+                return None
+        
+        # ANSEMBED EXTRACTION
+        elif 'ansembed.net' in single_url:
+            html_content = fetch_page_content(single_url)
+            m3u8_url = extract_ansembed_video_source(html_content)
+            if not m3u8_url:
+                return None
+            try:
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Gecko/20100101 Firefox/108.0',
+                    'Referer': 'https://ansembed.net/'
                 }
                 response = requests.get(m3u8_url, headers=headers, timeout=10)
                 response.raise_for_status()
