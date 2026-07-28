@@ -12,6 +12,7 @@ class SourceDomains:
         "smooth": ("Smoothpre", ["smoothpre.com", "Smoothpre.com"]),
         "embed4me": ("Embed4me", ["embed4me.com", "embed4me"]),
         "uqload": ("Uqload", ["uqload.is", "uqload"]),
+        "ansembed": ("AnsEmbed", ["ansembed.net"]),
     }
 
     ONEUPLOAD = _SOURCES["oneupload"][1]
