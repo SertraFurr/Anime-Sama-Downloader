@@ -16,6 +16,8 @@ def print_episodes(episodes):
         "mivalyo.com": ("Mivalyo", Colors.OKGREEN, True),
         "dingtezuni.com": ("Dingtezuni", Colors.OKGREEN, True),
         "embed4me.com": ("Embed4me", Colors.OKGREEN, True),
+        "ansembed.net": ("AnsEmbed", Colors.OKGREEN, True),
+
     }
 
     print(f"\n{Colors.BOLD}{Colors.HEADER}📺 AVAILABLE EPISODES{Colors.ENDC}")
