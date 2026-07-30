@@ -105,10 +105,6 @@ def search_anime_on_mal(anime_name, interactive=True, alt_names=None):
         print_status(f"Using cached MAL data for: {anime_name}", "info")
         return _mal_search_cache[cache_key]
 
-    # MAL's search only understands English/romaji titles. anime-sama URLs
-    # (and thus anime_name) are French, so that query alone usually misses.
-    # alt_names carries the English/romaji names scraped from the anime-sama
-    # page itself, tried in order after the original name.
     seen = set()
     queries = []
     for name in [anime_name] + list(alt_names or []):
@@ -305,7 +301,7 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
     
     print_separator()
     
-    if 'm3u8' in video_source and output_path.endswith('.ts'):
+    if ('m3u8' in video_source or 'LULU_DEFERRED:' in video_source) and output_path and output_path.endswith('.ts'):
         print_status(f"Video saved as {output_path} (MPEG-TS format, playable in VLC or similar players)", "success")
         if automatic_mp4:
             success, final_path = convert_ts_to_mp4(output_path, save_path, pre_selected_tool)
