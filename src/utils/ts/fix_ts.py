@@ -2,6 +2,7 @@ import os
 import av
 
 def sanitize_ts_file(filepath):
+
     if not os.path.exists(filepath):
         return False
 
@@ -39,7 +40,6 @@ def sanitize_ts_file(filepath):
 
 
 def fix_ts(infile, outfile):
-
     sanitize_ts_file(infile)
 
     input_container = None
@@ -63,32 +63,44 @@ def fix_ts(infile, outfile):
         output_container = av.open(outfile, mode="w")
 
         streams = {}
-        for in_stream in input_container.streams:
-            stype = str(getattr(in_stream, "type", "")).lower()
+        muxed_count = 0
+
+        for packet in input_container.demux():
+            st_idx = packet.stream.index
+            in_s = packet.stream
+            stype = str(getattr(in_s, "type", "")).lower()
+
             if "data" in stype:
                 continue
 
-            codec_context = getattr(in_stream, "codec_context", None)
-            codec_name = codec_context.name if codec_context and hasattr(codec_context, "name") else None
-            if not codec_name and hasattr(in_stream, "codec") and in_stream.codec:
-                codec_name = getattr(in_stream.codec, "name", None)
-
-            if codec_name:
+            if st_idx not in streams:
+                out_s = None
                 try:
-                    out_stream = output_container.add_stream(codec_name)
-                    streams[in_stream.index] = (in_stream, out_stream)
+                    out_s = output_container.add_stream(template=in_s)
                 except Exception:
                     pass
 
-        if not streams:
-            raise ValueError("No valid video or audio streams found in input file.")
+                if not out_s:
+                    codec_name = getattr(getattr(in_s, "codec_context", None), "name", None) or getattr(getattr(in_s, "codec", None), "name", None)
+                    if codec_name:
+                        try:
+                            out_s = output_container.add_stream(codec_name)
+                        except Exception:
+                            pass
 
-        muxed_count = 0
-        for packet in input_container.demux():
-            if packet.stream.index not in streams:
-                continue
+                if not out_s:
+                    fallback = "h264" if "video" in stype else "aac"
+                    try:
+                        out_s = output_container.add_stream(fallback)
+                    except Exception:
+                        pass
 
-            in_s, out_s = streams[packet.stream.index]
+                if out_s:
+                    streams[st_idx] = (in_s, out_s)
+                else:
+                    continue
+
+            in_s, out_s = streams[st_idx]
             packet.stream = out_s
 
             try:
