@@ -64,6 +64,7 @@ def fix_ts(infile, outfile):
 
         streams = {}
         muxed_count = 0
+        last_dts = {}
 
         for packet in input_container.demux():
             st_idx = packet.stream.index
@@ -97,10 +98,19 @@ def fix_ts(infile, outfile):
 
                 if out_s:
                     streams[st_idx] = (in_s, out_s)
+                    last_dts[st_idx] = -1
                 else:
                     continue
 
             in_s, out_s = streams[st_idx]
+
+            if packet.dts is not None:
+                if st_idx in last_dts and packet.dts <= last_dts[st_idx]:
+                    packet.pts = None
+                    packet.dts = None
+                else:
+                    last_dts[st_idx] = packet.dts
+
             packet.stream = out_s
 
             try:
