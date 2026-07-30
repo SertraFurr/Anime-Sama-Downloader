@@ -28,7 +28,7 @@ def extract_embed4me_video_source(embed_url):
     api_url = f"https://lpayer.embed4me.com/api/v1/video?id={video_id}&w=1920&h=1080&r=https://lpayer.embed4me.com/"
 
     headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Referer": "https://lpayer.embed4me.com/"
     }
 
@@ -46,7 +46,7 @@ def extract_embed4me_video_source(embed_url):
             return None
 
         data = json.loads(decrypted)
-        source = data.get('source')
+        source = data.get('cfNative') or data.get('cf') or data.get('source')
         return source
     except Exception:
         return None
