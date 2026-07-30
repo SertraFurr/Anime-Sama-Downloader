@@ -1,10 +1,62 @@
+import os
 import av
 
-def fix_ts(infile, outfile):
-    input_container = av.open(infile, mode="r")
-    output_container = av.open(outfile, mode="w")
+def sanitize_ts_file(filepath):
+    if not os.path.exists(filepath):
+        return False
+
+    file_size = os.path.getsize(filepath)
+    if file_size < 188:
+        return False
 
     try:
+        with open(filepath, "rb") as f:
+            head = f.read(min(file_size, 524288))
+
+        if not head:
+            return False
+
+        if head[0] == 0x47 and len(head) >= 377 and head[188] == 0x47 and head[376] == 0x47:
+            return False
+
+        sync_offset = -1
+        for i in range(min(len(head) - 376, 262144)):
+            if head[i] == 0x47 and head[i + 188] == 0x47 and head[i + 376] == 0x47:
+                sync_offset = i
+                break
+
+        if sync_offset > 0:
+            with open(filepath, "rb") as f_in:
+                f_in.seek(sync_offset)
+                clean_data = f_in.read()
+            with open(filepath, "wb") as f_out:
+                f_out.write(clean_data)
+            return True
+    except Exception:
+        pass
+
+    return False
+
+
+def fix_ts(infile, outfile):
+    input_container = None
+    output_container = None
+
+    try:
+        input_container = av.open(infile, mode="r")
+    except Exception:
+        sanitize_ts_file(infile)
+        try:
+            input_container = av.open(infile, mode="r", format="mpegts", options={"err_detect": "ignore_err"})
+        except Exception:
+            try:
+                input_container = av.open(infile, mode="r", options={"err_detect": "ignore_err"})
+            except Exception as final_err:
+                raise ValueError(f"Failed to open input file {infile}: {final_err}")
+
+    try:
+        output_container = av.open(outfile, mode="w")
+
         streams = {}
         for in_stream in input_container.streams:
             if in_stream.type not in ("video", "audio"):
@@ -44,11 +96,13 @@ def fix_ts(infile, outfile):
                 continue
 
     finally:
-        try:
-            output_container.close()
-        except Exception:
-            pass
-        try:
-            input_container.close()
-        except Exception:
-            pass
+        if output_container:
+            try:
+                output_container.close()
+            except Exception:
+                pass
+        if input_container:
+            try:
+                input_container.close()
+            except Exception:
+                pass
