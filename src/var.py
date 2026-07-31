@@ -6,14 +6,20 @@ class SourceDomains:
         "dingtezuni": ("Dingtezuni", ["dingtezuni.com"]),
         "sibnet": ("Sibnet", ["video.sibnet.ru"]),
         "oneupload": ("OneUpload", ["oneupload.net", "oneupload.to"]),
-        "vidmoly": ("Vidmoly", ["vidmoly.net", "vidmoly.to", "vidmoly.biz"]),
+        "vidmoly": ("Vidmoly", ["vidmoly.net", "vidmoly.to", "vidmoly.biz", "vidmoly.org", "vidmoly.me"]),
         "movearn": ("Movearnpre", ["movearnpre.com", "ovaltinecdn.com"]),
         "mivalyo": ("Mivalyo", ["mivalyo.com"]),
         "smooth": ("Smoothpre", ["smoothpre.com", "Smoothpre.com"]),
         "embed4me": ("Embed4me", ["embed4me.com", "embed4me"]),
         "uqload": ("Uqload", ["uqload.is", "uqload"]),
         "ansembed": ("AnsEmbed", ["ansembed.net"]),
+        "voe": ("Voe", ["matthewhotelscience.com", "voe.sx", "jessicachoosemake.com", "jessicachoosemake", "voe"]),
+        "filemoon": ("Filemoon", ["bysesukior.com", "filemoon"]),
+        "luluvdo": ("LuluStream", ["luluvdo.com", "lulustream.com", "lulu"]),
+        "vidzy": ("Vidzy", ["vidzy.live", "vidzy.org", "vidzy"]),
+        "nakanime": ("Nakanime", ["nakanime.tv", "nakanime.fr", "nakanime"]),
     }
+
 
     ONEUPLOAD = _SOURCES["oneupload"][1]
     VIDMOLY = _SOURCES["vidmoly"][1]
