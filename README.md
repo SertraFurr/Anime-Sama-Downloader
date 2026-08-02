@@ -1,22 +1,22 @@
 <div align="center">
 
-# Anime-Sama Downloader
+# Anime Downloader
   
 <img src="https://img.shields.io/badge/Python-3.6+-blue.svg?style=for-the-badge&logo=python" alt="Python Version">
 <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux_(mostly_windows)-lightgrey.svg?style=for-the-badge" alt="Platform">
 <img src="https://img.shields.io/badge/License-GPL_3-green.svg?style=for-the-badge" alt="License">
  
-**A powerful, beautiful and simple CLI tool to download anime episodes from anime-sama.(any)**
+**A powerful, beautiful and simple CLI tool to download anime episodes from Anime-Sama & Nakanime. (More coming)**
 
-(✨48 STARS✨! Thanks!) 
+(✨50 STARS✨! Thanks!) 
 
-*Questions? Unworking urls? Open an issue, will be added fastly (hopefully)*
+*Questions? Unworking URLs? Open an issue, will be added fastly (hopefully)*
 
-It also works on unreleased episodes ! (Where it says 'This content does not exist.' sometimes it still exist.) 
+It also works on unreleased episodes! (Where it says 'This content does not exist.' - sometimes it still exists.)
 
 ### 🌟 Star this repo if it helped you!
 
-Looking for projects to do ! feel free to request in issue !
+Looking for projects to do! Feel free to request in issues!
 
 ![Website Support](https://img.shields.io/badge/Website%20Support-100%25-brightgreen)
 
@@ -33,16 +33,18 @@ Looking for projects to do ! feel free to request in issue !
 -  **Auto URL Validation** with helpful error messages
 -  **Built-in Tutorial** for first-time users
 -  **Multi-threaded Downloads** for blazing fast performance
+-  **Automatic Fallback** to next player if download fails
+
 </td>
 <td width="50%">
 
 ###  **Powerful & Reliable**  
--  **Multiple Player Support** (Player 1, 2, 3...)
--  **Smart Source Detection** (SendVid, Sibnet and others)
+-  **Multiple Player Support** with smart fallback chain
+-  **12 Video Sources** supported (SendVid, Sibnet, VOE, Filemoon, LuluStream, Vidzy, Uqload, Vidmoly and more)
 -  **Real-time Progress** with download speeds
 -  **Robust Error Handling** with retry logic
--  **Multiple Episode Selection** with threads supports
--  **FFmpeg support** choose between 2 converters
+-  **Multiple Episode Selection** with thread support
+-  **FFmpeg support** - choose between 2 converters
 
 </td>
 </tr>
@@ -80,10 +82,10 @@ pip install requests beautifulsoup4 tqdm
 
 ```bash
 # 1. Clone the repository.
-git clone https://github.com/SertraFurr/Anime-Sama-Downloader.git
+git clone https://github.com/SertraFurr/Anime-Downloader.git
 
 # 2. Navigate into the project directory.
-cd Anime-Sama-Downloader
+cd Anime-Downloader
 
 # 3. Run it.
 python3 main.py
@@ -148,7 +150,7 @@ python main.py --search "one piece" --player "Sibnet" --episodes "all" --threads
 ###  Find Anime
 <img src="https://img.shields.io/badge/Step-1-blue?style=for-the-badge">
 
-Visit **[anime-sama](https://anime-sama.(DOMAIN)/catalogue/)**
+Visit **[Anime-Sama](https://anime-sama.fr/catalogue/)** or **[Nakanime](https://nakanime.tv/)**
 
 - Search your anime  
 - Select season & language  
@@ -187,7 +189,7 @@ Watch the magic happen
 <details>
 <summary>🔗 Example URLs</summary>
 
-* Works**
+**Anime-Sama - Works**
 ```
 - https://anime-sama.fr/catalogue/roshidere/saison1/vostfr/
 - https://anime-sama.fr/catalogue/demon-slayer/saison1/vf/
@@ -195,8 +197,13 @@ Watch the magic happen
 - https://anime-sama.fr/catalogue/one-piece/saison1/vostfr/
 ```
 
+**Nakanime - Works**
+```
+- https://nakanime.tv/anime/roshidere/
+- https://nakanime.tv/anime/demon-slayer/
+```
 
-* Won’t work**
+**Won't work**
 ```
 - https://anime-sama.fr/catalogue/roshidere/
 - https://anime-sama.fr/
@@ -206,23 +213,29 @@ Watch the magic happen
 
 ## 🛠️ Video Source Support
 
-| Platform | Status | Performance | Notes |
-|:--------:|:------:|:-----------:|:------|
-| **⚠️ READ BEFORE DOING ANYTHING** | Threaded mode is only suitable for strong Wi-Fi connections that won't crash when handling multiple downloads simultaneously. |||
-| 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Primary recommended source |
-| 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Reliable backup source |
-| 🎬 **Uqload.is** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ Good | Reliable backup source |
-| 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. FASTEST if | Download .ts file then make them into an mp4 back. |
-| 🎬 **ONEUPLOAD** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **EMBED4ME** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **ANSEMBED** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. |
-| 🎬 **MOVEARNPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Very fast if  | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **SMOOTHPRE** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Very fast if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **MIVALYO** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🎬 **DINGTEZUNI** | ![Working](https://img.shields.io/badge/Status-➖_Working_Inconsistent-orange) | ✅ SLOW if not threaded. Faster if | Download .ts file then make them into an mp4 back. INCONSISTENT |
-| 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | ❌ None | Malicious website, only redirect to advertisement. |
-| 🚫 **MINOCHINOS** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Useless to implement. |
-| 🤔 **VK.com** | ![Deprecated](https://img.shields.io/badge/Status-❌_Unsupported-red) | ❌ None | Could try, but did not find any working URL. |
+> **⚠️ Threaded mode** is only suitable for strong Wi-Fi connections that won't crash when handling multiple simultaneous downloads.
+
+| Platform | Status | Type | Notes |
+|:--------:|:------:|:----:|:------|
+| 📹 **SendVid** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | Direct MP4 | Primary recommended source |
+| 🎬 **Sibnet** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | Direct MP4 | Reliable backup source |
+| 🎬 **VOE** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Fast with `--fast` flag |
+| 🎬 **Filemoon** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Fast with `--fast` flag |
+| 🎬 **LuluStream / Luluvdo** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Token freshly resolved at download time |
+| 🎬 **Vidzy** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | XOR-decrypted stream |
+| 🎬 **Uqload** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | JS-unpacked stream |
+| 🎬 **Vidmoly** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | SLOW without `--fast`. Very fast with it |
+| 🎬 **Vidzy.live** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Alias for Vidzy |
+| 🎬 **Embed4Me** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Download .ts then convert to mp4 |
+| 🎬 **AnsEmbed** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Download .ts then convert to mp4 |
+| 🎬 **OneUpload** | ![Working](https://img.shields.io/badge/Status-✅_Working-brightgreen) | HLS (.ts→mp4) | Download .ts then convert to mp4 |
+| 🎬 **MovearnPre** | ![Inconsistent](https://img.shields.io/badge/Status-➖_Inconsistent-orange) | HLS (.ts→mp4) | Download .ts then convert to mp4. INCONSISTENT |
+| 🎬 **SmoothPre** | ![Inconsistent](https://img.shields.io/badge/Status-➖_Inconsistent-orange) | HLS (.ts→mp4) | Download .ts then convert to mp4. INCONSISTENT |
+| 🎬 **Mivalyo** | ![Inconsistent](https://img.shields.io/badge/Status-➖_Inconsistent-orange) | HLS (.ts→mp4) | Download .ts then convert to mp4. INCONSISTENT |
+| 🎬 **Dingtezuni** | ![Inconsistent](https://img.shields.io/badge/Status-➖_Inconsistent-orange) | HLS (.ts→mp4) | Download .ts then convert to mp4. INCONSISTENT |
+| 🚫 **MYVI** | ![Deprecated](https://img.shields.io/badge/Status-❌_Deprecated-red) | - | Malicious - only redirects to ads |
+| 🚫 **Minochinos** | ![Unsupported](https://img.shields.io/badge/Status-❌_Unsupported-red) | - | Useless to implement |
+| 🤔 **VK.com** | ![Unsupported](https://img.shields.io/badge/Status-❌_Unsupported-red) | - | Could try, but no working URLs found |
 
 ---
 
@@ -235,11 +248,11 @@ Watch the magic happen
 ###  Main Interface
 ```
 ╔══════════════════════════════════════════════════════════════╗
-║                 ANIME-SAMA VIDEO DOWNLOADER                  ║
+║                    ANIME VIDEO DOWNLOADER                    ║
 ║                       Enhanced CLI v2.0                      ║
 ╚══════════════════════════════════════════════════════════════╝
 
-📺 Download anime episodes from anime-sama.fr easily!
+📺 Download anime episodes from Anime-Sama & Nakanime!
 ```
 
 ###  Player Selection
@@ -305,20 +318,20 @@ The script uses a beautiful color scheme:
 
 We welcome contributions! Here's how you can help:
 
-[![Issues](https://img.shields.io/badge/Issues-Welcome-blue?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/issues)
-[![Pull Requests](https://img.shields.io/badge/PRs-Welcome-green?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/pulls)
-[![Discussions](https://img.shields.io/badge/Discussions-Join-purple?style=for-the-badge)](https://github.com/sertrafurr/Anime-Sama-Downloader/discussions)
+[![Issues](https://img.shields.io/badge/Issues-Welcome-blue?style=for-the-badge)](https://github.com/sertrafurr/Anime-Downloader/issues)
+[![Pull Requests](https://img.shields.io/badge/PRs-Welcome-green?style=for-the-badge)](https://github.com/sertrafurr/Anime-Downloader/pulls)
+[![Discussions](https://img.shields.io/badge/Discussions-Join-purple?style=for-the-badge)](https://github.com/sertrafurr/Anime-Downloader/discussions)
 
 
 ### 🐛 Found a Bug?
- Check existing [issues](https://github.com/sertrafurr/issues)
+ Check existing [issues](https://github.com/sertrafurr/Anime-Downloader/issues)
  Create a new issue with:
    📝 Clear description
    🔄 Steps to reproduce
    💻 System information
 
 ### 💡 Feature Request?
- Open a [discussion](https://github.com/sertrafurr/discussions)
+ Open a [discussion](https://github.com/sertrafurr/Anime-Downloader/discussions)
  Explain your idea
  Community feedback welcome!
 
@@ -346,9 +359,6 @@ This project is licensed under the **GPL v3 License**
 
  📺 Respect **copyright laws** in your jurisdiction  
 
- 🔒 Use responsibly and in compliance with anime-sama.fr's terms
-
-
 ---
 
 
@@ -356,13 +366,10 @@ This project is licensed under the **GPL v3 License**
 
 <img src="https://img.shields.io/badge/Made_with-❤️-red?style=for-the-badge">
 
-** Core algorithms and video extraction logic: Human-developed**  
-** Code restructuring and user interface enhancements: AI-assisted**
-
 ---
 
 ### 🌟 Star this repo if it helped you!
 
-[![Stars](https://img.shields.io/github/stars/sertrafurr/anime-sama-downloader?style=for-the-badge&logo=github)](https://github.com/sertrafurr/anime-sama-downloader/stargazers)
+[![Stars](https://img.shields.io/github/stars/sertrafurr/anime-downloader?style=for-the-badge&logo=github)](https://github.com/sertrafurr/anime-downloader/stargazers)
 
 You wish for something/a service to get removed/added, open an issue.
