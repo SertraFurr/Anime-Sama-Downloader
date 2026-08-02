@@ -1,3 +1,4 @@
+import re
 import time
 import requests
 
@@ -13,18 +14,63 @@ from src.utils.extract.extract_sibnet_video_source      import extract_sibnet_vi
 from src.utils.fetch.fetch_sibnet_redirect_location     import fetch_sibnet_redirect_location
 from src.utils.extract.extract_uqload_video_source      import extract_m3u8
 from src.utils.extract.extract_ansembed_video_source   import extract_ansembed_video_source
+from src.utils.extract.extract_voe_video_source        import extract_voe_video_source
+from src.utils.extract.extract_filemoon_video_source   import extract_filemoon_video_source
+from src.utils.extract.extract_luluvdo_video_source   import extract_luluvdo_video_source
+from src.utils.extract.extract_vidzy_video_source     import extract_vidzy_video_source
 
 def fetch_video_source(url):
     def process_single_url(single_url):
         print_status(f"Processing video URL: {single_url[:50]}...", "loading")
 
-        # VIDMOLY DOMAIN FIX
-        if 'vidmoly.to' in single_url or 'vidmoly.net' in single_url:
-            if 'vidmoly.to' in single_url:
+        # VIDZY EXTRACTION
+        if 'vidzy.live' in single_url or 'vidzy.org' in single_url or 'vidzy' in single_url:
+            stream_url = extract_vidzy_video_source(single_url)
+            if stream_url:
+                return stream_url
+            return None
+
+        # LULUVDO / LULUSTREAM EXTRACTION
+
+        if 'luluvdo.com' in single_url or 'lulustream.com' in single_url or 'lulu' in single_url:
+            try:
+                import requests as _r
+                rtest = _r.get(single_url, headers={"User-Agent": "Mozilla/5.0"}, timeout=6)
+                if rtest.status_code == 200 and ('m3u8' in rtest.text or 'eval(function' in rtest.text):
+                    return f"LULU_DEFERRED:{single_url}"
+            except Exception:
+                pass
+            return None
+
+        # FILEMOON EXTRACTION
+        if 'bysesukior.com' in single_url or 'filemoon' in single_url:
+            stream_url = extract_filemoon_video_source(single_url)
+            if stream_url:
+                return stream_url
+            return None
+
+        # VOE EXTRACTION
+        if any(d in single_url for d in ['matthewhotelscience.com', 'voe.sx', 'jessicachoosemake.com', 'voe']):
+            stream_url = extract_voe_video_source(single_url)
+            if stream_url:
+                return stream_url
+            return None
+
+        # VIDMOLY DOMAIN & ROUTE CONVERSION
+        if 'vidmoly' in single_url:
+            m_route = re.search(r'/(?:v|w)/([a-zA-Z0-9]+)', single_url)
+            if m_route:
+                code = m_route.group(1)
+                single_url = f"https://vidmoly.biz/embed-{code}.html"
+            elif 'vidmoly.to' in single_url:
                 single_url = single_url.replace('vidmoly.to', 'vidmoly.biz')
             elif 'vidmoly.net' in single_url:
                 single_url = single_url.replace('vidmoly.net', 'vidmoly.biz')
-            print_status("Converted vidmoly.to to vidmoly.biz", "info")
+            elif 'vidmoly.org' in single_url:
+                single_url = single_url.replace('vidmoly.org', 'vidmoly.biz')
+            elif 'vidmoly.me' in single_url:
+                single_url = single_url.replace('vidmoly.me', 'vidmoly.biz')
+            print_status("Normalized Vidmoly domain/route", "info")
         
         # SENDVID EXTRACTION
         if 'sendvid.com' in single_url:
@@ -98,7 +144,7 @@ def fetch_video_source(url):
                 return None
             
         # VIDMOLY EXTRACTION
-        elif 'vidmoly.biz' in single_url:
+        elif 'vidmoly' in single_url:
             attempt = 0
             html_content = None
             
