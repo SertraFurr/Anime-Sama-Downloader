@@ -1,7 +1,87 @@
 import re
+import json
 import requests
+import urllib.parse
 from urllib.parse import urljoin
 from src.var import get_domain
+
+cO = "nkapiv1"
+
+def derive_nakanime_key(url_path):
+    N = cO + url_path
+    V = []
+    for v in range(32):
+        G = 0
+        for q in range(len(N)):
+            G = (G * 31 + ord(N[q]) + v) & 255
+        V.append(G)
+    return V
+
+def decode_nakanime_response(response_bytes, url_path):
+    key_bytes = derive_nakanime_key(url_path)
+    out = bytearray(len(response_bytes))
+    for i in range(len(response_bytes)):
+        out[i] = response_bytes[i] ^ key_bytes[i % len(key_bytes)]
+    return bytes(out)
+
+def expand_nakanime_url(url, headers=None):
+    unquoted = urllib.parse.unquote(url)
+    match = re.search(r'/anime/(\d+)', unquoted)
+    if not match:
+        return []
+    anime_id = match.group(1)
+    
+    req_headers = {"User-Agent": "Mozilla/5.0"}
+    if headers and "User-Agent" in headers:
+        req_headers["User-Agent"] = headers["User-Agent"]
+        
+    seasons = set()
+
+    try:
+        url_page = f"https://nakanime.tv/anime/{anime_id}/season/1/episode/1"
+        res_page = requests.get(url_page, headers=req_headers, timeout=10)
+        scripts = re.findall(r'<script[^>]*>(.*?)</script>', res_page.text, re.DOTALL)
+        for s in scripts:
+            if 'animeId' in s and 'seasons' in s:
+                try:
+                    data = json.loads(s.strip())
+                    for season in data.get('seasons', []):
+                        s_num = season.get('number', 1)
+                        if s_num is not None:
+                            seasons.add(int(s_num))
+                    break
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
+    if not seasons:
+        try:
+            path = f"/api/anime/{anime_id}/episodes"
+            api_url = f"https://nakanime.tv{path}"
+            res = requests.get(api_url, headers=req_headers, timeout=10)
+            res.raise_for_status()
+            decrypted = decode_nakanime_response(res.content, path)
+            data = json.loads(decrypted.decode('utf-8'))
+            episodes = data.get('data', [])
+            for ep in episodes:
+                s_num = ep.get('seasonNumber')
+                if s_num is None:
+                    s_num = 1
+                seasons.add(int(s_num))
+        except Exception:
+            pass
+
+    if not seasons:
+        seasons.add(1)
+        
+    results = []
+    for s_num in sorted(seasons):
+        results.append({
+            "name": f"Saison {s_num}",
+            "url": f"https://nakanime.tv/anime/{anime_id}/season/{s_num}/episode/1"
+        })
+    return results
 
 def is_valid_season(url, headers):
     try:
@@ -68,6 +148,9 @@ def get_matches_from_page(url, headers):
         return []
 
 def expand_catalogue_url(url, headers=None):
+    if 'nakanime.tv' in url.lower():
+        return expand_nakanime_url(url, headers)
+
     raw_matches = get_matches_from_page(url, headers)
     
     if not raw_matches:
