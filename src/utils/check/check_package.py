@@ -26,6 +26,11 @@ def check_package(ask_install=False, first_run=False):
     except ImportError:
         missing_packages.append("beautifulsoup4")
 
+    try:
+        from Crypto.Cipher import AES
+    except ImportError:
+        missing_packages.append("pycryptodome")
+
     if missing_packages and ask_install:
         print("Missing packages:", ", ".join(missing_packages))
         if not first_run:
@@ -55,6 +60,11 @@ def check_package(ask_install=False, first_run=False):
                 from bs4 import BeautifulSoup
             except ImportError:
                 missing_packages.append("beautifulsoup4")
+
+            try:
+                from Crypto.Cipher import AES
+            except ImportError:
+                missing_packages.append("pycryptodome")
             
             if missing_packages:
                 print_status(f"Some packages still missing after installation: {', '.join(missing_packages)}", "error")
