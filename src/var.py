@@ -1,5 +1,7 @@
 import random
 
+DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+
 class SourceDomains:
     _SOURCES = {
         "sendvid": ("SendVid", ["sendvid.com"]),
@@ -19,7 +21,6 @@ class SourceDomains:
         "vidzy": ("Vidzy", ["vidzy.live", "vidzy.org", "vidzy"]),
         "nakanime": ("Nakanime", ["nakanime.tv", "nakanime.fr", "nakanime"]),
     }
-
 
     ONEUPLOAD = _SOURCES["oneupload"][1]
     VIDMOLY = _SOURCES["vidmoly"][1]
@@ -62,16 +63,23 @@ class Colors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
+    DIM = '\033[2m'
+    MAGENTA = '\033[35m'
 
 def print_header():
-    header = f"""
-{Colors.HEADER}{Colors.BOLD}
-╔══════════════════════════════════════════════════════════════╗
-║                 ANIME-SAMA VIDEO DOWNLOADER                  ║
-╚══════════════════════════════════════════════════════════════╝
-{Colors.ENDC}
-{Colors.OKCYAN}📺 Download anime episodes from anime-sama.fr easily!{Colors.ENDC}
-"""
+    w = 62
+    inner = "ANIME  VIDEO  DOWNLOADER"
+    pad   = lambda s: s.center(w)
+    header = (
+        f"\n{Colors.HEADER}{Colors.BOLD}"
+        f"╔{'═' * w}╗\n"
+        f"║{pad(inner)}║\n"
+        f"╚{'═' * w}╝"
+        f"{Colors.ENDC}\n"
+        f"{Colors.DIM}  {'─' * (w + 2)}{Colors.ENDC}\n"
+        f"  {Colors.OKCYAN}📺  {Colors.DIM}Download anime episodes from your favourite streaming sites.{Colors.ENDC}\n"
+        f"  {Colors.DIM}Type a URL, search by name, or browse seasons.{Colors.ENDC}\n"
+    )
     print(header)
 
 def print_tutorial():
@@ -79,19 +87,21 @@ def print_tutorial():
 {Colors.BOLD}{Colors.HEADER}🎓 COMPLETE TUTORIAL - HOW TO USE{Colors.ENDC}
 {Colors.BOLD}{'='*65}{Colors.ENDC}
 
-{Colors.OKGREEN}{Colors.BOLD}Step 1: Find Your Anime on Anime-Sama{Colors.ENDC}
-├─ 🌐 Visit: {Colors.OKCYAN}https://anime-sama.fr/catalogue/{Colors.ENDC}
+{Colors.OKGREEN}{Colors.BOLD}Step 1: Find Your Anime{Colors.ENDC}
+├─ 🌐 Anime-Sama: {Colors.OKCYAN}https://anime-sama.fr/catalogue/{Colors.ENDC}
+├─ 🌐 Nakanime:   {Colors.OKCYAN}https://nakanime.fr/{Colors.ENDC}
 ├─ 🔍 Search for your desired anime (e.g., "Roshidere")
 ├─ 📺 Click on the anime title to view seasons
 └─ 📂 Navigate to your preferred season and language
 
 {Colors.OKGREEN}{Colors.BOLD}Step 2: Get the Complete URL{Colors.ENDC}
 ├─ 🎯 Choose your preferred option:
-│   ├─ Season (saison1, saison2, etc.)
+│   ├─ Season (saison1, saison2, etc.)  [Anime-Sama]
 │   └─ Language (vostfr, vf, etc.)
 ├─ 📋 Copy the FULL URL from browser address bar
-└─ ✅ Example URL format:
+└─ ✅ Example URL formats:
     {Colors.OKCYAN}https://anime-sama.fr/catalogue/roshidere/saison1/vostfr/{Colors.ENDC}
+    {Colors.OKCYAN}https://nakanime.fr/anime/roshidere/{Colors.ENDC}
 
 {Colors.OKGREEN}{Colors.BOLD}Step 3: Run This Program{Colors.ENDC}
 ├─ 🚀 Start the downloader
@@ -100,8 +110,9 @@ def print_tutorial():
 └─ 🎮 Follow the interactive prompts
 
 {Colors.WARNING}{Colors.BOLD}📌 IMPORTANT NOTES:{Colors.ENDC}
-├─ ✅ Supported sources: See inside of the github README
-├─ ❌ Other sources are not supported (see GitHub for details)
+├─ ✅ Supported sites: Anime-Sama & Nakanime
+├─ ✅ Supported video sources: See GitHub README for details
+├─ ❌ Other sites/sources are not supported
 ├─ 🔗 URL must be the complete path including season/language
 └─ 📁 Videos save to ./videos/ by default (customizable)
 
@@ -110,30 +121,44 @@ def print_tutorial():
 ├─ https://anime-sama.fr/catalogue/demon-slayer/saison1/vf/
 ├─ https://anime-sama.fr/catalogue/attack-on-titan/saison3/vostfr/
 ├─ https://anime-sama.fr/catalogue/one-piece/saison1/vostfr/
+├─ https://nakanime.fr/anime/roshidere/
+├─ https://nakanime.fr/anime/demon-slayer/
 
 {Colors.BOLD}{'='*65}{Colors.ENDC}
 """
     print(tutorial)
 
-def print_separator(char="─", length=65):
-    print(f"{Colors.OKBLUE}{char * length}{Colors.ENDC}")
+def print_separator(char="─", length=65, title=""):
+    if title:
+        title_str = f"  {title}  "
+        side = max(0, (length - len(title_str)) // 2)
+        line = char * side + title_str + char * (length - side - len(title_str))
+        print(f"{Colors.OKBLUE}{Colors.BOLD}{line}{Colors.ENDC}")
+    else:
+        print(f"{Colors.OKBLUE}{char * length}{Colors.ENDC}")
+
+def print_section(title, emoji=""):
+    label = f" {emoji}  {title} " if emoji else f" {title} "
+    border = "─" * (len(label) + 2)
+    print(f"\n{Colors.BOLD}{Colors.HEADER}┌{border}┐")
+    print(f"│ {label} │")
+    print(f"└{border}┘{Colors.ENDC}")
 
 def print_status(message, status_type="info"):
     icons = {
-        "info": "ℹ️",
-        "success": "✅",
-        "warning": "⚠️",
-        "error": "❌",
-        "loading": "⏳"
+        "info":    "ℹ️ ",
+        "success": "✅ ",
+        "warning": "⚠️ ",
+        "error":   "❌ ",
+        "loading": "⏳ "
     }
     colors = {
-        "info": Colors.OKBLUE,
+        "info":    Colors.OKBLUE,
         "success": Colors.OKGREEN,
         "warning": Colors.WARNING,
-        "error": Colors.FAIL,
+        "error":   Colors.FAIL,
         "loading": Colors.OKCYAN
     }
-    
-    icon = icons.get(status_type, "ℹ️")
+    icon  = icons.get(status_type, "ℹ️ ")
     color = colors.get(status_type, Colors.OKBLUE)
-    print(f"{color}{icon} {message}{Colors.ENDC}")
+    print(f"{color}{icon}{message}{Colors.ENDC}")
