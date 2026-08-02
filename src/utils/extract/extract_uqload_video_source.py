@@ -1,8 +1,6 @@
 import re
 import requests
-from src.utils.fetch.fetch_html_for_ts              import fetch_html_for_ts
-from src.utils.extract.extract_packed_code_for_ts   import extract_packed_code_for_ts
-from src.utils.extract.extract_last_video_source    import extract_last_video_source
+from src.utils.extract.extract_packed_code_for_ts import extract_packed_code_for_ts
 
 ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -18,7 +16,6 @@ def extract_hls_url(js_code):
         if match:
             return match.group(0)
 
-    print("No m3u8 URL found in unpacked code.")
     return None
 
 def encode_base(num: int, base: int) -> str:
@@ -31,7 +28,6 @@ def encode_base(num: int, base: int) -> str:
         result = ALPHABET[num % base] + result
         num //= base
     return result
-
 
 def unpack_js_for_ts_file(packed_code, base, count, words):
     unpacked = packed_code
@@ -54,34 +50,33 @@ def unpack_js_for_ts_file(packed_code, base, count, words):
     return unpacked
 
 def extract_m3u8(embed_url):
+    m_code = re.search(r'/(?:embed-)?([a-zA-Z0-9]{8,20})(?:\.html)?', embed_url)
+    if not m_code:
+        return None
+    code = m_code.group(1)
+    domain_match = re.search(r'https?://([^/]+)', embed_url)
+    domain = domain_match.group(1) if domain_match else "uqload.is"
+    
+    clean_embed_url = f"https://{domain}/embed-{code}.html"
+
     headers = {
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "accept-language": "fr-FR,fr;q=0.8",
-        "cache-control": "no-cache",
-        "sec-gpc": "1",
-        "upgrade-insecure-requests": "1",
-        "user-agent": (
-            "Chrome/150.0.0.0 Safari/67.67"
-            ),
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
 
-    response = requests.get(embed_url, headers=headers)
-    response.raise_for_status()
-
-    html = response.text
-
-    html_content = fetch_html_for_ts(embed_url, headers=headers)
-    if not html_content:
-        return None
-    packed_code, base, count, words = extract_packed_code_for_ts(html_content)
-    if not packed_code:
-        return None
-    
-    unpacked_code = unpack_js_for_ts_file(packed_code, base, count, words)
-    
-    hls_url = extract_hls_url(unpacked_code)
-
-    if hls_url:
-        return hls_url
+    try:
+        response = requests.get(clean_embed_url, headers=headers, timeout=10)
+        if response.status_code == 200:
+            m3u8_direct = re.search(r'["\'](https?://[^\s"\']+\.m3u8[^\s"\']*)["\']', response.text)
+            if m3u8_direct:
+                return m3u8_direct.group(1)
+                
+            packed_code, base, count, words = extract_packed_code_for_ts(response.text)
+            if packed_code:
+                unpacked_code = unpack_js_for_ts_file(packed_code, base, count, words)
+                hls_url = extract_hls_url(unpacked_code)
+                if hls_url:
+                    return hls_url
+    except Exception:
+        pass
 
     return None
