@@ -17,7 +17,27 @@ def print_episodes(episodes):
         "dingtezuni.com": ("Dingtezuni", Colors.OKGREEN, True),
         "embed4me.com": ("Embed4me", Colors.OKGREEN, True),
         "ansembed.net": ("AnsEmbed", Colors.OKGREEN, True),
-
+        "vidmoly.org": ("Vidmoly", Colors.OKGREEN, True),
+        "vidmoly.me": ("Vidmoly", Colors.OKGREEN, True),
+        "matthewhotelscience.com": ("Voe", Colors.OKGREEN, True),
+        "voe.sx": ("Voe", Colors.OKGREEN, True),
+        "jessicachoosemake.com": ("Voe", Colors.OKGREEN, True),
+        "jessicachoosemake": ("Voe", Colors.OKGREEN, True),
+        "voe": ("Voe", Colors.OKGREEN, True),
+        "bysesukior.com": ("Filemoon", Colors.OKGREEN, True),
+        "filemoon": ("Filemoon", Colors.OKGREEN, True),
+        "luluvdo.com": ("LuluStream", Colors.OKGREEN, True),
+        "lulustream.com": ("LuluStream", Colors.OKGREEN, True),
+        "vidzy.live": ("Vidzy", Colors.OKGREEN, True),
+        "vidzy.org": ("Vidzy", Colors.OKGREEN, True),
+        "vidzy": ("Vidzy", Colors.OKGREEN, True),
+        "uqload.is": ("Uqload", Colors.OKGREEN, True),
+        "uqload.co": ("Uqload", Colors.OKGREEN, True),
+        "uqload.com": ("Uqload", Colors.OKGREEN, True),
+        "uqload.to": ("Uqload", Colors.OKGREEN, True),
+        "uqload": ("Uqload", Colors.OKGREEN, True),
+        "nakanime.tv": ("Nakanime", Colors.OKGREEN, True),
+        "nakanime": ("Nakanime", Colors.OKGREEN, True),
     }
 
     print(f"\n{Colors.BOLD}{Colors.HEADER}📺 AVAILABLE EPISODES{Colors.ENDC}")
