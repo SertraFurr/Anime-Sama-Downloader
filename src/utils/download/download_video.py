@@ -6,33 +6,49 @@ import time
 from tqdm import tqdm
 from concurrent.futures                 import ThreadPoolExecutor, as_completed
 
-from src.var                            import Colors, print_status
+from src.var                            import Colors, print_status, DEFAULT_USER_AGENT
 from src.utils.parse.parse_ts_segments  import parse_ts_segments
 
 def download_video(video_url, save_path, use_ts_threading=False, url='',automatic_mp4=False, threaded_mp4=False, interactive=True):
     print_status(f"Starting download: {os.path.basename(save_path)}", "loading")
-    ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+    ua = DEFAULT_USER_AGENT
 
     target = url if url else video_url
     if target and not target.startswith(('http://', 'https://')):
         target = 'https://' + target
 
-    if target:
+    if target and 'tnmr.org' not in target:
         parsed = urlparse(target)
         origin = f"{parsed.scheme}://{parsed.netloc}"
         referer = f"{origin}/"
     else:
-        referer = 'https://vidmoly.net/'
+        referer = ''
         origin = ''
 
     headers = {
         'User-Agent': ua,
         'Accept': 'video/webm,video/mp4,video/*;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
-        'Referer': referer,
     }
+    if referer:
+        headers['Referer'] = referer
     if origin:
         headers['Origin'] = origin
+
+   
+    if video_url.startswith("LULU_DEFERRED:"):
+        embed_url = video_url[len("LULU_DEFERRED:"):]
+        from src.utils.extract.extract_luluvdo_video_source import extract_luluvdo_video_source
+        resolved = extract_luluvdo_video_source(embed_url)
+        if not resolved:
+            print_status(f"Download failed: could not resolve LuluStream token for {embed_url[:60]}", "error")
+            return False, None
+        video_url = resolved
+        from urllib.parse import urlparse as _up
+        _p = _up(embed_url)
+        headers['Referer'] = f"{_p.scheme}://{_p.netloc}/"
+        headers.pop('Origin', None)
+        headers.pop('Accept-Language', None)
 
     try:
         if 'm3u8' in video_url:
@@ -61,14 +77,22 @@ def download_video(video_url, save_path, use_ts_threading=False, url='',automati
                     variant_resp = requests.get(best_url, headers=headers, timeout=10)
                     variant_resp.raise_for_status()
                     content = variant_resp.text
-
-            segments = []
             base_for_join = response.url
             try:
                 if 'variant_resp' in locals():
                     base_for_join = variant_resp.url
             except Exception:
                 pass
+
+            init_segment_url = None
+            map_match = re.search(r'#EXT-X-MAP:URI=["\']?([^"\',\s]+)["\']?', content)
+            if map_match:
+                init_uri = map_match.group(1)
+                init_segment_url = init_uri if init_uri.startswith('http') else urljoin(base_for_join, init_uri)
+
+            segments = []
+            if init_segment_url:
+                segments.append(init_segment_url)
 
             for line in content.splitlines():
                 line = line.strip()
