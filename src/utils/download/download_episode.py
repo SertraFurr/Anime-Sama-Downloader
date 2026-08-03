@@ -281,7 +281,7 @@ def download_episode(episode_num, url, video_source, anime_name, save_dir, use_t
         print_status("Skipping MAL matching (--no-mal)", "info")
     elif not anime_name:
         print_status("anime_name is empty, skipping MAL matching", "warning")
-    elif interactive:
+    else:
         create_match_file(season_dir, anime_name, interactive=interactive)
     
     save_path = os.path.join(season_dir, f"{anime_name if anime_name else 'episode'}_{episode_num}.mp4")
