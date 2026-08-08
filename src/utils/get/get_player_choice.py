@@ -9,7 +9,7 @@ def get_player_choice(episodes):
     for i, player in enumerate(available_players, 1):
         working_episodes = sum(
             1 for url in episodes[player]
-            if any(source in url.lower() for source in valid_sources)
+            if SourceDomains.is_valid_url(url, category=player)
         )
         total_episodes = len(episodes[player])
         print(f"{Colors.OKCYAN}  {i}. {player} ({working_episodes}/{total_episodes} working episodes){Colors.ENDC}")
