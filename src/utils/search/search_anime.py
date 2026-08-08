@@ -3,7 +3,7 @@ import re
 import json
 import urllib.parse
 from bs4 import BeautifulSoup
-from src.var import get_domain
+from src.var import get_domain, print_status
 from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urljoin
 
@@ -55,7 +55,8 @@ def search_nakanime(query, headers=None):
                     "site": "nakanime"
                 })
         return results
-    except Exception:
+    except Exception as e:
+        print_status(f"Nakanime search failed: {str(e)}", "warning")
         return []
 
 def check_link_support(res, headers):
@@ -132,7 +133,16 @@ def search_anime_sama(query, headers=None):
     except Exception:
         return []
 
-def search_anime(query, headers=None, site="anime-sama"):
+def search_anime(query, headers=None, site="all"):
     if site and site.lower() == "nakanime":
         return search_nakanime(query, headers=headers)
-    return search_anime_sama(query, headers=headers)
+    if site and site.lower() == "anime-sama":
+        return search_anime_sama(query, headers=headers)
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        future_sama = executor.submit(search_anime_sama, query, headers)
+        future_naka = executor.submit(search_nakanime, query, headers)
+        results_sama = future_sama.result()
+        results_naka = future_naka.result()
+
+    return results_sama + results_naka

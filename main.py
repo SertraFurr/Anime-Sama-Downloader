@@ -41,6 +41,7 @@ else:
     headers = generate_requests_headers("None", "Mozilla/5.0")
 
 import os
+import re
 import sys
 import argparse
 from concurrent.futures                         import ThreadPoolExecutor, as_completed
@@ -63,6 +64,272 @@ from src.utils.download.download_scan           import download_scan
 from src.utils.settings.settings_menu           import settings_menu
 
 # PLEASE DO NOT REMOVE: Original code from https://github.com/sertrafurr/Anime-Sama-Downloader
+
+def parse_selection_indices(user_input, count):
+    """Parse a 1-based selection string (comma list, ranges like 12-49, or 'all') into 0-based indices."""
+    user_input = user_input.strip().lower()
+    if not user_input:
+        return []
+
+    if user_input == 'all':
+        return list(range(count))
+
+    indices = []
+    seen = set()
+    for part in user_input.split(','):
+        part = part.strip()
+        if not part:
+            continue
+        try:
+            if '-' in part:
+                start, end = map(int, part.split('-', 1))
+                nums = range(start, end + 1)
+            else:
+                nums = [int(part)]
+        except ValueError:
+            print_status(f"Invalid selection: '{part}'", "error")
+            continue
+
+        for num in nums:
+            if num in seen:
+                continue
+            seen.add(num)
+            if 1 <= num <= count:
+                indices.append(num - 1)
+            else:
+                print_status(f"Number {num} is out of range (1-{count})", "error")
+
+    return indices
+
+
+def process_season(base_url, args, headers, interactive, pause_at_end=True):
+    is_valid, error_msg = validate_anime_sama_url(base_url)
+    if not is_valid:
+        print_status(error_msg, "error")
+        return 1
+
+    if "/scan" in base_url.lower():
+        download_scan(base_url, headers)
+        return 0
+
+    anime_name = extract_anime_name(base_url)
+    print_status(f"Detected anime: {anime_name}", "info")
+    episodes = fetch_episodes(base_url, headers=headers)
+    if not episodes:
+        print_status("Failed to fetch episodes.", "error")
+        return 1
+
+    print_episodes(episodes)
+
+    player_choice = None
+    if args.player:
+        avail = list(episodes.keys())
+        if args.player in avail:
+            player_choice = args.player
+        else:
+            for p in avail:
+                if args.player.lower() in p.lower():
+                    player_choice = p
+                    break
+
+            if not player_choice:
+                target = args.player.lower()
+                domain_map = SourceDomains.DOMAIN_MAP
+
+                search_domains = []
+                if target in domain_map:
+                     val = domain_map[target]
+                     if isinstance(val, list): search_domains.extend(val)
+                     else: search_domains.append(val)
+                else:
+                    search_domains.append(target)
+
+                for p in avail:
+                    urls_to_check = episodes[p][:5]
+                    found_match = False
+                    for u in urls_to_check:
+                        u_lower = u.lower()
+                        if any(d in u_lower for d in search_domains):
+                            player_choice = p
+                            found_match = True
+                            break
+                    if found_match:
+                        break
+
+        if not player_choice:
+            print_status(f"Player '{args.player}' not found.", "error")
+            return 1
+    else:
+        player_choice = get_player_choice(episodes)
+
+    if not player_choice:
+        return 1
+
+    episode_indices = None
+
+    if args.latest:
+        if episodes and player_choice in episodes:
+            count = len(episodes[player_choice])
+            if count > 0:
+                episode_indices = [count - 1]
+                print_status(f"Latest episode selected: Episode {count}", "info")
+            else:
+                print_status("No episodes found to select latest.", "error")
+                return 1
+        else:
+            return 1
+
+    if not episode_indices:
+        if args.episodes:
+            if args.episodes.lower() == 'all':
+                episode_indices = []
+                for i in range(len(episodes[player_choice])):
+                    if 'vk.com' not in episodes[player_choice][i] and 'myvi.tv' not in episodes[player_choice][i]:
+                        episode_indices.append(i)
+            else:
+                try:
+                    episode_indices = []
+                    for x in args.episodes.split(','):
+                        if x.strip():
+                            val = int(x.strip())
+                            if 1 <= val <= len(episodes[player_choice]):
+                                episode_indices.append(val - 1)
+                except ValueError:
+                    print_status("Invalid episode list format", "error")
+                    return 1
+        else:
+             if not args.latest:
+                episode_indices = get_episode_choice(episodes, player_choice)
+
+    if episode_indices is None or not episode_indices:
+        return 1
+
+    get_anime_name = extract_anime_name(base_url)
+    if 'nakanime.tv' in base_url.lower() or 'nakanime.fr' in base_url.lower():
+        m_season = re.search(r'/season/(\d+)', base_url)
+        get_saison_info = f"saison{m_season.group(1)}" if m_season else "saison1"
+    else:
+        get_saison_info = base_url.split('/')[-3]
+
+
+    if args.dest:
+         save_dir = format_save_path(get_anime_name, get_saison_info, base_path=args.dest)
+    elif interactive:
+        save_dir = get_save_directory(get_anime_name, get_saison_info)
+    else:
+        save_dir = format_save_path(get_anime_name, get_saison_info)
+
+    if not args.dest and not interactive:
+         os.makedirs(save_dir, exist_ok=True)
+
+    if isinstance(episode_indices, int):
+        episode_indices = [episode_indices]
+
+    urls = [episodes[player_choice][index] for index in episode_indices]
+    episode_numbers = [index + 1 for index in episode_indices]
+    def _player_lang(player_key):
+        m = re.search(r'\(([^)]+)\)\s*$', player_key)
+        return m.group(1).strip().upper() if m else None
+
+    chosen_lang = _player_lang(player_choice)
+    other_players = [p for p in episodes.keys() if p != player_choice]
+    if chosen_lang:
+        same_lang = [p for p in other_players if _player_lang(p) == chosen_lang]
+        other_lang = [p for p in other_players if _player_lang(p) != chosen_lang]
+        player_order = [player_choice] + same_lang + other_lang
+    else:
+        player_order = [player_choice] + other_players
+
+    if not args.no_mal and get_anime_name:
+        os.makedirs(save_dir, exist_ok=True)
+        alt_names = fetch_alt_titles(base_url, headers=headers)
+        create_match_file(save_dir, get_anime_name, interactive=interactive, alt_names=alt_names)
+
+    print(f"\n{Colors.BOLD}{Colors.HEADER}🎬 PROCESSING EPISODES{Colors.ENDC}")
+    print_separator()
+    print_status(f"Player: {player_choice}", "info")
+    print_status(f"Episodes selected: {', '.join(map(str, episode_numbers))}", "info")
+
+    video_sources = fetch_video_source(urls)
+    if not video_sources:
+        print_status("Could not extract video sources", "error")
+        return 1
+
+    if isinstance(video_sources, str):
+        video_sources = [video_sources]
+
+    use_threading = args.threads
+    use_ts_threading = args.fast
+    automatic_mp4 = args.mp4
+    pre_selected_tool = args.tool
+
+    if interactive:
+        if len(episode_indices) > 1 and not args.threads:
+            thread_choice = input(f"{Colors.BOLD}Download all episodes simultaneously? (t/1/y = yes / s = no): {Colors.ENDC}").strip().lower()
+            use_threading = thread_choice in ['t', 'threaded', '1', 'y', 'yes']
+
+        if any('m3u8' in src for src in video_sources if src):
+            if use_threading:
+                print_status("Using threading with M3U8.", "warning")
+
+            if not args.fast:
+                 ts_thread_choice = input(f"{Colors.BOLD}Download .ts files simultaneously (fast)? (y/n): {Colors.ENDC}").strip().lower()
+                 use_ts_threading = ts_thread_choice in ['t', 'threaded', '1', 'y', 'yes']
+
+            if not args.mp4:
+                auto_mp4_choice = input(f"{Colors.BOLD}Convert to .mp4 automatically? (y/n): {Colors.ENDC}").strip().lower()
+                automatic_mp4 = auto_mp4_choice in ['t', 'threaded', '1', 'y', 'yes']
+
+                if automatic_mp4:
+                    if not pre_selected_tool:
+                         while True:
+                            t = input(f"{Colors.BOLD}Tool (1=av, 2=ffmpeg): {Colors.ENDC}").strip()
+                            if t in ['1', 'av', '']:
+                                pre_selected_tool = 'av'
+                                break
+                            elif t in ['2', 'ffmpeg']:
+                                pre_selected_tool = 'ffmpeg'
+                                break
+
+    failed_downloads = 0
+    try:
+        if use_threading and len(episode_indices) > 1:
+            print_status("Starting threaded downloads...", "info")
+            with ThreadPoolExecutor() as executor:
+                future_to_episode = {
+                    executor.submit(download_episode_with_fallback, ep_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_src, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive): ep_num
+                    for ep_num, ep_idx, video_src in zip(episode_numbers, episode_indices, video_sources)
+                }
+                for future in as_completed(future_to_episode):
+                    ep_num = future_to_episode[future]
+                    try:
+                        success, _ = future.result()
+                        if not success: failed_downloads += 1
+                    except Exception as e:
+                        print_status(f"Error ep {ep_num}: {e}", "error")
+                        failed_downloads += 1
+        else:
+            for episode_num, ep_idx, video_source in zip(episode_numbers, episode_indices, video_sources):
+                success, _ = download_episode_with_fallback(episode_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_source, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive)
+                if not success: failed_downloads += 1
+
+        print_separator()
+        if failed_downloads == 0:
+            print_status("All downloads completed! 🎉", "success")
+            if interactive and pause_at_end: input(f"{Colors.BOLD}Press Enter to exit...{Colors.ENDC}")
+            return 0
+        else:
+            print_status(f"Completed with {failed_downloads} failed", "warning")
+            if interactive and pause_at_end: input(f"{Colors.BOLD}Press Enter to exit...{Colors.ENDC}")
+            return 1
+
+    except KeyboardInterrupt:
+        print_status("Interrupted", "error")
+        return 1
+    except Exception as e:
+        print_status(f"Error: {e}", "error")
+        return 1
+
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -101,6 +368,7 @@ def main():
         print_header()
         
         base_url = args.url
+        season_urls = None
 
         if args.search and not base_url:
             results = search_anime(args.search, headers=headers)
@@ -115,7 +383,8 @@ def main():
                     support_text = f" {Colors.OKGREEN}(Anime Supported){Colors.ENDC}"
                 elif res.get('support') == "Scans Supported":
                     support_text = f" {Colors.OKGREEN}(Scans Supported){Colors.ENDC}"
-                print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text} ({res['url']}){Colors.ENDC}")
+                site_tag = f" [{res.get('site')}]" if res.get('site') else ""
+                print(f"{Colors.OKCYAN}{i}. {res['title']}{site_tag}{support_text} ({res['url']}){Colors.ENDC}")
             
             while True:
                 try:
@@ -170,7 +439,8 @@ def main():
                              support_text = f" {Colors.OKGREEN}(Anime & Scans Supported){Colors.ENDC}"
                          elif res.get('support') == "Unknown":
                              support_text = f" {Colors.FAIL}(Status Unknown){Colors.ENDC}"
-                         print(f"{Colors.OKCYAN}{i}. {res['title']}{support_text}{Colors.ENDC}")
+                         site_tag = f" [{res.get('site')}]" if res.get('site') else ""
+                         print(f"{Colors.OKCYAN}{i}. {res['title']}{site_tag}{support_text}{Colors.ENDC}")
                     
                     valid_choice = False
                     while True:
@@ -209,13 +479,17 @@ def main():
                                              idx_counter += 1
                                     
                                     while True:
-                                        s_choice = input(f"{Colors.BOLD}Select season (1-{len(options)}): {Colors.ENDC}").strip()
-                                        if s_choice.isdigit():
-                                            s_idx = int(s_choice) - 1
-                                            if 0 <= s_idx < len(options):
-                                                base_url = options[s_idx]['url']
-                                                valid_choice = True
-                                                break
+                                        s_choice = input(
+                                            f"{Colors.BOLD}Select season(s) (1-{len(options)}, "
+                                            "comma-separated example 1,2,3, ranges like 1-3, or 'all'): "
+                                            f"{Colors.ENDC}"
+                                        )
+                                        s_indices = parse_selection_indices(s_choice, len(options))
+                                        if s_indices:
+                                            season_urls = [options[i]['url'] for i in s_indices]
+                                            base_url = season_urls[0]
+                                            valid_choice = True
+                                            break
                                         print_status("Invalid choice", "error")
                                     if valid_choice:
                                         break
@@ -261,227 +535,36 @@ def main():
                             idx_counter += 1
                 
                 while True:
-                    choice = input(f"{Colors.BOLD}Select season (1-{len(season_options)}): {Colors.ENDC}").strip()
-                    if choice.isdigit():
-                        idx = int(choice) - 1
-                        if 0 <= idx < len(season_options):
-                            base_url = season_options[idx]['url']
-                            break
+                    choice = input(
+                        f"{Colors.BOLD}Select season(s) (1-{len(season_options)}, "
+                        "comma-separated example 1,2,3, ranges like 1-3, or 'all'): "
+                        f"{Colors.ENDC}"
+                    )
+                    indices = parse_selection_indices(choice, len(season_options))
+                    if indices:
+                        season_urls = [season_options[i]['url'] for i in indices]
+                        base_url = season_urls[0]
+                        break
                     print_status("Invalid choice", "error")
             else:
                  print_status("Could not find any seasons/versions. Please define one manually (url/saison...)", "warning")
 
-        is_valid, error_msg = validate_anime_sama_url(base_url)
-        if not is_valid:
-            print_status(error_msg, "error")
-            return 1
+        if season_urls is None:
+            season_urls = [base_url]
 
-        if "/scan" in base_url.lower():
-            download_scan(base_url, headers)
-            return 0
+        multi = len(season_urls) > 1
+        overall_rc = 0
+        for i, season_url in enumerate(season_urls):
+            if multi:
+                print(f"\n{Colors.BOLD}{Colors.HEADER}=== Saison {i + 1}/{len(season_urls)} ==={Colors.ENDC}")
+            rc = process_season(season_url, args, headers, interactive, pause_at_end=not multi)
+            if rc != 0:
+                overall_rc = 1
 
-        anime_name = extract_anime_name(base_url)
-        print_status(f"Detected anime: {anime_name}", "info")
-        episodes = fetch_episodes(base_url, headers=headers)
-        if not episodes:
-            print_status("Failed to fetch episodes.", "error")
-            return 1
-        
-        print_episodes(episodes)
-        
-        player_choice = None
-        if args.player:
-            avail = list(episodes.keys())
-            if args.player in avail:
-                player_choice = args.player
-            else:
-                for p in avail:
-                    if args.player.lower() in p.lower():
-                        player_choice = p
-                        break
-                
-                if not player_choice:
-                    target = args.player.lower()
-                    domain_map = SourceDomains.DOMAIN_MAP
-                    
-                    search_domains = []
-                    if target in domain_map:
-                         val = domain_map[target]
-                         if isinstance(val, list): search_domains.extend(val)
-                         else: search_domains.append(val)
-                    else:
-                        search_domains.append(target)
-                        
-                    for p in avail:
-                        urls_to_check = episodes[p][:5] 
-                        found_match = False
-                        for u in urls_to_check:
-                            u_lower = u.lower()
-                            if any(d in u_lower for d in search_domains):
-                                player_choice = p
-                                found_match = True
-                                break
-                        if found_match:
-                            break
+        if multi and interactive:
+            input(f"{Colors.BOLD}Press Enter to exit...{Colors.ENDC}")
 
-            if not player_choice:
-                print_status(f"Player '{args.player}' not found.", "error")
-                return 1
-        else:
-            player_choice = get_player_choice(episodes)
-        
-        if not player_choice:
-            return 1
-            
-        episode_indices = None
-        
-        if args.latest:
-            if episodes and player_choice in episodes:
-                count = len(episodes[player_choice])
-                if count > 0:
-                    episode_indices = [count - 1]
-                    print_status(f"Latest episode selected: Episode {count}", "info")
-                else:
-                    print_status("No episodes found to select latest.", "error")
-                    return 1
-            else:
-                return 1
-
-        if not episode_indices:
-            if args.episodes:
-                if args.episodes.lower() == 'all':
-                    episode_indices = []
-                    for i in range(len(episodes[player_choice])):
-                        if 'vk.com' not in episodes[player_choice][i] and 'myvi.tv' not in episodes[player_choice][i]:
-                            episode_indices.append(i)
-                else:
-                    try:
-                        episode_indices = []
-                        for x in args.episodes.split(','):
-                            if x.strip():
-                                val = int(x.strip())
-                                if 1 <= val <= len(episodes[player_choice]):
-                                    episode_indices.append(val - 1)
-                    except ValueError:
-                        print_status("Invalid episode list format", "error")
-                        return 1
-            else:
-                 if not args.latest:
-                    episode_indices = get_episode_choice(episodes, player_choice)
-            
-        if episode_indices is None or not episode_indices:
-            return 1
-
-        get_anime_name = extract_anime_name(base_url)
-        get_saison_info = base_url.split('/')[-3]
-
-        
-        if args.dest:
-             save_dir = format_save_path(get_anime_name, get_saison_info, base_path=args.dest)
-        elif interactive:
-            save_dir = get_save_directory(get_anime_name, get_saison_info)
-        else:
-            save_dir = format_save_path(get_anime_name, get_saison_info)
-
-        if not args.dest and not interactive:
-             os.makedirs(save_dir, exist_ok=True)
-
-        if isinstance(episode_indices, int):
-            episode_indices = [episode_indices]
-        
-        urls = [episodes[player_choice][index] for index in episode_indices]
-        episode_numbers = [index + 1 for index in episode_indices]
-        player_order = [player_choice] + [p for p in episodes.keys() if p != player_choice]
-
-        if not args.no_mal and get_anime_name and interactive:
-            os.makedirs(save_dir, exist_ok=True)
-            alt_names = fetch_alt_titles(base_url, headers=headers)
-            create_match_file(save_dir, get_anime_name, interactive=interactive, alt_names=alt_names)
-
-        print(f"\n{Colors.BOLD}{Colors.HEADER}🎬 PROCESSING EPISODES{Colors.ENDC}")
-        print_separator()
-        print_status(f"Player: {player_choice}", "info")
-        print_status(f"Episodes selected: {', '.join(map(str, episode_numbers))}", "info")
-        
-        video_sources = fetch_video_source(urls)
-        if not video_sources:
-            print_status("Could not extract video sources", "error")
-            return 1
-        
-        if isinstance(video_sources, str):
-            video_sources = [video_sources]
-            
-        use_threading = args.threads
-        use_ts_threading = args.fast
-        automatic_mp4 = args.mp4
-        pre_selected_tool = args.tool
-
-        if interactive:
-            if len(episode_indices) > 1 and not args.threads:
-                thread_choice = input(f"{Colors.BOLD}Download all episodes simultaneously? (t/1/y = yes / s = no): {Colors.ENDC}").strip().lower()
-                use_threading = thread_choice in ['t', 'threaded', '1', 'y', 'yes']
-
-            if any('m3u8' in src for src in video_sources if src):
-                if use_threading:
-                    print_status("Using threading with M3U8.", "warning")
-                
-                if not args.fast:
-                     ts_thread_choice = input(f"{Colors.BOLD}Download .ts files simultaneously (fast)? (y/n): {Colors.ENDC}").strip().lower()
-                     use_ts_threading = ts_thread_choice in ['t', 'threaded', '1', 'y', 'yes']
-
-                if not args.mp4:
-                    auto_mp4_choice = input(f"{Colors.BOLD}Convert to .mp4 automatically? (y/n): {Colors.ENDC}").strip().lower()
-                    automatic_mp4 = auto_mp4_choice in ['t', 'threaded', '1', 'y', 'yes']
-                    
-                    if automatic_mp4:
-                        if not pre_selected_tool:
-                             while True:
-                                t = input(f"{Colors.BOLD}Tool (1=av, 2=ffmpeg): {Colors.ENDC}").strip()
-                                if t in ['1', 'av', '']: 
-                                    pre_selected_tool = 'av'
-                                    break
-                                elif t in ['2', 'ffmpeg']:
-                                    pre_selected_tool = 'ffmpeg'
-                                    break
-
-        failed_downloads = 0
-        try:
-            if use_threading and len(episode_indices) > 1:
-                print_status("Starting threaded downloads...", "info")
-                with ThreadPoolExecutor() as executor:
-                    future_to_episode = {
-                        executor.submit(download_episode_with_fallback, ep_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_src, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive): ep_num
-                        for ep_num, ep_idx, video_src in zip(episode_numbers, episode_indices, video_sources)
-                    }
-                    for future in as_completed(future_to_episode):
-                        ep_num = future_to_episode[future]
-                        try:
-                            success, _ = future.result()
-                            if not success: failed_downloads += 1
-                        except Exception as e:
-                            print_status(f"Error ep {ep_num}: {e}", "error")
-                            failed_downloads += 1
-            else:
-                for episode_num, ep_idx, video_source in zip(episode_numbers, episode_indices, video_sources):
-                    success, _ = download_episode_with_fallback(episode_num, ep_idx, episodes, player_order, get_anime_name, save_dir, video_source, use_ts_threading, automatic_mp4, pre_selected_tool, args.no_mal, interactive)
-                    if not success: failed_downloads += 1
-
-            print_separator()
-            if failed_downloads == 0:
-                print_status("All downloads completed! 🎉", "success")
-                if interactive: input(f"{Colors.BOLD}Press Enter to exit...{Colors.ENDC}")
-                return 0
-            else:
-                print_status(f"Completed with {failed_downloads} failed", "warning")
-                if interactive: input(f"{Colors.BOLD}Press Enter to exit...{Colors.ENDC}")
-                return 1
-
-        except KeyboardInterrupt:
-            print_status("Interrupted", "error")
-            return 1
-        except Exception as e:
-            print_status(f"Error: {e}", "error")
-            return 1
+        return overall_rc
     except Exception as e:
         print_status(f"Fatal: {e}", "error")
         return 1
