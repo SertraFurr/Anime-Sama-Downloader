@@ -2,7 +2,7 @@ import re
 import time
 import requests
 
-from src.var                                            import print_status
+from src.var                                            import print_status, SourceDomains
 from src.utils.parse.parse_m3u8_content                 import parse_m3u8_content
 from src.utils.extract.extract_movearnpre_video_source  import extract_movearnpre_video_source
 from src.utils.extract.extract_sendvid_video_source     import extract_sendvid_video_source
@@ -50,7 +50,7 @@ def fetch_video_source(url):
             return None
 
         # VOE EXTRACTION
-        if any(d in single_url for d in ['matthewhotelscience.com', 'voe.sx', 'jessicachoosemake.com', 'voe']):
+        if SourceDomains.is_voe_url(single_url):
             stream_url = extract_voe_video_source(single_url)
             if stream_url:
                 return stream_url
