@@ -15,7 +15,7 @@ class SourceDomains:
         "embed4me": ("Embed4me", ["embed4me.com", "embed4me"]),
         "uqload": ("Uqload", ["uqload.is", "uqload"]),
         "ansembed": ("AnsEmbed", ["ansembed.net"]),
-        "voe": ("Voe", ["matthewhotelscience.com", "voe.sx", "jessicachoosemake.com", "jessicachoosemake", "voe"]),
+        "voe": ("Voe", ["voe"]),
         "filemoon": ("Filemoon", ["bysesukior.com", "filemoon"]),
         "luluvdo": ("LuluStream", ["luluvdo.com", "lulustream.com", "lulu"]),
         "vidzy": ("Vidzy", ["vidzy.live", "vidzy.org", "vidzy"]),
@@ -34,6 +34,31 @@ class SourceDomains:
         k: (val[1] if len(val[1]) > 1 else val[1][0])
         for k, val in _SOURCES.items()
     }
+
+    @classmethod
+    def is_voe_url(cls, url, category=None):
+        if not url:
+            return False
+        if category and "voe" in str(category).lower():
+            return True
+        url_lower = str(url).lower()
+        if "voe" in url_lower:
+            return True
+        import re
+        if re.search(r'https?://[^/]+/e/[a-zA-Z0-9]+', url_lower):
+            non_voe = ["sibnet", "vidmoly", "lulustream", "luluvdo", "vidzy", "filemoon", "uqload", "ansembed", "embed4me", "sendvid", "oneupload"]
+            if not any(p in url_lower for p in non_voe):
+                return True
+        return False
+
+    @classmethod
+    def is_valid_url(cls, url, category=None):
+        if not url:
+            return False
+        if cls.is_voe_url(url, category=category):
+            return True
+        url_lower = str(url).lower()
+        return any(source in url_lower for source in cls.PLAYERS)
 
 def get_domain():
     return "anime-sama.to"
