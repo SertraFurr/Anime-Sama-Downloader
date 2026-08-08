@@ -1,4 +1,4 @@
-from src.var import Colors, print_separator
+from src.var import Colors, print_separator, SourceDomains
 
 def print_episodes(episodes):
     SOURCE_CONFIG = {
@@ -19,10 +19,6 @@ def print_episodes(episodes):
         "ansembed.net": ("AnsEmbed", Colors.OKGREEN, True),
         "vidmoly.org": ("Vidmoly", Colors.OKGREEN, True),
         "vidmoly.me": ("Vidmoly", Colors.OKGREEN, True),
-        "matthewhotelscience.com": ("Voe", Colors.OKGREEN, True),
-        "voe.sx": ("Voe", Colors.OKGREEN, True),
-        "jessicachoosemake.com": ("Voe", Colors.OKGREEN, True),
-        "jessicachoosemake": ("Voe", Colors.OKGREEN, True),
         "voe": ("Voe", Colors.OKGREEN, True),
         "bysesukior.com": ("Filemoon", Colors.OKGREEN, True),
         "filemoon": ("Filemoon", Colors.OKGREEN, True),
@@ -50,6 +46,11 @@ def print_episodes(episodes):
         for i, url in enumerate(urls, start=1):
             url_lower = url.lower()
             found = False
+
+            if SourceDomains.is_voe_url(url, category=category):
+                print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - Voe ✅{Colors.ENDC}")
+                found = True
+                continue
             
             for domain, (label, color, ok) in SOURCE_CONFIG.items():
                 if domain in url_lower:
