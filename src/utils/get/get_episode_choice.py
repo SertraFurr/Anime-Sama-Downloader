@@ -14,10 +14,15 @@ def get_episode_choice(episodes, player_choice):
     for i, url in enumerate(episodes[player_choice], 1):
         url_lower = url.lower()
         found_type = None
-        for key, value in source_types.items():
-            if key in url_lower:
-                found_type = value
-                break
+
+        if SourceDomains.is_voe_url(url, category=player_choice):
+            found_type = "Voe"
+        else:
+            for key, value in source_types.items():
+                if key in url_lower:
+                    found_type = value
+                    break
+
         if found_type:
             working_episodes.append(i)
             print(f"{Colors.OKGREEN}  {i:2d}. Episode {i} - {found_type} ✅{Colors.ENDC}")
